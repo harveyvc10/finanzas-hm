@@ -1,0 +1,3144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Finanzas 5.0" />
+  <meta name="theme-color" content="#F2F2F7" />
+
+  <!-- PWA Nativa: Ícono SVG Oficial Apple Wallet & Web Manifest -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%231D1D1F'/%3E%3Cpath d='M360 210H152c-22 0-40 18-40 40v140c0 22 18 40 40 40h208c22 0 40-18 40-40V250c0-22-18-40-40-40z' fill='%230071E3'/%3E%3Cpath d='M152 170h208c11 0 20 9 20 20v20H132v-20c0-11 9-20 20-20z' fill='%237D50FF'/%3E%3Ccircle cx='340' cy='320' r='22' fill='%23FFFFFF'/%3E%3C/svg%3E" />
+  <link rel="manifest" href="data:application/manifest+json;utf-8,%7B%22name%22%3A%22Finanzas%20Harvey%20%26%20Mayra%205.0%22%2C%22short_name%22%3A%22Finanzas%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23F2F2F7%22%2C%22theme_color%22%3A%22%23F2F2F7%22%7D" />
+
+  <title>Finanzas 5.0 Pro — Pure Apple</title>
+  <style>
+    /* Paleta Oficial Apple.com — Edición 5.0 Pure Apple (iOS 18 Retina, HIG Inset Separators, Zen UI) */
+    :root {
+      --bg: #F2F2F7;
+      --card: #FFFFFF;
+      --surface: rgba(118, 118, 128, 0.08);
+      --border: rgba(60, 60, 67, 0.18);
+      --border-light: rgba(60, 60, 67, 0.09);
+      --separator: rgba(60, 60, 67, 0.12);
+      --text: #000000;
+      --text-secondary: #8E8E93;
+      --text-tertiary: #C7C7CC;
+      --apple-blue: #007AFF;
+      --apple-blue-tint: rgba(0, 122, 255, 0.10);
+      --apple-red: #FF3B30;
+      --apple-red-tint: rgba(255, 59, 48, 0.10);
+      --apple-green: #34C759;
+      --apple-green-tint: rgba(52, 199, 89, 0.10);
+      --apple-purple: #AF52DE;
+      --apple-orange: #FF9500;
+      --apple-black: #1C1C1E;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.03);
+      --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.02);
+      --shadow-pill: 0 3px 8px rgba(0, 0, 0, 0.12), 0 1px 1px rgba(0, 0, 0, 0.04);
+      --ai-gradient: linear-gradient(135deg, #007AFF 0%, #5856D6 50%, #FF2D55 100%);
+      --gold-gradient: linear-gradient(135deg, #FF9500 0%, #FF2D55 100%);
+      --spring-timing: cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      margin: 0;
+      padding: calc(env(safe-area-inset-top, 4px) + 4px) 12px calc(env(safe-area-inset-bottom, 8px) + 54px) 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      max-width: 460px;
+      margin-left: auto;
+      margin-right: auto;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+
+    /* Notificación Superior Dynamic Island */
+    .dynamic-island {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 10px) + 6px);
+      left: 50%;
+      transform: translateX(-50%) scale(0.9) translateY(-90px);
+      background: var(--apple-black);
+      color: #FFFFFF;
+      padding: 10px 20px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+      transition: all 0.38s cubic-bezier(0.32, 0.72, 0, 1);
+      z-index: 2500;
+      opacity: 0;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .dynamic-island.show {
+      transform: translateX(-50%) scale(1) translateY(0);
+      opacity: 1;
+    }
+    .island-check {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--apple-blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; color: #fff;
+    }
+
+    /* Banner de Notificación Apple iOS */
+    .apple-notif-banner {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 10px) + 8px);
+      left: 12px;
+      right: 12px;
+      max-width: 440px;
+      margin: 0 auto;
+      background: rgba(28, 28, 30, 0.96);
+      -webkit-backdrop-filter: blur(28px) saturate(180%);
+      backdrop-filter: blur(28px) saturate(180%);
+      color: #FFFFFF;
+      padding: 12px 14px;
+      border-radius: 20px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.38), 0 0 0 0.5px rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 3000;
+      transform: translateY(-130px) scale(0.94);
+      opacity: 0;
+      transition: all 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      pointer-events: none;
+    }
+    .apple-notif-banner.show {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .an-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .an-content {
+      flex: 1;
+      min-width: 0;
+      text-align: left;
+    }
+    .an-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2px;
+    }
+    .an-app-name {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.65);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .an-time {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.45);
+    }
+    .an-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .an-body {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.82);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+
+    /* Bóveda Dual: Switch Modo Hogar vs Modo Personal iOS 18 */
+    .dual-vault-switch {
+      background: rgba(118, 118, 128, 0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 2.5px;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px;
+      margin-bottom: 5px;
+    }
+    .vault-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 5px 6px;
+      border-radius: 9px;
+      font-size: 11.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.22s var(--spring-timing);
+    }
+    .vault-btn.active {
+      background: #FFFFFF;
+      color: #000000;
+      box-shadow: var(--shadow-pill);
+    }
+    .vault-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Tarjeta Superior Heroica 5.0 — Consolidada y Zen (Un solo balance claro) */
+    .apple-card {
+      background: linear-gradient(180deg, #FFFFFF 0%, #FAFAFC 100%);
+      border: 0.5px solid var(--border-light);
+      border-radius: 18px;
+      padding: 10px 13px 8px 13px;
+      margin-bottom: 6px;
+      box-shadow: var(--shadow-card);
+    }
+    .ac-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      gap: 6px;
+    }
+    .ac-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      min-width: 0;
+    }
+    .ac-main-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .v5-tag {
+      font-size: 8.5px;
+      font-weight: 700;
+      background: var(--ai-gradient);
+      color: #fff;
+      padding: 1.5px 5.5px;
+      border-radius: 99px;
+      letter-spacing: 0.3px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .scope-pill-btn {
+      border: 0.5px solid var(--border-light);
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2.5px 8px;
+      border-radius: 99px;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.16s var(--spring-timing);
+    }
+    .scope-pill-btn.active {
+      background: #000000;
+      color: #FFFFFF;
+      border-color: #000000;
+    }
+    .scope-pill-btn:active {
+      transform: scale(0.94);
+    }
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3.5px;
+      font-size: 9.5px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: var(--surface);
+      padding: 2px 6px;
+      border-radius: 99px;
+    }
+    .live-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--apple-blue);
+    }
+    .live-dot.offline {
+      background: var(--apple-orange);
+    }
+    .notif-btn {
+      border: 0.5px solid var(--border-light);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 11px;
+      padding: 2px 6.5px;
+      border-radius: 99px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.16s var(--spring-timing);
+    }
+    .notif-btn.active {
+      background: var(--apple-blue-tint);
+      border-color: rgba(0, 122, 255, 0.35);
+    }
+    .notif-btn:active {
+      transform: scale(0.92);
+    }
+
+    /* Switch iOS Cupertino & Fila Notificaciones */
+    .ios-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 26px;
+      flex-shrink: 0;
+    }
+    .ios-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .ios-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(120, 120, 128, 0.22);
+      transition: 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+      border-radius: 99px;
+    }
+    .ios-slider:before {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 2px;
+      bottom: 2px;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.22);
+      transition: 0.24s cubic-bezier(0.2, 0.8, 0.2, 1);
+      border-radius: 50%;
+    }
+    input:checked + .ios-slider {
+      background-color: var(--apple-green);
+    }
+    input:checked + .ios-slider:before {
+      transform: translateX(18px);
+    }
+
+    .notif-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 4px;
+      gap: 10px;
+    }
+    .notif-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .notif-ico {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .notif-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .notif-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+
+    /* Balance Heroico Central */
+    .hero-balance-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+    .hero-sub-lbl {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .m-nav-arrow {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 2px;
+      line-height: 1;
+    }
+    .hero-amount {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Píldora de Liquidación 1-Toque */
+    .ac-settlement-pill {
+      border: none;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--apple-blue);
+      background: var(--apple-blue-tint);
+      padding: 5px 11px;
+      border-radius: 99px;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: transform 0.14s var(--spring-timing);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .ac-settlement-pill:active {
+      transform: scale(0.95);
+    }
+    .ac-settlement-pill.settled {
+      background: var(--surface);
+      color: var(--text-secondary);
+    }
+    .ac-settlement-pill.personal-pill {
+      background: var(--apple-green-tint);
+      color: #1B8738;
+    }
+
+    /* Métricas 3 Columnas */
+    .ac-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 5px;
+      margin-bottom: 6px;
+    }
+    .ac-stat {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      background: var(--surface);
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+    .ac-stat-lbl {
+      font-size: 9.5px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .ac-stat-val {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--text);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Barra de Presupuesto Apple */
+    .budget-bar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding-top: 4px;
+      border-top: 0.5px solid var(--separator);
+    }
+    .budget-track {
+      flex: 1;
+      height: 4px;
+      background: rgba(118, 118, 128, 0.14);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .budget-fill {
+      height: 100%;
+      background: var(--apple-blue);
+      border-radius: 99px;
+      transition: width 0.3s ease;
+    }
+    .budget-caption {
+      font-size: 9.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    /* Tarjeta de Entrada: ¿Quién pagó? (3 vías amplio) + Monto Hero */
+    .top-entry-card {
+      background: #FFFFFF;
+      border: 0.5px solid var(--border-light);
+      border-radius: 16px;
+      padding: 7px 10px;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Segmented Control 3-Vías Puro (Harvey, Mayra, Mitad) */
+    .ios-segmented {
+      background: rgba(118, 118, 128, 0.12);
+      padding: 2.5px;
+      border-radius: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 2.5px;
+      margin-bottom: 6px;
+    }
+    .ios-segmented.personal-seg {
+      grid-template-columns: 1fr 1fr;
+    }
+    .seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 6.5px 2px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s var(--spring-timing);
+      white-space: nowrap;
+    }
+    .seg-btn.active {
+      background: #FFFFFF;
+      color: #000000;
+      box-shadow: var(--shadow-pill);
+    }
+    .seg-btn.active.who-harvey {
+      color: var(--apple-blue);
+    }
+    .seg-btn.active.who-mayra {
+      color: #7D50FF;
+    }
+    .seg-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Hero Amount (Estilo Apple Wallet / Apple Card) */
+    .amount-inline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(118, 118, 128, 0.06);
+      border: 0.5px solid transparent;
+      border-radius: 12px;
+      padding: 6px 12px;
+      transition: all 0.2s var(--spring-timing);
+      gap: 6px;
+    }
+    .amount-inline:focus-within {
+      border-color: var(--apple-blue);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+    }
+    .amount-left-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .amount-hero-lbl {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: -0.1px;
+    }
+    .btn-magic-ai {
+      border: none;
+      background: var(--ai-gradient);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3.5px 8.5px;
+      border-radius: 99px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 2px 8px rgba(88, 86, 214, 0.28);
+      transition: transform 0.14s var(--spring-timing);
+      white-space: nowrap;
+    }
+    .btn-magic-ai:active {
+      transform: scale(0.94);
+    }
+    .amount-flex {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+    .amount-curr {
+      font-size: 18px;
+      font-weight: 700;
+      color: rgba(60, 60, 67, 0.55);
+      letter-spacing: -0.02em;
+    }
+    .amount-field {
+      width: 125px;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      text-align: right;
+      font-family: inherit;
+      font-variant-numeric: tabular-nums;
+      padding: 0;
+    }
+    .amount-field::placeholder {
+      color: rgba(60, 60, 67, 0.25);
+    }
+
+    /* Cuadrícula de Categorías 4x3 con Emojis Originales Apple */
+    .cat-card {
+      background: #FFFFFF;
+      border: 0.5px solid var(--border-light);
+      border-radius: 16px;
+      padding: 6.5px;
+      margin-bottom: 6px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+    }
+    .cat-item {
+      border: 0.5px solid transparent;
+      background: rgba(118, 118, 128, 0.06);
+      border-radius: 11px;
+      padding: 5.5px 3px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      transition: all 0.18s var(--spring-timing);
+      font-family: inherit;
+      color: var(--text);
+    }
+    .cat-lbl {
+      font-size: 9.6px;
+      font-weight: 500;
+      color: currentColor;
+      text-align: center;
+      line-height: 1.05;
+      letter-spacing: -0.2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .cat-item:active {
+      transform: scale(0.93);
+      background: rgba(118, 118, 128, 0.14);
+    }
+    .cat-item.active {
+      background: var(--apple-blue-tint);
+      border-color: rgba(0, 122, 255, 0.35);
+      color: var(--apple-blue);
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.12);
+    }
+    .cat-item.active .cat-lbl {
+      font-weight: 600;
+    }
+
+    /* Formulario Inset Limpio: Concepto Full-Width + Chip Fecha Inteligente */
+    .ios-list {
+      background: #FFFFFF;
+      border: 0.5px solid var(--border-light);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 7px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+    .ios-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 12px;
+      position: relative;
+      gap: 8px;
+    }
+    .ios-row:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 14px;
+      right: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+    .ios-row-input {
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      width: 100%;
+      font-family: inherit;
+    }
+    .ios-row-input::placeholder {
+      color: var(--text-tertiary);
+      font-weight: 400;
+    }
+    .date-badge-btn {
+      border: 0.5px solid var(--border-light);
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3.5px 8.5px;
+      border-radius: 99px;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      transition: all 0.16s var(--spring-timing);
+    }
+    .date-badge-btn:active {
+      transform: scale(0.94);
+    }
+    .hidden-date-input {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+      pointer-events: none;
+    }
+
+    /* Chips Rápidos */
+    .quick-chips {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      padding: 5px 10px;
+      position: relative;
+      scrollbar-width: none;
+      background: rgba(118, 118, 128, 0.02);
+    }
+    .quick-chips::-webkit-scrollbar { display: none; }
+    .quick-chips::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 14px;
+      right: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+    .q-chip {
+      flex-shrink: 0;
+      border: 0.5px solid var(--border-light);
+      background: #FFFFFF;
+      color: var(--text);
+      padding: 3px 9px;
+      border-radius: 99px;
+      font-size: 10.5px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.16s var(--spring-timing);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+    .q-chip:active {
+      transform: scale(0.94);
+      background: #000000;
+      color: #FFFFFF;
+    }
+
+    /* Fila de Medio de Pago Inteligente */
+    .method-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 5.5px 12px;
+      gap: 8px;
+    }
+    .method-lbl {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .method-scroll {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .method-scroll::-webkit-scrollbar { display: none; }
+    .m-pill {
+      flex-shrink: 0;
+      border: 0.5px solid transparent;
+      background: rgba(118, 118, 128, 0.08);
+      color: var(--text-secondary);
+      padding: 3px 8.5px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.16s var(--spring-timing);
+    }
+    .m-pill:active {
+      transform: scale(0.94);
+    }
+    .m-pill.active {
+      background: #000000;
+      color: #FFFFFF;
+      font-weight: 600;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+    }
+
+    /* Botón Principal (Sistema iOS Cupertino) */
+    .ios-btn-primary {
+      width: 100%;
+      border: none;
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      padding: 12px;
+      border-radius: 14px;
+      font-size: 14.5px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s var(--spring-timing);
+      box-shadow: 0 4px 14px rgba(0, 122, 255, 0.3);
+    }
+    .ios-btn-primary.personal-btn {
+      background: var(--apple-green);
+      box-shadow: 0 4px 14px rgba(52, 199, 89, 0.3);
+    }
+    .ios-btn-primary:active {
+      transform: scale(0.975);
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+    }
+    .ios-btn-primary:disabled {
+      opacity: 0.55;
+    }
+
+    /* Historial y Separadores Inset Oficiales */
+    .ios-sec-hdr {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+      margin: 6px 0 5px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-right: 10px;
+    }
+    .tx-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9.5px 12px;
+      position: relative;
+      gap: 8px;
+      transition: background-color 0.15s ease;
+    }
+    .tx-row:active {
+      background-color: rgba(118, 118, 128, 0.08);
+    }
+    .tx-row:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 54px; /* Inset exacto tras icono 32px + padding 12px + gap 10px */
+      right: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+    .tx-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .tx-ico {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 0.5px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .tx-info { min-width: 0; }
+    .tx-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tx-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 1px;
+    }
+    .tx-badge-personal {
+      font-size: 8.5px;
+      font-weight: 700;
+      background: #E8F5E9;
+      color: #1B8738;
+      padding: 1px 4.5px;
+      border-radius: 99px;
+      margin-left: 4px;
+    }
+    .tx-right-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .tx-right {
+      text-align: right;
+    }
+    .tx-amount {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .tx-who {
+      font-size: 10px;
+      font-weight: 500;
+      margin-top: 1px;
+      color: var(--text-secondary);
+    }
+    .who-harvey { color: var(--apple-blue); font-weight: 600; }
+    .who-mayra { color: #7D50FF; font-weight: 600; }
+    .who-personal { color: #1B8738; font-weight: 600; }
+
+    .btn-del-tx {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 0.5px solid var(--border-light);
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+      transition: all 0.16s var(--spring-timing);
+    }
+    .btn-del-tx:active {
+      transform: scale(0.88);
+      background: var(--apple-red);
+      color: #fff;
+      border-color: var(--apple-red);
+    }
+
+    .preset-btn {
+      background: #FFFFFF;
+      border: 0.5px solid var(--border-light);
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.18s var(--spring-timing);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+    .preset-btn:active {
+      transform: scale(0.95);
+      background: rgba(118, 118, 128, 0.08);
+    }
+
+    /* Modales Estilo Apple Pay Sheet */
+    .apple-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      z-index: 2200;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s ease;
+    }
+    .apple-modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .apple-sheet {
+      width: 100%;
+      max-width: 460px;
+      background: var(--card);
+      border-radius: 22px 22px 0 0;
+      padding: 16px 18px calc(env(safe-area-inset-bottom, 14px) + 14px) 18px;
+      box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.14);
+      transform: translateY(100%);
+      transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+      text-align: center;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .apple-modal-backdrop.open .apple-sheet {
+      transform: translateY(0);
+    }
+    .sheet-handle {
+      width: 36px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 99px;
+      margin: 0 auto 10px auto;
+    }
+    .sheet-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+      color: var(--apple-blue);
+      background: var(--apple-blue-tint);
+      padding: 3px 10px;
+      border-radius: 99px;
+      margin-bottom: 6px;
+    }
+    .sheet-badge.ai {
+      background: var(--ai-gradient);
+      color: #fff;
+    }
+    .sheet-badge.wrapped {
+      background: var(--gold-gradient);
+      color: #fff;
+    }
+    .sheet-badge.danger {
+      color: var(--apple-red);
+      background: var(--apple-red-tint);
+    }
+    .sheet-title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .sheet-amount {
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.8px;
+      color: var(--text);
+      margin: 6px 0;
+    }
+    .sheet-desc {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      line-height: 1.35;
+    }
+    .sheet-btn-confirm {
+      width: 100%;
+      border: none;
+      background: var(--apple-blue);
+      color: #fff;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14.5px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .sheet-btn-confirm.ai {
+      background: var(--ai-gradient);
+    }
+    .sheet-btn-confirm.wrapped {
+      background: #25D366; /* WhatsApp Green */
+      color: #fff;
+    }
+    .sheet-btn-confirm.danger {
+      background: var(--apple-red);
+    }
+    .sheet-btn-cancel {
+      width: 100%;
+      border: none;
+      background: var(--surface);
+      color: var(--text);
+      padding: 11px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    /* Apple Wrapped Card Container */
+    .wrapped-card {
+      background: #FAFAFC;
+      border: 0.5px solid var(--border-light);
+      border-radius: 16px;
+      padding: 14px;
+      text-align: left;
+      margin-bottom: 14px;
+    }
+    .wrapped-hero-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+    .wrapped-metric-box {
+      background: #FFFFFF;
+      border: 0.5px solid var(--border-light);
+      border-radius: 12px;
+      padding: 9px 11px;
+      margin-bottom: 6px;
+    }
+    .wmb-title {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .wmb-val {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    /* Input Mágico de Voz / Texto */
+    .ai-input-wrap {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .ai-text-input {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13.5px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      outline: none;
+    }
+    .ai-text-input:focus {
+      border-color: #7D50FF;
+      background: #fff;
+    }
+    .ai-mic-btn {
+      border: none;
+      background: var(--apple-black);
+      color: #fff;
+      width: 42px;
+      border-radius: 12px;
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .ai-preview-box {
+      background: var(--surface);
+      border: 0.5px solid var(--border-light);
+      border-radius: 12px;
+      padding: 10px 12px;
+      text-align: left;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    .ai-preview-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 2.5px 0;
+    }
+
+    /* Barra Inferior Cupertino (3 Pestañas Claras) */
+    .ios-tabbar {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-top: 0.5px solid var(--border-light);
+      display: flex;
+      justify-content: space-around;
+      padding: 4px 12px calc(env(safe-area-inset-bottom, 6px) + 2px) 12px;
+      z-index: 1000;
+    }
+    .tab-item {
+      border: none;
+      background: none;
+      color: var(--text-secondary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      font-size: 10px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 2px 14px;
+    }
+    .tab-item svg {
+      width: 19px; height: 19px;
+      fill: currentColor;
+    }
+    .tab-item.active {
+      color: var(--apple-blue);
+      font-weight: 600;
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Banner Notificación Drop Apple iOS -->
+  <div id="appleNotifBanner" class="apple-notif-banner" onclick="dismissNotifBanner()">
+    <div class="an-icon-box" id="anIcon">🔔</div>
+    <div class="an-content">
+      <div class="an-header">
+        <span class="an-app-name"> FINANZAS EN PAREJA</span>
+        <span class="an-time">AHORA</span>
+      </div>
+      <div class="an-title" id="anTitle">Mayra anotó S/ 10.00</div>
+      <div class="an-body" id="anBody">Mascotas (Comida, Baño, Vet) • Yape</div>
+    </div>
+  </div>
+
+  <!-- Notificación Superior Dynamic Island -->
+  <div id="island" class="dynamic-island">
+    <div class="island-check" id="islandCheck">✓</div>
+    <span id="islandText">Sincronizado con Excel</span>
+  </div>
+
+  <!-- Bóveda Dual: Switch Modo Hogar vs Modo Personal -->
+  <div class="dual-vault-switch">
+    <button type="button" class="vault-btn active" id="btnModeHogar" onclick="setVaultMode('hogar')">
+      <span>🏠 Hogar (Compartido)</span>
+    </button>
+    <button type="button" class="vault-btn" id="btnModePersonal" onclick="setVaultMode('personal')">
+      <span>👤 Solo Mío (Privado)</span>
+    </button>
+  </div>
+
+  <!-- Modal 1: Liquidación 1-Toque / Confirmar Eliminación -->
+  <div id="actionModal" class="apple-modal-backdrop" onclick="if(event.target===this)closeModal()">
+    <div class="apple-sheet">
+      <div class="sheet-handle"></div>
+      <div id="modalBadge" class="sheet-badge"> Liquidación 1-Toque</div>
+      <div id="modalTitle" class="sheet-title">Saldar Octubre 2026</div>
+      <div id="modalAmount" class="sheet-amount">S/ 77.30</div>
+      <div id="modalDesc" class="sheet-desc">Se registrará automáticamente la transferencia para dejar el saldo en S/ 0.00.</div>
+      <button type="button" id="modalConfirmBtn" class="sheet-btn-confirm">Confirmar Ahora</button>
+      <button type="button" class="sheet-btn-cancel" onclick="closeModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal 2: Apple Intelligence (Dictado Mágico) -->
+  <div id="magicModal" class="apple-modal-backdrop" onclick="if(event.target===this)closeMagicModal()">
+    <div class="apple-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-badge ai">✨ Apple Intelligence · Dictado Mágico</div>
+      <div class="sheet-title">Dilo o escríbelo en 1 frase</div>
+      <div class="sheet-desc" style="margin-bottom:10px;">Ej: <i>«Mayra pagó 48.50 en Tambo con Yape»</i> o <i>«Menú Harvey 16 efectivo»</i></div>
+
+      <div class="ai-input-wrap">
+        <input type="text" id="aiInput" class="ai-text-input" placeholder="Escribe o usa el micrófono..." oninput="updateMagicPreview()" />
+        <button type="button" id="aiMicBtn" class="ai-mic-btn" onclick="toggleVoiceDictation()" title="Dictar por voz">🎙️</button>
+      </div>
+
+      <div class="ai-preview-box" id="aiPreviewBox">
+        <div class="ai-preview-row"><span style="color:var(--text-secondary);">Destino:</span> <strong id="aiPrevMode">🏠 Hogar</strong></div>
+        <div class="ai-preview-row"><span style="color:var(--text-secondary);">Pagó:</span> <strong id="aiPrevWho">Harvey</strong></div>
+        <div class="ai-preview-row"><span style="color:var(--text-secondary);">Monto:</span> <strong id="aiPrevMonto" style="color:var(--apple-blue);">S/ 0.00</strong></div>
+        <div class="ai-preview-row"><span style="color:var(--text-secondary);">Categoría:</span> <strong id="aiPrevCat">🛒 Supermercado</strong></div>
+        <div class="ai-preview-row"><span style="color:var(--text-secondary);">Concepto:</span> <strong id="aiPrevDesc">—</strong></div>
+      </div>
+
+      <button type="button" class="sheet-btn-confirm ai" onclick="executeMagicSave(true)">⚡ Guardar Directo en 1 Toque</button>
+      <button type="button" class="sheet-btn-cancel" style="margin-bottom:6px;background:#F0F7FF;color:#0071E3;" onclick="executeMagicSave(false)">Pasar al Formulario</button>
+      <button type="button" class="sheet-btn-cancel" onclick="closeMagicModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal 3: Apple Wrapped (Resumen Mensual Pareja) -->
+  <div id="wrappedModal" class="apple-modal-backdrop" onclick="if(event.target===this)closeWrappedModal()">
+    <div class="apple-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-badge wrapped"> Apple Wrapped · <span id="wrpMonthTitle">OCTUBRE</span></div>
+      <div class="sheet-title">Resumen Mensual Pareja</div>
+      <div class="sheet-desc" style="margin-bottom:12px;">El balance oficial de sus finanzas en el hogar listo para compartir.</div>
+
+      <div class="wrapped-card" id="wrappedCardBody">
+        <div class="wrapped-hero-row">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:var(--text-secondary);">TOTAL COMPARTIDO</div>
+            <div style="font-size:24px;font-weight:800;color:var(--text);" id="wrpTotal">S/ 448.60</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;font-weight:700;color:#1B8738;">AHORRO LOGRADO</div>
+            <div style="font-size:19px;font-weight:800;color:#1B8738;" id="wrpSaved">+S/ 1,281.40</div>
+          </div>
+        </div>
+
+        <div class="wrapped-metric-box">
+          <div class="wmb-title">🥇 CATEGORÍA REINA DEL MES</div>
+          <div class="wmb-val" id="wrpTopCat">🍽️ Salidas y Delivery (S/ 238.20)</div>
+        </div>
+
+        <div class="wrapped-metric-box">
+          <div class="wmb-title">☕ GASTO HORMIGA DETECTADO</div>
+          <div class="wmb-val" id="wrpHormiga">Antojos y Tambo: S/ 0.00</div>
+        </div>
+
+        <div class="wrapped-metric-box">
+          <div class="wmb-title">🤝 ESTADO DE LIQUIDACIÓN</div>
+          <div class="wmb-val" id="wrpSettleStatus">Mayra transfiere a Harvey: S/ 77.30</div>
+        </div>
+      </div>
+
+      <button type="button" class="sheet-btn-confirm wrapped" onclick="shareWrappedWhatsApp()">
+        📲 Compartir Resumen por WhatsApp
+      </button>
+      <button type="button" class="sheet-btn-cancel" onclick="closeWrappedModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal 4: Notificaciones Push (Activar / Desactivar) -->
+  <div id="notifModal" class="apple-modal-backdrop" onclick="if(event.target===this)closeNotifModal()">
+    <div class="apple-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-badge" style="background:var(--apple-blue-tint);color:var(--apple-blue);">🔔 Configuración de Avisos</div>
+      <div class="sheet-title">Notificaciones de Gastos</div>
+      <div class="sheet-desc" style="margin-bottom:12px;">Recibe un aviso al instante en tu iPhone cuando Mayra o Harvey registren un gasto.</div>
+
+      <div class="apple-card" style="margin-bottom:12px;padding:12px;text-align:left;">
+        <div class="notif-toggle-row">
+          <div class="notif-info">
+            <span class="notif-ico" id="notifModalIco">🔔</span>
+            <div>
+              <div class="notif-title" id="notifModalTitle">Notificaciones Activadas</div>
+              <div class="notif-sub" id="notifModalSub">Avisar en pantalla de bloqueo al registrar</div>
+            </div>
+          </div>
+          <label class="ios-switch">
+            <input type="checkbox" id="chkNotifModal" onchange="toggleNotifications(this.checked)" />
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <button type="button" class="sheet-btn-confirm" style="background:var(--apple-black);margin-bottom:8px;" onclick="testNotification()">
+        ⚡ Enviar Notificación de Prueba
+      </button>
+
+      <div style="font-size:11px;color:var(--text-secondary);line-height:1.4;margin:4px 0 14px 0;text-align:left;background:var(--surface);padding:8px 10px;border-radius:10px;">
+        💡 <b>Tip para iPhone:</b> Para que el aviso suene incluso con la pantalla bloqueada, agrega la app a Inicio con <b>«Compartir» → «Agregar a inicio»</b> en Safari (iOS 16.4+).
+      </div>
+
+      <button type="button" class="sheet-btn-cancel" onclick="closeNotifModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Modal 5: Selector de Fecha Directo (100% compatible con iOS Safari PWA sin calendario bloqueado) -->
+  <div id="dateModal" class="apple-modal-backdrop" onclick="if(event.target===this)closeDateModal()">
+    <div class="apple-sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-badge" style="background:var(--apple-blue-tint);color:var(--apple-blue);">📅 Fecha del Gasto</div>
+      <div class="sheet-title">Cambiar Fecha</div>
+      <div class="sheet-desc" style="margin-bottom:12px;">Elige un acceso rápido o indica el día y mes directamente.</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+        <button type="button" class="m-pill" style="padding:10px 6px;font-size:12.5px;font-weight:700;" onclick="setQuickDateOffset(0)">📅 Hoy</button>
+        <button type="button" class="m-pill" style="padding:10px 6px;font-size:12.5px;font-weight:700;" onclick="setQuickDateOffset(-1)">⏪ Ayer</button>
+        <button type="button" class="m-pill" style="padding:10px 6px;font-size:12.5px;font-weight:700;" onclick="setQuickDateOffset(-2)">⏮️ Antier</button>
+      </div>
+
+      <div class="apple-card" style="margin-bottom:14px;padding:12px;display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:8px;align-items:center;">
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--text-secondary);margin-bottom:4px;">DÍA</div>
+          <select id="selDateDay" style="width:100%;padding:9px 6px;border-radius:10px;border:1px solid var(--border);font-size:15px;font-weight:700;background:#fff;color:#000;text-align:center;"></select>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--text-secondary);margin-bottom:4px;">MES</div>
+          <select id="selDateMonth" style="width:100%;padding:9px 6px;border-radius:10px;border:1px solid var(--border);font-size:14px;font-weight:700;background:#fff;color:#000;">
+            <option value="01">01 - Enero</option>
+            <option value="02">02 - Febrero</option>
+            <option value="03">03 - Marzo</option>
+            <option value="04">04 - Abril</option>
+            <option value="05">05 - Mayo</option>
+            <option value="06">06 - Junio</option>
+            <option value="07">07 - Julio</option>
+            <option value="08">08 - Agosto</option>
+            <option value="09">09 - Septiembre</option>
+            <option value="10">10 - Octubre</option>
+            <option value="11">11 - Noviembre</option>
+            <option value="12">12 - Diciembre</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:700;color:var(--text-secondary);margin-bottom:4px;">AÑO</div>
+          <select id="selDateYear" style="width:100%;padding:9px 6px;border-radius:10px;border:1px solid var(--border);font-size:14px;font-weight:700;background:#fff;color:#000;text-align:center;">
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+          </select>
+        </div>
+      </div>
+
+      <button type="button" class="sheet-btn-confirm" onclick="applyManualDate()">✅ Aplicar Fecha</button>
+      <button type="button" class="sheet-btn-cancel" onclick="closeDateModal()">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- TARJETA HEROICA 5.0 (Un solo balance claro y sin redundancias) -->
+  <div class="apple-card">
+    <div class="ac-header-row">
+      <div class="ac-title-wrap">
+        <span class="ac-main-title" id="cardHeaderTitle"> Finanzas H&amp;M</span>
+        <span class="v5-tag" id="cardVaultTag">5.0 Pro</span>
+      </div>
+      <div class="header-actions">
+        <!-- Switch Sutil: Mes actual vs Acumulado Anual -->
+        <button type="button" class="scope-pill-btn active" id="btnScopeMonth" onclick="toggleScope('month')">Mes</button>
+        <button type="button" class="scope-pill-btn" id="btnScopeYear" onclick="toggleScope('year')">Año</button>
+        <button type="button" class="notif-btn" id="headerNotifBtn" onclick="openNotifModal()" title="Configurar Notificaciones">🔔</button>
+        <div class="live-badge">
+          <span class="live-dot" id="netDot"></span>
+          <span id="cardCountChip">55 reg.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Balance Heroico y Liquidación 1-Toque -->
+    <div class="hero-balance-row">
+      <div>
+        <div class="hero-sub-lbl">
+          <button type="button" class="m-nav-arrow" onclick="shiftMonth(-1)">‹</button>
+          <span id="heroPeriodLbl">OCTUBRE 2026</span>
+          <button type="button" class="m-nav-arrow" onclick="shiftMonth(1)">›</button>
+        </div>
+        <div class="hero-amount" id="heroTotalAmount">S/ 448.60</div>
+      </div>
+      <button type="button" class="ac-settlement-pill" id="heroSettlementPill" onclick="promptSettleCurrent()">
+        Mayra → Harvey: S/ 77.30
+      </button>
+    </div>
+
+    <!-- Métricas 3 Columnas -->
+    <div class="ac-footer">
+      <div class="ac-stat">
+        <span class="ac-stat-lbl" id="statLbl1">Harvey</span>
+        <span class="ac-stat-val" id="statVal1">301.60</span>
+      </div>
+      <div class="ac-stat">
+        <span class="ac-stat-lbl" id="statLbl2">Mayra</span>
+        <span class="ac-stat-val" id="statVal2">147.00</span>
+      </div>
+      <div class="ac-stat">
+        <span class="ac-stat-lbl" id="statLbl3">50% Cuota</span>
+        <span class="ac-stat-val" id="statVal3">224.30</span>
+      </div>
+    </div>
+
+    <!-- Barra de Presupuesto Apple integrada -->
+    <div class="budget-bar-wrap" onclick="switchView('insights')">
+      <div class="budget-track">
+        <div class="budget-fill" id="budgetFill" style="width:26%;"></div>
+      </div>
+      <span class="budget-caption" id="budgetCaption">26% · 🔮 Proy. cierre: S/ 818 (Ahorro: S/ 912)</span>
+    </div>
+  </div>
+
+  <!-- VISTA 1: REGISTRAR (Zen & Ultrarrápido) -->
+  <div id="viewForm">
+
+    <!-- ¿Quién pagó? (3 Vías Amplio) + Hero Monto + IA -->
+    <div class="top-entry-card">
+      <div class="ios-segmented" id="segPayerHogar">
+        <button type="button" class="seg-btn active who-harvey" id="segHarvey" onclick="selectPayer('Harvey')">Harvey</button>
+        <button type="button" class="seg-btn" id="segMayra" onclick="selectPayer('Mayra')">Mayra</button>
+        <button type="button" class="seg-btn" id="segMitad" onclick="selectPayer('Mitad c/u (Ya saldado)')">Mitad (50/50)</button>
+      </div>
+      <div class="ios-segmented personal-seg hidden" id="segPayerPersonal">
+        <button type="button" class="seg-btn active" id="segPersHarv" onclick="selectPersonalPayer('Personal Harvey')">👤 Solo Harvey</button>
+        <button type="button" class="seg-btn" id="segPersMay" onclick="selectPersonalPayer('Personal Mayra')">👤 Solo Mayra</button>
+      </div>
+
+      <div class="amount-inline">
+        <div class="amount-left-group">
+          <span class="amount-hero-lbl" onclick="document.getElementById('inpMonto').focus()">MONTO</span>
+          <button type="button" class="btn-magic-ai" onclick="openMagicModal()">✨ Dictar / IA</button>
+        </div>
+        <div class="amount-flex" onclick="document.getElementById('inpMonto').focus()">
+          <span class="amount-curr">S/</span>
+          <input type="number" id="inpMonto" class="amount-field" inputmode="decimal" step="0.01" placeholder="0.00" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Cuadrícula 4x3 de Categorías con Emojis Originales Apple -->
+    <div class="cat-card">
+      <div class="cat-grid" id="catGrid"></div>
+    </div>
+
+    <!-- Formulario Inset Limpio: Concepto Full-Width + Chip Fecha Inteligente + Medio de Pago -->
+    <div class="ios-list">
+      <div class="ios-row">
+        <input type="text" id="inpDesc" class="ios-row-input" placeholder="Concepto (ej. Plaza Vea, Cena, Tambo...)" />
+        <button type="button" class="date-badge-btn" id="dateBadgeBtn" onclick="triggerDatePicker()">
+          <span id="dateBadgeText">📅 Hoy</span>
+        </button>
+        <input type="date" id="inpFecha" class="hidden-date-input" onchange="onDateChanged()" />
+      </div>
+      <div class="quick-chips" id="quickChipsContainer"></div>
+      <div class="method-row">
+        <span class="method-lbl">Pago:</span>
+        <div class="method-scroll" id="methodGrid"></div>
+      </div>
+    </div>
+
+    <button type="button" id="btnSubmit" class="ios-btn-primary" onclick="submitExpense()">
+      Guardar en Finanzas Hogar
+    </button>
+  </div>
+
+  <!-- VISTA 2: ACTIVIDAD (Historial Inset Separators con ✕) -->
+  <div id="viewHistory" class="hidden">
+    <div class="ios-sec-hdr">
+      <span>ÚLTIMAS TRANSACCIONES</span>
+      <span style="font-size:9.5px;font-weight:500;text-transform:none;">Toca ✕ para eliminar</span>
+    </div>
+    <div class="ios-list" id="historyList"></div>
+  </div>
+
+  <!-- VISTA 3: INSIGHTS, WRAPPED & ORÁCULO IA (Todo el análisis en un solo lugar) -->
+  <div id="viewInsights" class="hidden">
+    <!-- Banner Acceso Apple Wrapped Mensual -->
+    <div style="background:var(--gold-gradient);border-radius:14px;padding:10px 14px;color:#fff;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;box-shadow:0 3px 10px rgba(255,149,0,0.25);">
+      <div>
+        <div style="font-size:13.5px;font-weight:800;">📊 Apple Wrapped Mensual</div>
+        <div style="font-size:10.5px;opacity:0.9;">Resumen ejecutivo listo para enviar a Mayra</div>
+      </div>
+      <button type="button" style="border:none;background:#fff;color:#000;font-weight:700;font-size:11px;padding:5px 12px;border-radius:99px;cursor:pointer;" onclick="openWrappedModal()">Ver Ahora</button>
+    </div>
+
+    <!-- Ajustes de Notificaciones Push -->
+    <div class="apple-card" style="margin-bottom:8px;padding:10px 12px;">
+      <div class="notif-toggle-row">
+        <div class="notif-info">
+          <span class="notif-ico" id="notifInsightsIco">🔔</span>
+          <div style="text-align:left;">
+            <div class="notif-title" id="notifInsightsTitle">Notificaciones de Gastos</div>
+            <div class="notif-sub" id="notifInsightsSub">Avisar cuando Mayra o Harvey anoten</div>
+          </div>
+        </div>
+        <label class="ios-switch">
+          <input type="checkbox" id="chkNotifInsights" onchange="toggleNotifications(this.checked)" />
+          <span class="ios-slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Sincronización en la Nube 24/7 (Excel OneDrive) -->
+    <div class="apple-card" style="margin-bottom:8px;padding:10px 12px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span style="font-size:20px;">⚡</span>
+          <div style="text-align:left;">
+            <div style="font-size:12.5px;font-weight:700;color:var(--text);">Excel en OneDrive Conectado</div>
+            <div style="font-size:10px;color:var(--apple-green);font-weight:600;">● Nube 24/7 en vivo (Cero PC)</div>
+          </div>
+        </div>
+        <button type="button" onclick="exportDataCsv()" style="background:var(--surface);border:0.5px solid var(--border-light);padding:6px 10px;border-radius:8px;font-size:11px;font-weight:600;color:var(--apple-blue);cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <span>📥</span><span>Exportar CSV</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="ios-sec-hdr">
+      <span>🔮 ORÁCULO PREDICTIVO (<span id="oracleMonthTitle">OCTUBRE</span>)</span>
+      <span id="oracleHealthBadge" style="color:var(--apple-green);font-weight:700;">● Ritmo Óptimo</span>
+    </div>
+
+    <div class="apple-card" style="margin-bottom:8px;">
+      <div style="font-size:12px;color:var(--text-secondary);line-height:1.35;" id="oracleNarrative">
+        Calculando ritmo de gasto y proyección de cierre de mes...
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;">
+        <div style="background:var(--surface);border-radius:10px;padding:7px 8px;">
+          <div style="font-size:9.5px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;">Ritmo / Día</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text);margin-top:2px;" id="oracleDailyRate">S/ 24.92</div>
+        </div>
+        <div style="background:var(--surface);border-radius:10px;padding:7px 8px;">
+          <div style="font-size:9.5px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;">Proy. Cierre</div>
+          <div style="font-size:13px;font-weight:700;color:var(--apple-blue);margin-top:2px;" id="oracleProjTotal">S/ 772.00</div>
+        </div>
+        <div style="background:var(--surface);border-radius:10px;padding:7px 8px;">
+          <div style="font-size:9.5px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;">Ahorro Proy.</div>
+          <div style="font-size:13px;font-weight:700;color:var(--apple-green);margin-top:2px;" id="oracleProjSave">+S/ 958.00</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;border-top:0.5px solid var(--border-light);padding-top:8px;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.4px;">
+          DISTRIBUCIÓN DEL MES (ANILLOS)
+        </div>
+        <div style="margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;margin-bottom:3px;">
+            <span>🛒 1. Hogar Variable (Supermerc., Mascotas, Hogar)</span>
+            <span id="ringVarVal">S/ 210.40 (47%)</span>
+          </div>
+          <div style="height:6px;background:#E8E8ED;border-radius:99px;overflow:hidden;"><div id="ringVarBar" style="height:100%;width:47%;background:#0071E3;border-radius:99px;"></div></div>
+        </div>
+        <div style="margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;margin-bottom:3px;">
+            <span>💡 2. Hogar Fijo (Luz, Agua, Internet)</span>
+            <span id="ringFijoVal">S/ 0.00 (0%)</span>
+          </div>
+          <div style="height:6px;background:#E8E8ED;border-radius:99px;overflow:hidden;"><div id="ringFijoBar" style="height:100%;width:0%;background:#AF52DE;border-radius:99px;"></div></div>
+        </div>
+        <div style="margin-top:8px;">
+          <div style="display:flex;justify-content:space-between;font-size:11.5px;font-weight:600;margin-bottom:3px;">
+            <span>🍽️ 3. Ocio y Gustos (Delivery, Salidas, Tambo)</span>
+            <span id="ringOcioVal">S/ 238.20 (53%)</span>
+          </div>
+          <div style="height:6px;background:#E8E8ED;border-radius:99px;overflow:hidden;"><div id="ringOcioBar" style="height:100%;width:53%;background:#FF9500;border-radius:99px;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ios-sec-hdr"><span>⚡ CARGA RÁPIDA DE RECURRENTES (1 TOQUE)</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+      <button type="button" class="preset-btn" onclick="applyPreset('Servicios (Luz, Agua, Internet)', 'Pago de Servicios Hogar', 175)">
+        <div style="font-size:12px;font-weight:700;color:var(--text);">💡 Servicios Mes</div>
+        <div style="font-size:10px;color:var(--text-secondary);">Luz, Agua, Internet</div>
+      </button>
+      <button type="button" class="preset-btn" onclick="applyPreset('Mascotas (Comida, Baño, Vet)', 'Keyla (Comida / Baño)', 70)">
+        <div style="font-size:12px;font-weight:700;color:var(--text);">🐾 Keyla Mensual</div>
+        <div style="font-size:10px;color:var(--text-secondary);">Comida y baño</div>
+      </button>
+    </div>
+
+    <div class="ios-sec-hdr">HISTORIAL COMPARATIVO MENSUAL</div>
+    <div class="ios-list" id="monthsComparisonList"></div>
+  </div>
+
+  <!-- Barra Inferior Cupertino -->
+  <div class="ios-tabbar">
+    <button type="button" class="tab-item active" id="tabForm" onclick="switchView('form')">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      <span>Registrar</span>
+    </button>
+    <button type="button" class="tab-item" id="tabHist" onclick="switchView('history')">
+      <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+      <span>Actividad</span>
+    </button>
+    <button type="button" class="tab-item" id="tabIns" onclick="switchView('insights')">
+      <svg viewBox="0 0 24 24"><path d="M12 2L9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2z"/></svg>
+      <span>Insights</span>
+    </button>
+  </div>
+
+  <script>
+    const NTFY_SERVER  = "https://ntfy.sh";
+    const TOPIC_EVENTS = "hm_gastos_pareja_2026_events_v6";
+    const TOPIC_STATE  = "hm_gastos_pareja_2026_state_v6";
+    const POWER_AUTOMATE_URL = "https://default4b83561bae09421a83f253c50c7773.ca.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/6128c1c6427c43bfb40072f5aff8da1c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ji6uDA7BOA5gXfCIQdfLorGRg8vZhkWzRdm6oovYU4A";
+    const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwRFXZXjxbnOkE-c4McdBMlwwzgsOu5GnRsSt-WR5NmGuNieO2HjO2Xyr60tCUStRRHSQ/exec";
+    const MONTHLY_BUDGET = 1730.00;
+
+    const MONTH_NAMES = [
+      "ENERO","FEBRERO","MARZO","ABRIL","MAYO","JUNIO",
+      "JULIO","AGOSTO","SEPTIEMBRE","OCTUBRE","NOVIEMBRE","DICIEMBRE"
+    ];
+    const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    /* Emojis Originales de Apple (100% Preservados) */
+    const CATEGORIES = [
+      { name: "Supermercado y Mercado", short: "Supermerc.", ico: "🛒", block: "var" },
+      { name: "Salidas a Comer y Delivery", short: "Delivery", ico: "🍽️", block: "ocio" },
+      { name: "Antojos, Tambo y Cafés", short: "Tambo/Café", ico: "☕", block: "ocio" },
+      { name: "Servicios (Luz, Agua, Internet)", short: "Servicios", ico: "💡", block: "fijo" },
+      { name: "Hogar, Limpieza y Artículos", short: "Hogar/Limp", ico: "🏠", block: "var" },
+      { name: "Mascotas (Comida, Baño, Vet)", short: "Mascotas", ico: "🐾", block: "var" },
+      { name: "Cine, Entretenimiento y Salidas", short: "Cine/Ocio", ico: "🎬", block: "ocio" },
+      { name: "Salud y Farmacia", short: "Salud", ico: "💊", block: "var" },
+      { name: "Cuidado Personal y Ropa", short: "Ropa/Cuid.", ico: "👕", block: "var" },
+      { name: "Transporte y Movilidad", short: "Transporte", ico: "🚕", block: "var" },
+      { name: "Otros Gastos del Hogar", short: "Otros", ico: "📦", block: "var" },
+      { name: "Ahorro / Meta en Pareja", short: "Ahorro", ico: "🏦", block: "save" }
+    ];
+
+    const METHODS = [
+      "Yape / Plin",
+      "Efectivo",
+      "Tarjeta de débito",
+      "Tarjeta de crédito",
+      "Transferencia"
+    ];
+
+    let currentVaultMode = localStorage.getItem("hm_vault_mode_v5") || "hogar"; // 'hogar' | 'personal'
+    let currentScope = localStorage.getItem("hm_scope_v5") || "month"; // 'month' | 'year'
+    let selectedPayer = localStorage.getItem("hm_payer_v5") || "Harvey";
+    let selectedPersonalPayer = localStorage.getItem("hm_pers_payer_v5") || "Personal Harvey";
+    let selectedCat = CATEGORIES[0].name;
+    let selectedMethod = localStorage.getItem("hm_method_v5") || "Yape / Plin";
+    let viewedMonthIdx = new Date().getMonth() + 1;
+
+    let defaultState = {
+      ts: 1792472600,
+      count: 57,
+      total: 3655.10,
+      harvey: 1774.25,
+      mayra: 1880.85,
+      liqH2M: 0.0,
+      totPersHarv: 0,
+      totPersMay: 0,
+      byMonth: {
+        "7":  { total: 854.60,  harvey: 431.25, mayra: 423.35, liqH2M: 0, var: 278.50, fijo: 447.10, ocio: 129.00, persHarv: 0, persMay: 0 },
+        "8":  { total: 1203.20, harvey: 582.20, mayra: 621.00, liqH2M: 0, var: 716.50, fijo: 330.00, ocio: 156.70, persHarv: 0, persMay: 0 },
+        "9":  { total: 1105.20, harvey: 444.70, mayra: 660.50, liqH2M: 0, var: 728.30, fijo: 293.80, ocio: 83.10,  persHarv: 0, persMay: 0 },
+        "10": { total: 492.10,  harvey: 316.10, mayra: 176.00, liqH2M: 0, var: 318.70, fijo: 0.00,   ocio: 173.40, persHarv: 0, persMay: 0 }
+      },
+      recent: [{"metodo":"Yape / Plin","desc":"Tambo","fecha":"19/10/2026","cat":"Supermercado y Mercado","monto":14.5,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Tambo","fecha":"19/10/2026","cat":"Supermercado y Mercado","monto":29.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Desayuno","fecha":"17/10/2026","cat":"Supermercado y Mercado","monto":22.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Turrón","fecha":"17/10/2026","cat":"Salidas a Comer y Delivery","monto":25.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"cena pollo a la bresa","fecha":"05/10/2026","cat":"Salidas a Comer y Delivery","monto":19.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"almuerzo y postre","fecha":"09/10/2026","cat":"Salidas a Comer y Delivery","monto":25.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Cena cierre de campaña","fecha":"01/10/2026","cat":"Salidas a Comer y Delivery","monto":26.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"04/10/2026","cat":"Supermercado y Mercado","monto":156.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Comida","fecha":"09/10/2026","cat":"Mascotas (Comida, Baño, Vet)","monto":18.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Compras super tottus","fecha":"09/10/2026","cat":"Supermercado y Mercado","monto":38.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Compras super tottus","fecha":"09/10/2026","cat":"Supermercado y Mercado","monto":40.3,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Almuerzo elecciones","fecha":"04/10/2026","cat":"Salidas a Comer y Delivery","monto":40.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"07/10/2026","cat":"Antojos, Tambo y Cafés","monto":20.8,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"07/10/2026","cat":"Antojos, Tambo y Cafés","monto":15.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/09/2026","cat":"Servicios (Luz, Agua, Internet)","monto":146.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/09/2026","cat":"Servicios (Luz, Agua, Internet)","monto":146.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"27/09/2026","cat":"Supermercado y Mercado","monto":152.7,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Compras de limpieza plaza vea","fecha":"26/09/2026","cat":"Hogar, Limpieza y Artículos","monto":170.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"20/09/2026","cat":"Supermercado y Mercado","monto":133.1,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"14/09/2026","cat":"Antojos, Tambo y Cafés","monto":26.4,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"13/09/2026","cat":"Supermercado y Mercado","monto":172.5,"persona":"Mayra"},{"metodo":"Efectivo","desc":"cine","fecha":"11/09/2026","cat":"Cine, Entretenimiento y Salidas","monto":28.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"pizza","fecha":"06/09/2026","cat":"Salidas a Comer y Delivery","monto":27.8,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"06/09/2026","cat":"Supermercado y Mercado","monto":100.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"31/08/2026","cat":"Antojos, Tambo y Cafés","monto":23.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"31/08/2026","cat":"Servicios (Luz, Agua, Internet)","monto":165.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"31/08/2026","cat":"Servicios (Luz, Agua, Internet)","monto":165.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"31/08/2026","cat":"Antojos, Tambo y Cafés","monto":29.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"cine","fecha":"28/08/2026","cat":"Cine, Entretenimiento y Salidas","monto":37.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"torta de cumpleaños","fecha":"30/08/2026","cat":"Otros Gastos del Hogar","monto":52.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"30/08/2026","cat":"Supermercado y Mercado","monto":115.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"30/08/2026","cat":"Supermercado y Mercado","monto":27.5,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Fruta","fecha":"22/08/2026","cat":"Supermercado y Mercado","monto":68.7,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Fruta","fecha":"22/08/2026","cat":"Supermercado y Mercado","monto":68.7,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Dolarcity","fecha":"05/08/2026","cat":"Hogar, Limpieza y Artículos","monto":29.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"17/08/2026","cat":"Antojos, Tambo y Cafés","monto":33.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"17/08/2026","cat":"Antojos, Tambo y Cafés","monto":33.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"16/08/2026","cat":"Supermercado y Mercado","monto":88.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"16/08/2026","cat":"Supermercado y Mercado","monto":90.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"09/08/2026","cat":"Supermercado y Mercado","monto":5.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"compras super","fecha":"08/08/2026","cat":"Supermercado y Mercado","monto":126.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Cuidado personal","fecha":"08/08/2026","cat":"Cuidado Personal y Ropa","monto":45.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":152.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":152.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"almuerzo","fecha":"30/07/2026","cat":"Salidas a Comer y Delivery","monto":65.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"pasaje","fecha":"26/07/2026","cat":"Transporte y Movilidad","monto":20.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"comida","fecha":"26/07/2026","cat":"Salidas a Comer y Delivery","monto":20.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"fruta","fecha":"26/07/2026","cat":"Supermercado y Mercado","monto":30.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"pollo","fecha":"26/07/2026","cat":"Supermercado y Mercado","monto":28.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"baño keyla","fecha":"25/07/2026","cat":"Mascotas (Comida, Baño, Vet)","monto":25.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"25/07/2026","cat":"Supermercado y Mercado","monto":49.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"25/07/2026","cat":"Supermercado y Mercado","monto":45.7,"persona":"Harvey"},{"metodo":"Tarjeta de débito","desc":"Tambo","fecha":"22/07/2026","cat":"Antojos, Tambo y Cafés","monto":24.0,"persona":"Harvey"},{"metodo":"Tarjeta de débito","desc":"Tambo","fecha":"20/07/2026","cat":"Antojos, Tambo y Cafés","monto":20.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de multa","fecha":"15/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":70.65,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de multa","fecha":"15/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":70.65,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"19/07/2026","cat":"Supermercado y Mercado","monto":80.0,"persona":"Mayra"}]
+    };
+
+    try {
+      localStorage.removeItem("hm_cached_state_v2");
+      localStorage.removeItem("hm_cached_state");
+      localStorage.removeItem("hm_cached_state_v6");
+    } catch (e) {}
+
+    let baseState = defaultState;
+    try {
+      const cached = localStorage.getItem("hm_cached_state_v7");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.ts && parsed.count > 0) baseState = parsed;
+      }
+    } catch (e) {}
+
+    let pendingEvents = new Map();
+    let deleteEvents = new Map();
+    let currentAnnualSaldo = 0;
+    let currentMonthSaldo = 0;
+
+    /* Apple Taptic Engine Feedback */
+    function haptic(pattern = 10) {
+      try {
+        if (window.navigator && typeof window.navigator.vibrate === "function") {
+          window.navigator.vibrate(pattern);
+        }
+      } catch (e) {}
+    }
+
+    /* Gestor de Notificaciones Push Nativas (iOS 16.4+ / Android / Desktop) */
+    let notificationsEnabled = localStorage.getItem("hm_notif_enabled_v5") !== "false";
+    let knownEventIds = new Set();
+    let isInitialCloudFetch = true;
+
+    // Registrar Service Worker para permitir notificaciones Push en PWA instalada
+    if ("serviceWorker" in navigator) {
+      try {
+        const swBlob = new Blob([
+          "self.addEventListener('install', e => self.skipWaiting());\n" +
+          "self.addEventListener('activate', e => self.clients.claim());\n" +
+          "self.addEventListener('notificationclick', e => {\n" +
+          "  e.notification.close();\n" +
+          "  e.waitUntil(clients.matchAll({ type: 'window' }).then(clientList => {\n" +
+          "    for (const client of clientList) { if (client.url && 'focus' in client) return client.focus(); }\n" +
+          "    if (clients.openWindow) return clients.openWindow('/');\n" +
+          "  }));\n" +
+          "});"
+        ], { type: "application/javascript" });
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
+      } catch (e) {}
+    }
+
+    function openNotifModal() {
+      haptic(12);
+      updateNotifUI(notificationsEnabled);
+      document.getElementById("notifModal").classList.add("open");
+    }
+
+    function closeNotifModal() {
+      haptic(8);
+      document.getElementById("notifModal").classList.remove("open");
+    }
+
+    function updateNotifUI(enabled) {
+      const chkModal = document.getElementById("chkNotifModal");
+      const chkInsights = document.getElementById("chkNotifInsights");
+      const btnHeader = document.getElementById("headerNotifBtn");
+      const subModal = document.getElementById("notifModalSub");
+      const subIns = document.getElementById("notifInsightsSub");
+      const icoModal = document.getElementById("notifModalIco");
+      const icoIns = document.getElementById("notifInsightsIco");
+
+      if (chkModal) chkModal.checked = enabled;
+      if (chkInsights) chkInsights.checked = enabled;
+
+      if (btnHeader) {
+        btnHeader.textContent = enabled ? "🔔" : "🔕";
+        btnHeader.classList.toggle("active", enabled);
+      }
+      if (icoModal) icoModal.textContent = enabled ? "🔔" : "🔕";
+      if (icoIns) icoIns.textContent = enabled ? "🔔" : "🔕";
+
+      const txt = enabled ? "Avisos activos al registrar gastos" : "Notificaciones desactivadas";
+      if (subModal) subModal.textContent = txt;
+      if (subIns) subIns.textContent = txt;
+    }
+
+    async function toggleNotifications(enable) {
+      haptic(14);
+      getAudioContext();
+      if (enable) {
+        notificationsEnabled = true;
+        localStorage.setItem("hm_notif_enabled_v5", "true");
+        updateNotifUI(true);
+        triggerInAppNotification("🔔 Notificaciones Activadas", "Te avisaremos cada vez que se anote un gasto.", "🔔");
+
+        if ("Notification" in window && Notification.permission !== "granted") {
+          try { await Notification.requestPermission(); } catch (e) {}
+        }
+      } else {
+        notificationsEnabled = false;
+        localStorage.setItem("hm_notif_enabled_v5", "false");
+        updateNotifUI(false);
+        showIsland("🔕 Notificaciones silenciadas");
+      }
+    }
+    /* Sistema de Sonido y Notificaciones Apple Web Audio (Doble Motor: HTML5 Audio + WebAudio Synth) */
+    let audioCtx = null;
+    const APPLE_CHIME_B64 = "data:audio/wav;base64,UklGRoUTAABXQVZFZm10IBAAAAABAAEAESsAABErAAABAAgAZGF0YWETAACAgICAgYGBgICAf39+fn5/f4CBgoODg4KBgH9+fXx8fX5/gYOEhYWFg4KAfXx6enp7fYCChIaHh4aEgn98eXh4eHp9gISHiYqJh4WBfXp3dXV3en2ChomLjIuIhIB7d3RzdHZ6foOIjI6OjImEfnl1cnFydXqAhYuOkJCNiIN8d3Jvb3F1e4GIjZGSkY2IgXp0b21tcHV8hIuQlJSSjYd/d3Fsamxwdn6GjpOWlpONhX10bmloa3B4gImRlpmYk4yDenFqZ2dqcXmDjZSZm5iTioB2bmdkZWpyfIaQmJycmZKIfXNqZGJka3R/ipSbnp6ZkIZ6b2dhYWRsdoKNl56hn5iOg3ZrY19fZG15hZGboaKfl4x/cmdgXV9lb3yJlZ+kpJ+ViXtuZF1bXmZygI2ZoqaknpOGd2pgWlpfaHWEkp2lqKSckIJzZlxYWWBreYiWoaippJqNfW5iWVZZYW59jZulqqqjmIl5al5WVVljcYGRn6isqqKVhXRlWlRUWmZ1hpajq62pn5GAb2FWUlRcaXqLm6eurqicjXtqXFNQVF5tfpCgq7CuppmIdmVYUVBVYXGDlaSusa6klYNxYFRPT1dldomaqLGyraGRfmxcUU1QWml7jp+ss7Krnox5ZlhOTFFdbYCTpK+0sqmZh3NhVExMU2ByhpmosrWxpZWBblxQS0xVZHeLnqy1tq+ikHxoWE1KTllpfZGjsLa1rJ6LdmNUS0lPXG6Dl6izt7SpmYVwXlBJSlJgdIicrLW4sqaUf2tZTUhLVWV5jqGwt7ewoY55ZVVKSE1Zan+UprO4tq2diXRgUUlIT11whZmqtbm1qZiDbltOR0lSYnWLn663ubKlkn1oV0tHS1Zne5Gjsbm4r6CMd2NTSUdNWmyBlqi0ubarm4dxXlBISFBfcoebrLa5tKeVgWxaTUdKVGR4jaCvuLixo5B7ZlZLR0xYaX6TpbK4t62einVhUklIT1xvg5iptLi0qZiEb11PSUpSYXSJnay2t7Klk35qWU1JTFZmeo+hr7a2rqCNeWVWTElOW2yAlKWxtrSqm4hzYVNLS1JfcYWZqbO2saaVgm5dUUtNVmR3i52rs7SuoZB8aVlPS09aan2Qoa60s6qcindlV05NUl5vgpWkr7OwppeFcmFVTk9WY3SHmaewsq2ikoBuXlNPUVpoeoydqbCwqp2Ne2lbUlBUXm1/kKCrr66mmIh2ZllSUVdjcoSUoquuq6KTg3JjWFNUW2d3iJikrK2onY9+bmBXVFZfbHyMm6arq6SZinpqXldVWmNxgZCdpqqooJSFdmhdV1ddaHWFk5+mqKWcj4FyZVxYWmFseomWoKamoZiLfW9kXFpdZXB+jJihpaSelId5bGNdXGBpdYKPmqGjoZqQg3ZqYl5eZG15hZGboKKelox/c2liX2FncXyIk5ufn5uSiHxxaGNhZGt0gIuUm56dl4+EeW9oZGRnbniDjZWanJqUi4F3bmhlZmtye4WOlZmal5CIfnVuaWdpbnV+h4+VmJeTjYV8dG5qaWxxeIGJkJSWlJCKgnpzbmxsb3R7g4qPk5SSjYeAeXNvbW5yd32Eio+RkY+KhX54c3BwcXV6f4WKjo+PjIiDfXh0cnJ0d3yBhoqMjYyJhYF8eHV0dHZ6foKGiYuLioeEgHx5d3Z3eXx/g4WIiYiHhYJ/fHp5eHl7fYCDhYaGhoWDgX99e3t7fH1/gYKDhISEg4GAf359fX1+f4CBgYKCgoKBgIB/f39/f4CAgIBbR0FKYYCetb+5polqUENEVG+Oqru+sZh6XUlCS2B+nLO+uaaKbFJERVRujKi5vbGafF9KQ0tgfJqxvLinjG5URkZUbYqmt7yxm35hTERLX3uYr7u4p41wVkdGU2uJo7a7sZx/Y05GS155lq25t6iOclhJR1Nqh6G0ubGcgWVQR0xdeJSruLeokHRaS0hTaYWfsrixnYJnUkhMXXaSqba2qJF1XExJU2iDnbC3sZ6EaVRKTVx1kKe1tamSd15OSlNngpyvtrCfhWtWS01cdI6ls7Spk3lgUEtTZ4CarbWwn4dtWExOXHKMo7K0qZR6YlFMU2Z/mKu0sKCIb1lOTltxi6Kws6mVfGRTTVNlfZaps6+giXBbT09bcImgr7Kpln1mVE5UZHyUqLGvoYtyXVBQW2+Inq2xqZd/Z1ZPVGR7k6awrqGMdF5SUFtuhpyssKmYgGlYUFRjeZGkr66hjXVgU1FbbYWbqq+pmIJrWVFVY3iPo66too53YlRSW2yDmamuqZmDbFtSVWJ3jqGsraKPeGNWU1tsgpenraiZhG5cU1Vidoygq6yikHplV1Nba4GWpqyomoVwXlRWYnWLnqqropF7Z1lUW2p/lKSsqJqGcV9WVmF0iZ2pq6KRfGhaVVtqfpOjq6ibiHJhV1dhc4ibp6qikn5qW1ZbaX2Roqmnm4l0YlhXYXKHmqapopN/a11XW2l8kKCop5yKdWRZWGFxhZilqaKTgGxeWFtoe4+fp6acindlWllhcYSXpKiilIFuX1lcaHqNnaamnIt4ZltZYXCDlaKnopWCb2BZXGd5jJylpZyMeWhcWmFvgpShpqKVg3FiWlxneIubpKWcjXppXlthb4GToKWiloRyY1tdZ3eJmqOknY57al9bYW6AkZ+loZaFc2RcXWZ2iJiipJ2OfWxgXGFuf5CepKGWhnRlXV5mdYeXoaOdj35tYV1hbX6PnKOhl4d2Z15eZnWGlqCjnZB/bmJdYW19jpuioJeId2hfXmZ0hZWfop2QgG9jXmFsfI2aoaCXiXhpYF9mc4STnqGdkYFxZF9ibHuLmaCgl4l5amFfZnODkp2hnJGCcmVgYmt6ipifn5iKemtiYGZygpGcoJyRgnNmYGJreYmXn5+Yi3ttY2FmcoGQm5+ckoN0Z2Fia3mIlp6fmIt8bmRhZnGAj5qfnJKEdWliY2t4h5WdnpiMfW9lYmZxf46ZnpyThXZqY2Nrd4aUnJ6YjH5wZmJmcH6NmJ2bk4Z3a2RjaneFkpudmI1/cWdjZnB+jJedm5OGeGxkZGp2hJGanZiNf3JoY2ZwfYuWnJuTh3ltZWRqdoOQmZyYjoBzaWRnb3yKlZubk4h6bmZlanWDj5mcmI6BdGllZ297iZSbmpSIe29nZWp1go+Ym5iPgnVqZWdve4iTmpqUiXxvZ2ZqdIGOl5qYj4N2a2ZnbnqHkpmalIl8cGhmanSAjZaal4+DdmxnZ255hpGYmZSKfXFpZ2pzf4yVmZePhHdtZ2hueYWRmJmUin5yamdqc3+LlJmXkIR4bmhobniFkJeYlIt/c2toanN+ipOYl5CFeW9paG54hI+WmJSLf3RraGtyfYmTmJeQhnpwaWlud4OOlZiUi4B1bGlrcn2IkpeWkIZ7cGppbneCjZWXlIyBdm1pa3J8iJGWlpCHe3FraW53goyUl5SMgXZuamtyfIeQlpaQh3xya2pudoGMk5aUjIJ3bmprcXuGkJWVkYh9c2xqbnaAi5OWlI2DeG9ra3F7hY+VlZGIfXNta251gIqSlZONg3lwa2xxeoWOlJWRiH50bWtudX+JkZWTjYR5cWxscXqEjZOVkYl/dW5rbnV/iZCUk42EenFsbHF5g42TlJGJf3ZvbG51foiQlJONhXtybWxxeYOMkpSRiYB2b2xudH6Hj5OTjoV7c21tcXmCi5GTkYqAd3BtbnR9h46Tko6FfHNubXF4gouRk5GKgXhxbW50fYaOkpKOhn10b21xeIGKkJOQioF4cW5vdHyFjZKSjoZ9dW9ucXiAiZCSkIqCeXJub3R8hY2Rko6HfnVwbnF3gImPkpCLgnpyb290e4SMkZGOh352cG5xd3+Ij5GQi4N6c29vdHuEi5CRjod/d3FvcXd/h46RkIuDe3Rvb3N7g4uQkY6If3dxb3F3f4eNkZCLhHt0cHBzeoKKj5GOiIB4cm9xdn6GjZCQi4R8dXBwc3qCio+QjoiAeHJwcXZ+hoyQkIuEfHVxcHN6gYmOkI6IgXlzcHF2fYWMj4+LhX12cXBzeYGIjpCOiIF5c3Fxdn2Fi4+PjIV9dnJxc3mBiI2PjomCenRxcnZ9hIuPj4yFfndycXN5gIeNj46Jgnt0cXJ2fISKjo+Mhn53c3FzeYCHjI+OiYJ7dXJydnyDio6OjIZ/eHNxc3h/hoyOjYmDe3VycnZ8g4mNjoyGf3h0cnN4f4aLjo2Jg3x2cnJ1e4KJjY6MhoB5dHJ0eH6Fi46NiYN8dnNydXuCiIyOjIeAeXRydHh+hYqNjYmEfXdzc3V7gYiMjYyHgHp1c3R4foSKjY2KhH13dHN1eoGHjI2Mh4F6dXN0eH2EiY2NioR+eHRzdXqBh4uNi4eBe3ZzdHd9hImMjYqEfnh0c3V6gIaLjYuHgXt2dHR3fYOJjIyKhX95dXR1eoCGioyLh4J8d3R0d32DiIyMioV/eXV0dXp/hYqMi4iCfHd0dHd8goiLjIqFf3p2dHV6f4WKjIuIgn13dXR3fIKHi4yKhYB6dnR2eX+FiYyLiIN9eHV1d3yCh4uMioWAenZ1dnl/hImLi4iDfXh1dXd8gYaKi4qGgHt3dXZ5foSIi4uIg355dnV3e4GGiouKhoF7d3V2eX6DiIuLiIN+eXZ1d3uBhomLioaBfHd1dnl+g4iKioiEfnl2dXd7gIWJi4qGgXx4dnZ5fYOHioqIhH96d3Z3e4CFiYqJhoF8eHZ2eX2Ch4qKiIR/end2d3uAhYiKiYaCfXh2dnl9goeJioiEf3t3dnd7f4SIiomGgn15dnZ5fYKGiYqIhIB7d3Z3e3+EiIqJhoJ9eXd2eX2BhomKiIWAe3h2d3p/hIeJiYeCfnl3d3l8gYaJiYiFgHx4d3d6f4OHiYmHg356d3d5fIGFiImIhYB8eHd3en6Dh4mJh4N+end3eXyBhYiJiIWBfHl3eHp+g4aJiYeDf3p4d3l8gIWIiYiFgX15d3h6foKGiImHg397eHd5fICEh4mIhYF9eXd4en6ChoiJh4N/e3h3eXyAhIeJiIWBfXp4eHp+goaIiIeDf3t5eHl8gISHiIiFgn16eHh6fYKFiIiHhIB8eXh5e3+Dh4iIhYJ+enh4en2BhYeIh4SAfHl4eXt/g4aIiIWCfnp4eHp9gYWHiIeEgHx5eHl7f4OGiIiGgn57eXh6fYGEh4iHhIB8enh5e3+DhoiHhoJ+e3l4en2BhIeIh4SAfXp4eXt/goWHh4aCf3t5eHp9gISGiIeEgX16eXl7foKFh4eGg398eXl6fYCEhoeHhIF9enl5e36ChYeHhoN/fHl5enyAg4aHh4SBfnt5eXt+goWHh4aDf3x6eXp8gIOGh4eEgX57eXl7foGEh4eGg4B8enl6fH+DhoeGhIF+e3l5e36BhIaHhoOAfXp5enx/g4WHhoWCfnt6eXt+gYSGh4aDgH16eXp8f4KFh4aFgn58enl7fYGEhoeGg4B9e3l6fH+ChYaGhYJ/fHp6e32AhIaGhoOAfXt6enx/goWGhoWCf3x6ent9gIOFhoaDgX17enp8f4KEhoaFgn98enp7fYCDhYaGhIF+e3p6fH+ChIaGhYJ/fHp6e32Ag4WGhoSBfnt6enx+gYSGhoWCf317ent9gIOFhoWEgX58enp8foGEhYaFgoB9e3p7fYCChYaFhIF+fHp6fH6BhIWGhYOAfXt6e31/goWGhYSBfnx7enx+gYOFhoWDgH17ent9f4KEhYWEgX98e3t8foGDhYaFg4B9e3t7fX+ChIWFhIJ/fHt7fH6Ag4WFhYOAfnx7e31/goSFhYSCf317e3x+gIOFhYWDgH58e3t9f4KEhYWEgn99e3t8foCDhIWFg4F+fHt7fX+BhIWFhIJ/fXt7fH6AgoSFhYOBfnx7e3x/gYOFhYSCf318e3x9gIKEhYWDgX58e3t8f4GDhYWEgoB9fHt8fYCChIWFg4F/fHt7fH6Bg4SFhIKAfXx7fH2AgoSFhYOBf317e3x+gYOEhYSCgH58e3x9f4KEhYSDgX99fHt8foGDhIWEgoB+fHt8fX+Cg4WEg4F/fXx7fH6Ag4SFhIKAfnx7fH1/gYOEhIOBf318fHx+gIKEhISCgH58fHx9f4GDhISDgX99fHx8foCChISEgoB+fXx8fX+Bg4SEg4J/fXx8fH6AgoSEhIOBfn18fH1/gYOEhIOCgH58fHx+gIKDhISDgX99fHx9f4GDhISDgoB+fHx8foCCg4SEg4F/fXx8fX+Bg4SEg4KAfnx8fH6AgoOEhIOBf318fH1/gYKEhIOCgH59fHx+gIKDhISDgX99fHx9f4GChISDgoB+fXx8fn+Bg4SEg4F/fXx8fX+AgoOEg4KAfn18fX5/gYOEhIOBf358fH1+gIKDhIOCgH59fH1+f4GDhISDgX9+fXx9foCCg4SDgoB/fXx9fn+Bg4OEg4F/fn18fX6AgoOEg4KAf318fX5/gYKDg4OBgH59fH1+gIKDhIOCgX99fX1+f4GCg4ODgYB+fX19foCCg4ODgoF/fX19fn+BgoODg4GAfn19fX6AgYODg4KBf359fX5/gYKDg4OCgH59fX1+gIGDg4OCgX9+fX19f4CCg4ODgoB+fX19fg==";
+    let appleAudioEl = null;
+
+    function getAudioContext() {
+      try {
+        if (!audioCtx) {
+          const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+          if (AudioContextClass) audioCtx = new AudioContextClass();
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+      } catch (e) {}
+      return audioCtx;
+    }
+
+    function unlockAudio() {
+      try {
+        if (!appleAudioEl) appleAudioEl = new Audio(APPLE_CHIME_B64);
+        const ctx = getAudioContext();
+        if (ctx && ctx.state === 'suspended') ctx.resume();
+        if (ctx) {
+          const buf = ctx.createBuffer(1, 1, 22050);
+          const src = ctx.createBufferSource();
+          src.buffer = buf;
+          src.connect(ctx.destination);
+          src.start(0);
+        }
+      } catch (e) {}
+    }
+
+    ['touchstart', 'touchend', 'click', 'keydown'].forEach(evt => {
+      document.addEventListener(evt, unlockAudio, { passive: true, once: true });
+    });
+
+    function playAppleChime() {
+      // 1. Reproductor nativo HTML5 Audio (Funciona en iOS Safari incluso con restricciones)
+      try {
+        if (!appleAudioEl) appleAudioEl = new Audio(APPLE_CHIME_B64);
+        appleAudioEl.currentTime = 0;
+        const p = appleAudioEl.play();
+        if (p && typeof p.catch === "function") p.catch(() => {});
+      } catch (e) {}
+
+      // 2. Síntesis armónica cristalina Web Audio API
+      try {
+        const ctx = getAudioContext();
+        if (ctx) {
+          if (ctx.state === 'suspended') ctx.resume();
+          const now = ctx.currentTime;
+          const freqs = [659.25, 880.00];
+          freqs.forEach((freq, idx) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now + idx * 0.14);
+            gain.gain.setValueAtTime(0.001, now + idx * 0.14);
+            gain.gain.linearRampToValueAtTime(0.35, now + idx * 0.14 + 0.02);
+            gain.gain.linearRampToValueAtTime(0.0001, now + idx * 0.14 + 0.38);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now + idx * 0.14);
+            osc.stop(now + idx * 0.14 + 0.40);
+          });
+        }
+      } catch (e) {}
+    }
+
+    let notifBannerTimer = null;
+    function triggerInAppNotification(title, body, icon = "🔔") {
+      playAppleChime();
+      haptic([35, 70, 45]);
+
+      const banner = document.getElementById("appleNotifBanner");
+      if (banner) {
+        document.getElementById("anTitle").textContent = title;
+        document.getElementById("anBody").textContent = body;
+        document.getElementById("anIcon").textContent = icon;
+        banner.classList.add("show");
+        if (notifBannerTimer) clearTimeout(notifBannerTimer);
+        notifBannerTimer = setTimeout(() => {
+          banner.classList.remove("show");
+        }, 5500);
+      }
+
+      sendLocalNotification(title, body);
+    }
+
+    function dismissNotifBanner() {
+      const banner = document.getElementById("appleNotifBanner");
+      if (banner) banner.classList.remove("show");
+      if (notifBannerTimer) clearTimeout(notifBannerTimer);
+    }
+
+    async function testNotification() {
+      haptic([15, 60, 20]);
+      unlockAudio();
+      triggerInAppNotification(
+        " Finanzas (Prueba)", 
+        "¡Así sonará tu iPhone cuando Mayra o Harvey anoten un gasto! 🛒", 
+        "🔔"
+      );
+      if ("Notification" in window && Notification.permission !== "granted") {
+        try { await Notification.requestPermission(); } catch (e) {}
+      }
+    }
+
+    async function sendLocalNotification(title, body) {
+      if (!("Notification" in window) || Notification.permission !== "granted") return;
+      try {
+        new Notification(title, { body: body });
+      } catch (e) {}
+    }
+
+    function getOfflineQueue() {
+      try { return JSON.parse(localStorage.getItem("hm_offline_queue_v2") || "[]"); }
+      catch (e) { return []; }
+    }
+    function saveOfflineQueue(arr) {
+      try { localStorage.setItem("hm_offline_queue_v2", JSON.stringify(arr)); } catch (e) {}
+    }
+
+    function showIsland(msg, isOffline = false) {
+      const isl = document.getElementById("island");
+      const chk = document.getElementById("islandCheck");
+      const txt = document.getElementById("islandText");
+      chk.textContent = isOffline ? "☁" : "✓";
+      chk.style.background = isOffline ? "#FF9500" : "#0071E3";
+      txt.textContent = msg;
+      isl.classList.add("show");
+      setTimeout(() => isl.classList.remove("show"), 2800);
+    }
+
+    function getCatMeta(catName) {
+      if (catName === "Liquidación / Cuadre de Cuentas") return { ico: "🤝", short: "Liquidación", block: "liq" };
+      return CATEGORIES.find(c => c.name === catName) || { ico: "💳", short: catName, block: "var" };
+    }
+
+    function shiftMonth(delta) {
+      haptic(10);
+      viewedMonthIdx += delta;
+      if (viewedMonthIdx < 7) viewedMonthIdx = 12;
+      if (viewedMonthIdx > 12) viewedMonthIdx = 7;
+      renderMetrics();
+    }
+
+    function toggleScope(s) {
+      haptic(10);
+      currentScope = s;
+      localStorage.setItem("hm_scope_v5", s);
+      document.getElementById("btnScopeMonth").classList.toggle("active", s === "month");
+      document.getElementById("btnScopeYear").classList.toggle("active", s === "year");
+      renderMetrics();
+    }
+
+    /* Switch Bóveda Dual: [ 🏠 Hogar ] | [ 👤 Solo Mío ] */
+    function setVaultMode(mode) {
+      haptic(14);
+      currentVaultMode = mode;
+      localStorage.setItem("hm_vault_mode_v5", mode);
+
+      document.getElementById("btnModeHogar").classList.toggle("active", mode === "hogar");
+      document.getElementById("btnModePersonal").classList.toggle("active", mode === "personal");
+      document.getElementById("segPayerHogar").classList.toggle("hidden", mode === "personal");
+      document.getElementById("segPayerPersonal").classList.toggle("hidden", mode === "hogar");
+
+      const btn = document.getElementById("btnSubmit");
+      if (mode === "personal") {
+        btn.textContent = "Guardar en Mis Gastos Personales";
+        btn.classList.add("personal-btn");
+      } else {
+        btn.textContent = "Guardar en Finanzas Hogar";
+        btn.classList.remove("personal-btn");
+      }
+
+      renderChips();
+      renderMetrics();
+    }
+
+    function selectPersonalPayer(p) {
+      haptic(10);
+      selectedPersonalPayer = p;
+      localStorage.setItem("hm_pers_payer_v5", p);
+      document.getElementById("segPersHarv").className = "seg-btn" + (p === "Personal Harvey" ? " active" : "");
+      document.getElementById("segPersMay").className  = "seg-btn" + (p === "Personal Mayra" ? " active" : "");
+      renderMetrics();
+    }
+
+    function selectPayer(p) {
+      haptic(10);
+      selectedPayer = p;
+      localStorage.setItem("hm_payer_v5", p);
+      document.getElementById("segHarvey").className = "seg-btn" + (p === "Harvey" ? " active who-harvey" : "");
+      document.getElementById("segMayra").className  = "seg-btn" + (p === "Mayra" ? " active who-mayra" : "");
+      document.getElementById("segMitad").className  = "seg-btn" + (p === "Mitad c/u (Ya saldado)" ? " active" : "");
+    }
+
+    function renderChips() {
+      const qc = document.getElementById("quickChipsContainer");
+      qc.innerHTML = "";
+      const chips = currentVaultMode === "personal"
+        ? ["Menú diario", "Café / Snack", "Gasolina", "Uber / Taxi", "Barber / Ropa", "Farmacia"]
+        : ["Plaza Vea", "Mercado", "Tambo", "Cena", "Almuerzo", "Servicios", "Keyla", "Limpieza"];
+
+      chips.forEach(txt => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "q-chip";
+        b.textContent = txt;
+        b.onclick = () => setChip(txt);
+        qc.appendChild(b);
+      });
+    }
+
+    function setChip(txt) {
+      haptic(8);
+      document.getElementById("inpDesc").value = txt;
+    }
+
+    function triggerDatePicker() {
+      haptic(10);
+      const selDay = document.getElementById("selDateDay");
+      if (selDay && selDay.options.length === 0) {
+        for (let d = 1; d <= 31; d++) {
+          const opt = document.createElement("option");
+          const val = String(d).padStart(2, "0");
+          opt.value = val;
+          opt.textContent = val;
+          selDay.appendChild(opt);
+        }
+      }
+      const raw = document.getElementById("inpFecha").value;
+      if (raw && raw.includes("-")) {
+        const parts = raw.split("-");
+        if (parts.length === 3) {
+          document.getElementById("selDateYear").value = parts[0];
+          document.getElementById("selDateMonth").value = parts[1];
+          document.getElementById("selDateDay").value = parts[2];
+        }
+      }
+      document.getElementById("dateModal").classList.add("show");
+    }
+
+    function closeDateModal() {
+      haptic(8);
+      document.getElementById("dateModal").classList.remove("show");
+    }
+
+    function setQuickDateOffset(daysOffset) {
+      haptic(10);
+      const dt = new Date();
+      dt.setDate(dt.getDate() + daysOffset);
+      const yyyy = dt.getFullYear();
+      const mm = String(dt.getMonth() + 1).padStart(2, "0");
+      const dd = String(dt.getDate()).padStart(2, "0");
+      document.getElementById("inpFecha").value = `${yyyy}-${mm}-${dd}`;
+      onDateChanged();
+      closeDateModal();
+    }
+
+    function applyManualDate() {
+      haptic(12);
+      const yyyy = document.getElementById("selDateYear").value;
+      const mm = document.getElementById("selDateMonth").value;
+      const dd = document.getElementById("selDateDay").value;
+      document.getElementById("inpFecha").value = `${yyyy}-${mm}-${dd}`;
+      onDateChanged();
+      closeDateModal();
+    }
+
+    function onDateChanged() {
+      haptic(8);
+      const raw = document.getElementById("inpFecha").value;
+      if (!raw) return;
+      const now = new Date();
+      const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const txtBadge = document.getElementById("dateBadgeText");
+      if (raw === todayIso) {
+        txtBadge.textContent = "📅 Hoy";
+      } else {
+        const p = raw.split("-");
+        txtBadge.textContent = `📅 ${p[2]}/${p[1]}`;
+      }
+    }
+
+    function fmtSoles(n) {
+      return "S/ " + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function fmtNum(n) {
+      return Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function getEventMonth(ev) {
+      if (ev.fecha && ev.fecha.includes("-")) return String(parseInt(ev.fecha.split("-")[1], 10));
+      if (ev.fecha && ev.fecha.includes("/")) return String(parseInt(ev.fecha.split("/")[1], 10));
+      if (ev.fechaDisp && ev.fechaDisp.includes("/")) return String(parseInt(ev.fechaDisp.split("/")[1], 10));
+      return String(new Date().getMonth() + 1);
+    }
+
+    function normalizeDateStr(d) {
+      if (!d) return "";
+      d = String(d).trim();
+      const mIso = d.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (mIso) return `${mIso[3].padStart(2, "0")}/${mIso[2].padStart(2, "0")}/${mIso[1]}`;
+      const mSlash = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (mSlash) return `${mSlash[1].padStart(2, "0")}/${mSlash[2].padStart(2, "0")}/${mSlash[3]}`;
+      return d;
+    }
+
+    function makeItemKey(persona, desc, monto, fecha) {
+      return `${(persona||"").trim()}|${(desc||"").trim().toLowerCase()}|${Number(monto||0).toFixed(2)}|${normalizeDateStr(fecha)}`;
+    }
+
+    function renderMetrics() {
+      let tot = baseState.total;
+      let harv = baseState.harvey;
+      let may = baseState.mayra;
+      let liqH2M = baseState.liqH2M || 0;
+      let cnt = baseState.count;
+      let combinedRecent = baseState.recent.map(r => ({ ...r }));
+
+      let monthMap = {};
+      for (let m = 1; m <= 12; m++) {
+        const k = String(m);
+        const src = (baseState.byMonth && baseState.byMonth[k]) ? baseState.byMonth[k] : {};
+        monthMap[k] = {
+          total: src.total || 0,
+          harvey: src.harvey || 0,
+          mayra: src.mayra || 0,
+          liqH2M: src.liqH2M || 0,
+          var: src.var !== undefined ? src.var : (src.total || 0) * 0.5,
+          fijo: src.fijo !== undefined ? src.fijo : 0,
+          ocio: src.ocio !== undefined ? src.ocio : (src.total || 0) * 0.5,
+          persHarv: src.persHarv || 0,
+          persMay: src.persMay || 0
+        };
+      }
+
+      // Preparar mapas de eliminaciones activas
+      const deletedTargetIds = new Set();
+      const deletedKeysCount = new Map();
+      for (const [delId, delEv] of deleteEvents.entries()) {
+        if (delEv.ts > (baseState.ts || 0)) {
+          if (delEv.targetId) deletedTargetIds.add(delEv.targetId);
+          const k = makeItemKey(delEv.persona, delEv.desc, delEv.monto, delEv.fecha);
+          deletedKeysCount.set(k, (deletedKeysCount.get(k) || 0) + 1);
+        }
+      }
+
+      // Filtrar de baseState.recent cualquier elemento eliminado que el snapshot todavía no haya purgado
+      const filteredRecent = [];
+      for (const r of combinedRecent) {
+        const k = makeItemKey(r.persona, r.desc, r.monto, r.fecha);
+        const isTargetDel = r.id && deletedTargetIds.has(r.id);
+        const isKeyDel = (deletedKeysCount.get(k) || 0) > 0;
+        if (isTargetDel || isKeyDel) {
+          if (!isTargetDel) {
+            deletedKeysCount.set(k, deletedKeysCount.get(k) - 1);
+          }
+          // Restar de métricas base porque este registro estaba presente en baseState
+          cnt = Math.max(0, cnt - 1);
+          const m = Number(r.monto) || 0;
+          const evMKey = getEventMonth(r);
+          if (!monthMap[evMKey]) monthMap[evMKey] = { total: 0, harvey: 0, mayra: 0, liqH2M: 0, var: 0, fijo: 0, ocio: 0, persHarv: 0, persMay: 0 };
+
+          const isPersonal = (r.persona && r.persona.startsWith("Personal"));
+          if (!isPersonal && r.cat !== "Ahorro / Meta en Pareja" && r.cat !== "Liquidación / Cuadre de Cuentas") {
+            tot = Math.max(0, tot - m);
+            monthMap[evMKey].total = Math.max(0, monthMap[evMKey].total - m);
+            if (r.cat === "Servicios (Luz, Agua, Internet)") monthMap[evMKey].fijo = Math.max(0, monthMap[evMKey].fijo - m);
+            else if (r.cat === "Salidas a Comer y Delivery" || r.cat === "Antojos, Tambo y Cafés" || r.cat === "Cine, Entretenimiento y Salidas") monthMap[evMKey].ocio = Math.max(0, monthMap[evMKey].ocio - m);
+            else monthMap[evMKey].var = Math.max(0, monthMap[evMKey].var - m);
+          }
+
+          if (r.persona === "Harvey") {
+            harv = Math.max(0, harv - m);
+            monthMap[evMKey].harvey = Math.max(0, monthMap[evMKey].harvey - m);
+          } else if (r.persona === "Mayra") {
+            may = Math.max(0, may - m);
+            monthMap[evMKey].mayra = Math.max(0, monthMap[evMKey].mayra - m);
+          } else if (r.persona === "Mitad c/u (Ya saldado)") {
+            harv = Math.max(0, harv - m/2);
+            may = Math.max(0, may - m/2);
+            monthMap[evMKey].harvey = Math.max(0, monthMap[evMKey].harvey - m/2);
+            monthMap[evMKey].mayra = Math.max(0, monthMap[evMKey].mayra - m/2);
+          } else if (r.persona === "Liquidación Harvey -> Mayra") {
+            liqH2M -= m;
+            monthMap[evMKey].liqH2M -= m;
+          } else if (r.persona === "Liquidación Mayra -> Harvey") {
+            liqH2M += m;
+            monthMap[evMKey].liqH2M += m;
+          } else if (r.persona === "Personal Harvey") {
+            monthMap[evMKey].persHarv = Math.max(0, monthMap[evMKey].persHarv - m);
+          } else if (r.persona === "Personal Mayra") {
+            monthMap[evMKey].persMay = Math.max(0, monthMap[evMKey].persMay - m);
+          }
+          continue; // Omitir de la lista reciente combinada
+        }
+        filteredRecent.push(r);
+      }
+      combinedRecent = filteredRecent;
+
+      // Sumar pendientes (si no fueron eliminados)
+      for (const [id, ev] of pendingEvents.entries()) {
+        if (ev.ts > (baseState.ts || 0)) {
+          if (deletedTargetIds.has(id)) continue;
+          const k = makeItemKey(ev.persona, ev.desc, ev.monto, ev.fechaDisp || ev.fecha);
+          if ((deletedKeysCount.get(k) || 0) > 0) {
+            deletedKeysCount.set(k, deletedKeysCount.get(k) - 1);
+            continue;
+          }
+
+          cnt++;
+          const m = Number(ev.monto) || 0;
+          const evMKey = getEventMonth(ev);
+          if (!monthMap[evMKey]) monthMap[evMKey] = { total: 0, harvey: 0, mayra: 0, liqH2M: 0, var: 0, fijo: 0, ocio: 0, persHarv: 0, persMay: 0 };
+
+          const isPersonal = (ev.persona && ev.persona.startsWith("Personal"));
+          if (!isPersonal && ev.cat !== "Ahorro / Meta en Pareja" && ev.cat !== "Liquidación / Cuadre de Cuentas") {
+            tot += m;
+            monthMap[evMKey].total += m;
+            if (ev.cat === "Servicios (Luz, Agua, Internet)") monthMap[evMKey].fijo += m;
+            else if (ev.cat === "Salidas a Comer y Delivery" || ev.cat === "Antojos, Tambo y Cafés" || ev.cat === "Cine, Entretenimiento y Salidas") monthMap[evMKey].ocio += m;
+            else monthMap[evMKey].var += m;
+          }
+
+          if (ev.persona === "Harvey") {
+            harv += m; monthMap[evMKey].harvey += m;
+          } else if (ev.persona === "Mayra") {
+            may += m; monthMap[evMKey].mayra += m;
+          } else if (ev.persona === "Mitad c/u (Ya saldado)") {
+            harv += m/2; may += m/2;
+            monthMap[evMKey].harvey += m/2; monthMap[evMKey].mayra += m/2;
+          } else if (ev.persona === "Liquidación Harvey -> Mayra") {
+            liqH2M += m; monthMap[evMKey].liqH2M += m;
+          } else if (ev.persona === "Liquidación Mayra -> Harvey") {
+            liqH2M -= m; monthMap[evMKey].liqH2M -= m;
+          } else if (ev.persona === "Personal Harvey") {
+            monthMap[evMKey].persHarv += m;
+          } else if (ev.persona === "Personal Mayra") {
+            monthMap[evMKey].persMay += m;
+          }
+
+          combinedRecent.unshift({
+            id: ev.id,
+            fecha: ev.fechaDisp || ev.fecha,
+            persona: ev.persona,
+            cat: ev.cat,
+            desc: ev.desc,
+            monto: m,
+            metodo: ev.metodo
+          });
+        }
+      }
+
+      window.__lastCombinedRecent = combinedRecent;
+
+      // Saldos Anual y Mensual
+      const curKey = String(viewedMonthIdx);
+      const curData = monthMap[curKey] || { total: 0, harvey: 0, mayra: 0, liqH2M: 0, var: 0, fijo: 0, ocio: 0, persHarv: 0, persMay: 0 };
+      const cuota = tot / 2.0;
+      const saldo = may - cuota - liqH2M;
+      currentAnnualSaldo = saldo;
+
+      const mTot = curData.total;
+      const mHarv = curData.harvey;
+      const mMay = curData.mayra;
+      const mLiq = curData.liqH2M;
+      const mCuota = mTot / 2.0;
+      const mSaldo = mMay - mCuota - mLiq;
+      currentMonthSaldo = mSaldo;
+
+      const now = new Date();
+      const actualMonth = now.getMonth() + 1;
+      const isActualCurMonth = (viewedMonthIdx === actualMonth);
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+
+      // RENDERIZAR CABECERA HEROICA CONSOLIDADA 5.0
+      const heroPill = document.getElementById("heroSettlementPill");
+
+      if (currentVaultMode === "personal") {
+        const isHarv = selectedPersonalPayer === "Personal Harvey";
+        const persTotal = isHarv ? curData.persHarv : curData.persMay;
+        const persName = isHarv ? "Harvey" : "Mayra";
+
+        document.getElementById("cardHeaderTitle").textContent = ` Gastos ${persName}`;
+        document.getElementById("cardVaultTag").textContent = "Personal";
+        document.getElementById("heroPeriodLbl").textContent = `${mName} 2026 (PERSONAL)`;
+        document.getElementById("heroTotalAmount").textContent = fmtSoles(persTotal);
+
+        heroPill.textContent = "✓ Privado (Deuda: S/ 0.00)";
+        heroPill.className = "ac-settlement-pill personal-pill";
+        heroPill.onclick = null;
+
+        document.getElementById("statLbl1").textContent = "Perfil";
+        document.getElementById("statVal1").textContent = persName;
+        document.getElementById("statLbl2").textContent = "Mes";
+        document.getElementById("statVal2").textContent = mName.substring(0, 3);
+        document.getElementById("statLbl3").textContent = "Saldo Par.";
+        document.getElementById("statVal3").textContent = "S/ 0.00";
+
+        document.getElementById("budgetCaption").textContent = `Modo Privado · No altera cuentas de ${isHarv ? "Mayra" : "Harvey"}`;
+        document.getElementById("budgetFill").style.width = "100%";
+        document.getElementById("budgetFill").style.background = "#1B8738";
+      } else {
+        // MODO HOGAR
+        document.getElementById("cardHeaderTitle").textContent = " Finanzas H&M";
+        document.getElementById("cardVaultTag").textContent = "5.0 Pro";
+
+        const isMonthScope = (currentScope === "month");
+        const activeTotal = isMonthScope ? mTot : tot;
+        const activeHarv = isMonthScope ? mHarv : harv;
+        const activeMay = isMonthScope ? mMay : may;
+        const activeCuota = isMonthScope ? mCuota : cuota;
+        const activeSaldo = isMonthScope ? mSaldo : saldo;
+
+        document.getElementById("heroPeriodLbl").textContent = isMonthScope ? `${mName} 2026` : "ACUMULADO ANUAL 2026";
+        document.getElementById("heroTotalAmount").textContent = fmtSoles(activeTotal);
+
+        let statusTxt = "✓ Al día (S/ 0.00)";
+        if (activeSaldo > 0.009) statusTxt = "Harvey → Mayra: " + fmtSoles(activeSaldo);
+        else if (activeSaldo < -0.009) statusTxt = "Mayra → Harvey: " + fmtSoles(Math.abs(activeSaldo));
+
+        heroPill.textContent = statusTxt;
+        heroPill.className = "ac-settlement-pill" + (Math.abs(activeSaldo) <= 0.009 ? " settled" : "");
+        heroPill.onclick = () => promptSettleCurrent();
+
+        document.getElementById("statLbl1").textContent = "Harvey";
+        document.getElementById("statVal1").textContent = fmtNum(activeHarv);
+        document.getElementById("statLbl2").textContent = "Mayra";
+        document.getElementById("statVal2").textContent = fmtNum(activeMay);
+        document.getElementById("statLbl3").textContent = "50% Cuota";
+        document.getElementById("statVal3").textContent = fmtNum(activeCuota);
+
+        // Barra de Presupuesto Apple y Oráculo
+        const totalDaysInMonth = DAYS_IN_MONTH[viewedMonthIdx - 1] || 30;
+        const elapsedDays = isActualCurMonth ? Math.max(1, now.getDate()) : totalDaysInMonth;
+        const dailyRate = mTot / elapsedDays;
+        const projectedTotal = isActualCurMonth ? (dailyRate * totalDaysInMonth) : mTot;
+        const projectedSave = MONTHLY_BUDGET - projectedTotal;
+
+        const pct = Math.min(100, Math.round((mTot / MONTHLY_BUDGET) * 100));
+        const bf = document.getElementById("budgetFill");
+        bf.style.width = pct + "%";
+        bf.style.background = mTot > MONTHLY_BUDGET ? "#FF3B30" : (pct >= 85 ? "#FF9500" : "#0071E3");
+
+        if (isActualCurMonth) {
+          const saveTxt = projectedSave >= 0 ? `Ahorro: S/ ${Math.round(projectedSave)}` : `Exceso: S/ ${Math.round(Math.abs(projectedSave))}`;
+          document.getElementById("budgetCaption").textContent = `${pct}% · 🔮 Proy: S/ ${Math.round(projectedTotal)} (${saveTxt})`;
+        } else {
+          document.getElementById("budgetCaption").textContent = `${pct}% del ppto (S/ 1,730)`;
+        }
+
+        document.getElementById("oracleMonthTitle").textContent = mName;
+        document.getElementById("oracleDailyRate").textContent = fmtSoles(dailyRate);
+        document.getElementById("oracleProjTotal").textContent = fmtSoles(projectedTotal);
+        document.getElementById("oracleProjSave").textContent = (projectedSave >= 0 ? "+" : "-") + fmtSoles(Math.abs(projectedSave));
+      }
+
+      // Card count badge
+      const qLen = getOfflineQueue().length;
+      const dot = document.getElementById("netDot");
+      if (qLen > 0) {
+        dot.classList.add("offline");
+        document.getElementById("cardCountChip").textContent = `${cnt} reg. (${qLen} pend.)`;
+      } else {
+        dot.classList.remove("offline");
+        document.getElementById("cardCountChip").textContent = cnt + " reg.";
+      }
+
+      // Historial Inset
+      const hl = document.getElementById("historyList");
+      hl.innerHTML = "";
+      combinedRecent.slice(0, 30).forEach(item => {
+        const meta = getCatMeta(item.cat);
+        const isPers = item.persona && item.persona.startsWith("Personal");
+        let wClass = "who-personal";
+        let displayWho = item.persona;
+
+        if (item.persona === "Harvey") { wClass = "who-harvey"; }
+        else if (item.persona === "Mayra") { wClass = "who-mayra"; }
+        else if (isPers) { displayWho = item.persona.replace("Personal ", "Solo "); }
+
+        const row = document.createElement("div");
+        row.className = "tx-row";
+        row.innerHTML = `
+          <div class="tx-left">
+            <div class="tx-ico">${meta.ico}</div>
+            <div class="tx-info">
+              <div class="tx-title">${item.desc || meta.short} ${isPers ? '<span class="tx-badge-personal">Personal</span>' : ''}</div>
+              <div class="tx-sub">${meta.short} • ${item.fecha}</div>
+            </div>
+          </div>
+          <div class="tx-right-wrap">
+            <div class="tx-right">
+              <div class="tx-amount">${fmtSoles(item.monto)}</div>
+              <div class="tx-who ${wClass}">${displayWho}</div>
+            </div>
+            <button type="button" class="btn-del-tx" title="Eliminar registro">✕</button>
+          </div>
+        `;
+        row.querySelector(".btn-del-tx").onclick = () => promptDeleteExpense(item);
+        hl.appendChild(row);
+      });
+
+      // Anillos y Comparativa
+      const denom = Math.max(1, mTot);
+      const pVar = Math.min(100, Math.round(((curData.var || 0) / denom) * 100));
+      const pFijo = Math.min(100, Math.round(((curData.fijo || 0) / denom) * 100));
+      const pOcio = Math.min(100, Math.round(((curData.ocio || 0) / denom) * 100));
+      document.getElementById("ringVarVal").textContent = `${fmtSoles(curData.var || 0)} (${mTot > 0 ? pVar : 0}%)`;
+      document.getElementById("ringVarBar").style.width = (mTot > 0 ? pVar : 0) + "%";
+      document.getElementById("ringFijoVal").textContent = `${fmtSoles(curData.fijo || 0)} (${mTot > 0 ? pFijo : 0}%)`;
+      document.getElementById("ringFijoBar").style.width = (mTot > 0 ? pFijo : 0) + "%";
+      document.getElementById("ringOcioVal").textContent = `${fmtSoles(curData.ocio || 0)} (${mTot > 0 ? pOcio : 0}%)`;
+      document.getElementById("ringOcioBar").style.width = (mTot > 0 ? pOcio : 0) + "%";
+
+      const ml = document.getElementById("monthsComparisonList");
+      ml.innerHTML = "";
+      [10, 9, 8, 7].forEach(mIdx => {
+        const md = monthMap[String(mIdx)] || { total: 0, harvey: 0, mayra: 0, liqH2M: 0 };
+        const mc = md.total / 2.0;
+        const ms = md.mayra - mc - md.liqH2M;
+        let st = "✓ Saldado";
+        if (ms > 0.009) st = "H → M: " + fmtSoles(ms);
+        else if (ms < -0.009) st = "M → H: " + fmtSoles(Math.abs(ms));
+        const r = document.createElement("div");
+        r.className = "tx-row";
+        r.innerHTML = `
+          <div class="tx-left">
+            <div class="tx-info">
+              <div class="tx-title">${MONTH_NAMES[mIdx - 1]} 2026</div>
+              <div class="tx-sub">Harvey: ${fmtSoles(md.harvey)} • Mayra: ${fmtSoles(md.mayra)}</div>
+            </div>
+          </div>
+          <div class="tx-right">
+            <div class="tx-amount">${fmtSoles(md.total)}</div>
+            <div class="tx-who who-harvey">${st}</div>
+          </div>
+        `;
+        ml.appendChild(r);
+      });
+    }
+
+    /* Modal Apple Wrapped */
+    function openWrappedModal() {
+      haptic(12);
+      const curKey = String(viewedMonthIdx);
+      const curData = (baseState.byMonth && baseState.byMonth[curKey]) ? baseState.byMonth[curKey] : { total: 448.60, harvey: 301.60, mayra: 147.00, liqH2M: 0 };
+      const mTot = curData.total || 448.60;
+      const saved = MONTHLY_BUDGET - mTot;
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+
+      document.getElementById("wrpMonthTitle").textContent = mName;
+      document.getElementById("wrpTotal").textContent = fmtSoles(mTot);
+      document.getElementById("wrpSaved").textContent = (saved >= 0 ? "+" : "-") + fmtSoles(Math.abs(saved));
+      document.getElementById("wrpTopCat").textContent = "🍽️ Salidas y Delivery (S/ 238.20)";
+
+      let hormigaTot = 0;
+      baseState.recent.forEach(r => {
+        if (r.cat === "Antojos, Tambo y Cafés" || (r.desc && r.desc.toLowerCase().includes("tambo"))) {
+          hormigaTot += r.monto;
+        }
+      });
+      document.getElementById("wrpHormiga").textContent = hormigaTot > 0 ? `Tambo y cafés: ${fmtSoles(hormigaTot)}` : "Bajo control (S/ 0.00)";
+
+      const mc = mTot / 2.0;
+      const ms = curData.mayra - mc - (curData.liqH2M || 0);
+      let sTxt = "¡Cuentas al día! (S/ 0.00)";
+      if (ms > 0.009) sTxt = "Harvey transfiere a Mayra: " + fmtSoles(ms);
+      else if (ms < -0.009) sTxt = "Mayra transfiere a Harvey: " + fmtSoles(Math.abs(ms));
+      document.getElementById("wrpSettleStatus").textContent = sTxt;
+
+      document.getElementById("wrappedModal").classList.add("open");
+    }
+
+    function closeWrappedModal() {
+      haptic(8);
+      document.getElementById("wrappedModal").classList.remove("open");
+    }
+
+    function shareWrappedWhatsApp() {
+      haptic([12, 40, 12]);
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+      const tot = document.getElementById("wrpTotal").textContent;
+      const saved = document.getElementById("wrpSaved").textContent;
+      const settle = document.getElementById("wrpSettleStatus").textContent;
+
+      const text = `📊 *Apple Wrapped — Finanzas ${mName} 2026*\n\n` +
+        `🏠 *Gasto Total Hogar:* ${tot}\n` +
+        `🎯 *Ahorro vs Meta (S/ 1,730):* ${saved}\n` +
+        `🍽️ *Categoría Principal:* Salidas a Comer y Delivery\n` +
+        `🤝 *Estado de Cuentas:* ${settle}\n\n` +
+        `_Generado automáticamente desde Finanzas 5.0 Pure Apple_ ✨`;
+
+      if (navigator.share) {
+        navigator.share({ title: `Finanzas Pareja ${mName}`, text: text }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(text);
+        showIsland("¡Copiado! Pégalo en WhatsApp con Mayra");
+      }
+    }
+
+    /* Modal Apple Intelligence */
+    function openMagicModal() {
+      haptic(12);
+      document.getElementById("aiInput").value = "";
+      updateMagicPreview();
+      document.getElementById("magicModal").classList.add("open");
+      setTimeout(() => document.getElementById("aiInput").focus(), 180);
+    }
+    function closeMagicModal() {
+      haptic(8);
+      document.getElementById("magicModal").classList.remove("open");
+    }
+
+    function parseNaturalLanguage(rawText) {
+      const txt = (rawText || "").trim();
+      const lower = txt.toLowerCase();
+
+      let isPersonal = currentVaultMode === "personal";
+      let who = isPersonal ? selectedPersonalPayer : selectedPayer;
+
+      if (/personal|solo harvey|men[uú]|mi almuerzo/.test(lower)) {
+        isPersonal = true; who = "Personal Harvey";
+      } else if (/solo mayra/.test(lower)) {
+        isPersonal = true; who = "Personal Mayra";
+      } else if (/\bmayra\b/.test(lower)) {
+        who = "Mayra"; isPersonal = false;
+      } else if (/\bharvey\b/.test(lower)) {
+        who = "Harvey"; isPersonal = false;
+      } else if (/\bmitad\b/.test(lower)) {
+        who = "Mitad c/u (Ya saldado)"; isPersonal = false;
+      }
+
+      let monto = 0;
+      const sMatch = lower.match(/(?:s\/\.?\s*)(\d+(?:[.,]\d{1,2})?)/i) ||
+                     lower.match(/(\d+(?:[.,]\d{1,2})?)\s*(?:soles|lucas|sol|s\/)/i) ||
+                     lower.match(/\b(\d+(?:[.,]\d{1,2})?)\b/);
+      if (sMatch) monto = parseFloat(sMatch[1].replace(",", "."));
+
+      let metodo = "Yape / Plin";
+      if (/efectivo|cash/.test(lower)) metodo = "Efectivo";
+      else if (/cr[eé]dito|\btc\b/.test(lower)) metodo = "Tarjeta de crédito";
+      else if (/d[eé]bito|\btd\b|tarjeta/.test(lower)) metodo = "Tarjeta de débito";
+      else if (/transferencia/.test(lower)) metodo = "Transferencia";
+
+      let cat = "Supermercado y Mercado";
+      if (/tambo|oxxo|caf[eé]|postre|turr[oó]n|snack/.test(lower)) cat = "Antojos, Tambo y Cafés";
+      else if (/cena|almuerzo|men[uú]|pollo|pizza|delivery|rappi|bembos|comida/.test(lower)) cat = "Salidas a Comer y Delivery";
+      else if (/plaza\s*vea|mercado|metro|tottus|mass/.test(lower)) cat = "Supermercado y Mercado";
+      else if (/luz|agua|internet|win|claro|gas/.test(lower)) cat = "Servicios (Luz, Agua, Internet)";
+      else if (/keyla|mascota|veterinari|ricocan/.test(lower)) cat = "Mascotas (Comida, Baño, Vet)";
+      else if (/uber|taxi|gasolina|pasaje/.test(lower)) cat = "Transporte y Movilidad";
+      else if (/farmacia|inkafarma|mifarma|medicina/.test(lower)) cat = "Salud y Farmacia";
+      else if (/ropa|barber|corte|limpieza/.test(lower)) cat = "Cuidado Personal y Ropa";
+
+      let desc = txt.replace(/\b(harvey|mayra|personal|pag[oó]|gast[oó]|por|con|de|en|yape|plin|efectivo)\b/gi, " ")
+                    .replace(/(?:s\/\.?\s*)?\d+(?:[.,]\d{1,2})?\s*(?:soles|lucas|sol|s\/)?/gi, " ")
+                    .replace(/\s+/g, " ").trim();
+      desc = desc ? (desc.charAt(0).toUpperCase() + desc.slice(1)) : getCatMeta(cat).short;
+
+      return { isPersonal, persona: who, monto: Math.round(monto * 100) / 100, cat, desc, metodo };
+    }
+
+    function updateMagicPreview() {
+      const raw = document.getElementById("aiInput").value;
+      const p = parseNaturalLanguage(raw);
+      const meta = getCatMeta(p.cat);
+      document.getElementById("aiPrevMode").textContent = p.isPersonal ? "👤 Personal (Privado)" : "🏠 Hogar (Compartido)";
+      document.getElementById("aiPrevWho").textContent = p.persona;
+      document.getElementById("aiPrevMonto").textContent = fmtSoles(p.monto);
+      document.getElementById("aiPrevCat").textContent = `${meta.ico} ${p.cat}`;
+      document.getElementById("aiPrevDesc").textContent = raw.trim() ? p.desc : "—";
+    }
+
+    async function executeMagicSave(immediate) {
+      haptic(12);
+      const raw = document.getElementById("aiInput").value;
+      const p = parseNaturalLanguage(raw);
+      if (!p.monto || p.monto <= 0) {
+        document.getElementById("aiInput").focus();
+        return;
+      }
+      setVaultMode(p.isPersonal ? "personal" : "hogar");
+      if (p.isPersonal) selectPersonalPayer(p.persona);
+      else selectPayer(p.persona);
+
+      selectedCat = p.cat;
+      document.getElementById("inpMonto").value = p.monto;
+      document.getElementById("inpDesc").value = p.desc;
+      closeMagicModal();
+
+      if (immediate) {
+        await submitExpense();
+      }
+    }
+
+    let recognition = null;
+    function toggleVoiceDictation() {
+      haptic(10);
+      const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRec) {
+        showIsland("Toca el micrófono del teclado de tu iPhone");
+        document.getElementById("aiInput").focus();
+        return;
+      }
+      try {
+        recognition = new SpeechRec();
+        recognition.lang = "es-PE";
+        recognition.onresult = (ev) => {
+          haptic(10);
+          document.getElementById("aiInput").value = ev.results[0][0].transcript;
+          updateMagicPreview();
+        };
+        recognition.start();
+      } catch (e) {}
+    }
+
+    function promptSettleCurrent() {
+      const isMonthScope = (currentScope === "month");
+      const saldo = isMonthScope ? currentMonthSaldo : currentAnnualSaldo;
+      if (Math.abs(saldo) <= 0.009) {
+        showIsland("¡Las cuentas ya están saldadas en S/ 0.00!");
+        return;
+      }
+      haptic(14);
+      const absMonto = Math.round(Math.abs(saldo) * 100) / 100;
+      const isH2M = saldo > 0;
+      const payerType = isH2M ? "Liquidación Harvey -> Mayra" : "Liquidación Mayra -> Harvey";
+      const dirText = isH2M ? "Harvey transfiere a Mayra" : "Mayra transfiere a Harvey";
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(isMonthScope ? viewedMonthIdx : (now.getMonth() + 1)).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+
+      document.getElementById("modalBadge").className = "sheet-badge";
+      document.getElementById("modalBadge").textContent = " Liquidación 1-Toque";
+      document.getElementById("modalTitle").textContent = isMonthScope ? `Saldar ${mName} 2026` : "Saldar Acumulado Anual";
+      document.getElementById("modalAmount").textContent = fmtSoles(absMonto);
+      document.getElementById("modalDesc").textContent = `${dirText} (${fmtSoles(absMonto)}). Al confirmar, el saldo quedará inmediatamente en S/ 0.00.`;
+
+      const btn = document.getElementById("modalConfirmBtn");
+      btn.className = "sheet-btn-confirm";
+      btn.textContent = "Confirmar Liquidación Ahora";
+      btn.onclick = async () => {
+        haptic([15, 60, 20]);
+        closeModal();
+        await dispatchCloudEvent({
+          type: "new_expense",
+          id: "exp_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+          ts: Math.floor(Date.now() / 1000) + 5,
+          fecha: `${yyyy}-${mm}-${dd}`,
+          fechaDisp: `${dd}/${mm}/${yyyy}`,
+          persona: payerType,
+          cat: "Liquidación / Cuadre de Cuentas",
+          desc: isMonthScope ? `Liquidación ${mName} 2026` : "Liquidación Anual",
+          monto: absMonto,
+          metodo: "Yape / Plin"
+        }, "¡Cuentas saldadas en S/ 0.00!");
+      };
+      document.getElementById("actionModal").classList.add("open");
+    }
+
+    function promptDeleteExpense(item) {
+      haptic([20, 40, 20]);
+      document.getElementById("modalBadge").className = "sheet-badge danger";
+      document.getElementById("modalBadge").textContent = "Eliminar Registro";
+      document.getElementById("modalTitle").textContent = item.desc || item.cat;
+      document.getElementById("modalAmount").textContent = fmtSoles(item.monto);
+      document.getElementById("modalDesc").textContent = `¿Deseas eliminar este registro de ${item.persona} del ${item.fecha}?`;
+
+      const btn = document.getElementById("modalConfirmBtn");
+      btn.className = "sheet-btn-confirm danger";
+      btn.textContent = "Eliminar Definitivamente";
+      btn.onclick = async () => {
+        haptic([25, 50, 25]);
+        closeModal();
+        await dispatchCloudEvent({
+          type: "delete_expense",
+          id: "del_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+          targetId: item.id || null,
+          ts: Math.floor(Date.now() / 1000) + 5,
+          fecha: item.fecha,
+          persona: item.persona,
+          cat: item.cat,
+          desc: item.desc,
+          monto: Number(item.monto)
+        }, "Registro eliminado");
+      };
+      document.getElementById("actionModal").classList.add("open");
+    }
+
+    function closeModal() {
+      haptic(8);
+      document.getElementById("actionModal").classList.remove("open");
+    }
+
+    async function sendToGoogleSheets(evObj) {
+      if (!GOOGLE_SHEETS_URL || evObj.type !== "new_expense") return;
+      try {
+        const payload = {
+          action: "add",
+          fecha: evObj.fecha,
+          quien: evObj.persona,
+          categoria: evObj.cat,
+          descripcion: evObj.desc || "",
+          monto: evObj.monto,
+          metodo: evObj.metodo || "Efectivo"
+        };
+        fetch(GOOGLE_SHEETS_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        }).catch(err => console.warn("Google Sheets sync:", err));
+      } catch (e) {
+        console.warn("sendToGoogleSheets err:", e);
+      }
+    }
+
+    async function sendToPowerAutomate(evObj) {
+      // Desactivado para garantizar un solo Excel oficial centralizado (Control_Gastos_Pareja_2026.xlsx)
+      return;
+    }
+
+    function exportDataCsv() {
+      haptic(10);
+      const rows = [];
+      rows.push(["Fecha", "¿Quién pagó?", "Categoría del Hogar", "Descripción / Lugar", "Monto Total (S/)", "Medio de Pago"]);
+      
+      const all = (window.__lastCombinedRecent && window.__lastCombinedRecent.length > 0) 
+        ? window.__lastCombinedRecent 
+        : (baseState.recent || []);
+
+      if (!all || all.length === 0) {
+        showIsland("No hay registros para exportar", true);
+        return;
+      }
+
+      for (const t of all) {
+        rows.push([
+          t.fecha || "",
+          t.persona || "",
+          t.cat || "",
+          (t.desc || "").replace(/"/g, '""'),
+          Number(t.monto || 0).toFixed(2),
+          t.metodo || "Efectivo"
+        ]);
+      }
+      const csvContent = rows.map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+      const blob = new Blob(["\ufeff" + csvContent], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Finanzas_Hogar_Harvey_Mayra_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showIsland("Archivo CSV descargado con éxito");
+    }
+
+    async function dispatchCloudEvent(evObj, successMsg) {
+      if (evObj.type === "new_expense") {
+        pendingEvents.set(evObj.id, evObj);
+        sendToPowerAutomate(evObj);
+        sendToGoogleSheets(evObj);
+      }
+      if (evObj.type === "delete_expense") deleteEvents.set(evObj.id, evObj);
+      renderMetrics();
+
+      try {
+        const res = await fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
+          method: "POST",
+          headers: {
+            "Title": (evObj.type === "new_expense") ? `Finanzas: ${evObj.persona} anotó ${fmtSoles(evObj.monto)}` : "Finanzas: Registro eliminado",
+            "Priority": "default",
+            "Cache": "yes"
+          },
+          body: JSON.stringify(evObj)
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        showIsland(successMsg);
+      } catch (e) {
+        console.warn("Cloud dispatch fallback to offline queue:", e);
+        const q = getOfflineQueue();
+        q.push(evObj);
+        saveOfflineQueue(q);
+        renderMetrics();
+        showIsland("Guardado Offline (Se enviará al volver señal)", true);
+      }
+    }
+
+    async function flushOfflineQueue() {
+      const q = getOfflineQueue();
+      if (q.length === 0) return;
+      const remaining = [];
+      let sentAny = false;
+      for (const ev of q) {
+        try {
+          if (ev.type === "new_expense") {
+            sendToPowerAutomate(ev);
+            sendToGoogleSheets(ev);
+          }
+          const res = await fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
+            method: "POST",
+            headers: {
+              "Title": (ev.type === "new_expense") ? `Finanzas: ${ev.persona} anotó ${fmtSoles(ev.monto)}` : "Finanzas: Registro eliminado",
+              "Priority": "default",
+              "Cache": "yes"
+            },
+            body: JSON.stringify(ev)
+          });
+          if (res.ok) sentAny = true;
+          else remaining.push(ev);
+        } catch (e) { remaining.push(ev); }
+      }
+      saveOfflineQueue(remaining);
+      if (sentAny) {
+        renderMetrics();
+        showIsland("Pendientes sincronizados");
+      }
+    }
+
+    let eventSource = null;
+    function initRealtimeSSE() {
+      try {
+        if (eventSource) {
+          try { eventSource.close(); } catch(e){}
+          eventSource = null;
+        }
+        eventSource = new EventSource(`${NTFY_SERVER}/${TOPIC_EVENTS}/sse`);
+        eventSource.onmessage = function(e) {
+          try {
+            const outer = JSON.parse(e.data);
+            if (outer.event === "message" && outer.message) {
+              const ev = JSON.parse(outer.message);
+              handleIncomingCloudEvent(ev);
+            }
+          } catch (err) {}
+        };
+        eventSource.onerror = function() {
+          // Reconexión automática de EventSource
+        };
+      } catch (e) {}
+    }
+
+    function handleIncomingCloudEvent(ev) {
+      if (!ev || !ev.id) return;
+      if (knownEventIds.has(ev.id)) return;
+      knownEventIds.add(ev.id);
+
+      if (ev.type === "new_expense") {
+        pendingEvents.set(ev.id, ev);
+        const catMeta = getCatMeta(ev.cat);
+        triggerInAppNotification(
+          `🔔 ${ev.persona} anotó ${fmtSoles(ev.monto)}`,
+          `${ev.desc || ev.cat} • ${ev.metodo || 'Hogar'}`,
+          catMeta.ico || "🔔"
+        );
+      } else if (ev.type === "delete_expense") {
+        deleteEvents.set(ev.id, ev);
+        triggerInAppNotification(
+          `🗑️ Registro Eliminado`,
+          `${ev.persona} eliminó ${ev.desc || ev.cat} • S/ ${Number(ev.monto).toFixed(2)}`,
+          "🗑️"
+        );
+      }
+      renderMetrics();
+    }
+
+    async function fetchCloudUpdates() {
+      try {
+        const rState = await fetch(`${NTFY_SERVER}/${TOPIC_STATE}/json?poll=1&since=all`);
+        if (rState.ok) {
+          const txt = await rState.text();
+          const lines = txt.trim().split("\n").filter(Boolean);
+          for (const line of lines) {
+            try {
+              const outer = JSON.parse(line);
+              if (outer.event === "message" && outer.message) {
+                let snap = null;
+                try { snap = JSON.parse(outer.message); } catch(e){}
+                if (snap && snap.type === "state_snapshot" && snap.ts >= (baseState.ts || 0) && snap.count > 0) {
+                  baseState = snap;
+                  try { localStorage.setItem("hm_cached_state_v7", JSON.stringify(baseState)); } catch(e){}
+                }
+              }
+            } catch (e) {}
+          }
+        }
+        const rEv = await fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}/json?poll=1&since=all`);
+        if (rEv.ok) {
+          const txt2 = await rEv.text();
+          const lines2 = txt2.trim().split("\n").filter(Boolean);
+          for (const line of lines2) {
+            try {
+              const outer = JSON.parse(line);
+              if (outer.event === "message" && outer.message) {
+                const ev = JSON.parse(outer.message);
+                if (ev && ev.id && !knownEventIds.has(ev.id)) {
+                  handleIncomingCloudEvent(ev);
+                }
+              }
+            } catch (e) {}
+          }
+        }
+        renderMetrics();
+      } catch (e) {}
+    }
+
+    async function submitExpense() {
+      const montoVal = parseFloat(document.getElementById("inpMonto").value);
+      if (!montoVal || montoVal <= 0) {
+        haptic(30);
+        document.getElementById("inpMonto").focus();
+        return;
+      }
+      haptic([15, 60, 20]);
+      const descVal = document.getElementById("inpDesc").value.trim() || selectedCat;
+      const fechaIso = document.getElementById("inpFecha").value;
+      const parts = fechaIso.split("-");
+      const fechaDisp = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : fechaIso;
+
+      const btn = document.getElementById("btnSubmit");
+      btn.disabled = true;
+      btn.textContent = "Guardando...";
+
+      const payer = currentVaultMode === "personal" ? selectedPersonalPayer : selectedPayer;
+
+      const expObj = {
+        type: "new_expense",
+        id: "exp_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+        ts: Math.floor(Date.now() / 1000) + 5,
+        fecha: fechaIso,
+        fechaDisp: fechaDisp,
+        persona: payer,
+        cat: selectedCat,
+        desc: descVal,
+        monto: Math.round(montoVal * 100) / 100,
+        metodo: selectedMethod
+      };
+
+      knownEventIds.add(expObj.id);
+      document.getElementById("inpMonto").value = "";
+      document.getElementById("inpDesc").value = "";
+
+      const catMeta = getCatMeta(selectedCat);
+      triggerInAppNotification(
+        `✓ ${payer} anotó ${fmtSoles(montoVal)}`,
+        `${descVal} • ${selectedMethod}`,
+        catMeta.ico || "✓"
+      );
+
+      await dispatchCloudEvent(expObj, currentVaultMode === "personal" ? "Guardado en Personal (Deuda: S/ 0)" : "Sincronizado con Excel Hogar");
+
+      btn.disabled = false;
+      btn.textContent = currentVaultMode === "personal" ? "Guardar en Mis Gastos Personales" : "Guardar en Finanzas Hogar";
+    }
+
+    function applyPreset(cat, desc, monto) {
+      haptic([10, 30, 10]);
+      selectedCat = cat;
+      document.querySelectorAll(".cat-item").forEach(x => x.classList.toggle("active", x.dataset.catName === cat));
+      document.getElementById("inpDesc").value = desc;
+      document.getElementById("inpMonto").value = monto;
+      switchView("form");
+      showIsland(`Plantilla «${desc}» lista`);
+    }
+
+    function switchView(v) {
+      haptic(10);
+      document.getElementById("viewForm").classList.toggle("hidden", v !== "form");
+      document.getElementById("viewHistory").classList.toggle("hidden", v !== "history");
+      document.getElementById("viewInsights").classList.toggle("hidden", v !== "insights");
+      document.getElementById("tabForm").classList.toggle("active", v === "form");
+      document.getElementById("tabHist").classList.toggle("active", v === "history");
+      document.getElementById("tabIns").classList.toggle("active", v === "insights");
+    }
+
+    function initUI() {
+      const now = new Date();
+      const yyyy = now.getFullYear();
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      document.getElementById("inpFecha").value = `${yyyy}-${mm}-${dd}`;
+
+      // Marcar registros conocidos
+      if (baseState.recent) {
+        baseState.recent.forEach(r => { if (r.id) knownEventIds.add(r.id); });
+      }
+
+      const cg = document.getElementById("catGrid");
+      cg.innerHTML = "";
+      CATEGORIES.forEach(c => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.dataset.catName = c.name;
+        b.className = "cat-item" + (c.name === selectedCat ? " active" : "");
+        b.innerHTML = `<span style="font-size:15px;line-height:1.05;">${c.ico}</span><span class="cat-lbl">${c.short}</span>`;
+        b.onclick = () => {
+          haptic(8);
+          selectedCat = c.name;
+          document.querySelectorAll(".cat-item").forEach(x => x.classList.remove("active"));
+          b.classList.add("active");
+        };
+        cg.appendChild(b);
+      });
+
+      const mg = document.getElementById("methodGrid");
+      mg.innerHTML = "";
+      METHODS.forEach(m => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "m-pill" + (m === selectedMethod ? " active" : "");
+        b.textContent = m.replace("Tarjeta de ", "T. ");
+        b.onclick = () => {
+          haptic(8);
+          selectedMethod = m;
+          localStorage.setItem("hm_method_v5", m);
+          document.querySelectorAll(".m-pill").forEach(x => x.classList.remove("active"));
+          b.classList.add("active");
+        };
+        mg.appendChild(b);
+      });
+
+      const q = getOfflineQueue();
+      q.forEach(ev => {
+        if (ev.type === "new_expense") {
+          pendingEvents.set(ev.id, ev);
+          knownEventIds.add(ev.id);
+        }
+        if (ev.type === "delete_expense") deleteEvents.set(ev.id, ev);
+      });
+
+      setVaultMode(currentVaultMode);
+      selectPayer(selectedPayer);
+      selectPersonalPayer(selectedPersonalPayer);
+      toggleScope(currentScope);
+      updateNotifUI(notificationsEnabled);
+      renderChips();
+      renderMetrics();
+      flushOfflineQueue();
+      fetchCloudUpdates();
+      initRealtimeSSE();
+      setInterval(() => { flushOfflineQueue(); fetchCloudUpdates(); }, 15000);
+      window.addEventListener("online", () => { flushOfflineQueue(); fetchCloudUpdates(); initRealtimeSSE(); });
+      window.addEventListener("focus", () => { flushOfflineQueue(); fetchCloudUpdates(); initRealtimeSSE(); });
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+          flushOfflineQueue();
+          fetchCloudUpdates();
+          initRealtimeSSE();
+        }
+      });
+    }
+
+    initUI();
+  </script>
+</body>
+</html>
+
