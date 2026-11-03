@@ -7,6 +7,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Finanzas 5.0" />
   <meta name="theme-color" content="#F2F2F7" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
 
   <!-- PWA Nativa: Ícono SVG Oficial Apple Wallet & Web Manifest -->
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='115' fill='%231D1D1F'/%3E%3Cpath d='M360 210H152c-22 0-40 18-40 40v140c0 22 18 40 40 40h208c22 0 40-18 40-40V250c0-22-18-40-40-40z' fill='%230071E3'/%3E%3Cpath d='M152 170h208c11 0 20 9 20 20v20H132v-20c0-11 9-20 20-20z' fill='%237D50FF'/%3E%3Ccircle cx='340' cy='320' r='22' fill='%23FFFFFF'/%3E%3C/svg%3E" />
@@ -934,7 +937,112 @@
       opacity: 0.55;
     }
 
-    /* Historial y Separadores Inset Oficiales */
+    /* Historial y Separadores Inset Oficiales + Buscador y Filtros Apple Wallet */
+    .hist-toolbar {
+      background: #FFFFFF;
+      border: 0.5px solid var(--border-light);
+      border-radius: 14px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+    .hist-search-wrap {
+      display: flex;
+      align-items: center;
+      background: rgba(118, 118, 128, 0.10);
+      border-radius: 9px;
+      padding: 5.5px 9px;
+      gap: 6px;
+      margin-bottom: 7px;
+    }
+    .hist-search-ico {
+      font-size: 12px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+    .hist-search-inp {
+      flex: 1;
+      border: none;
+      outline: none;
+      background: transparent;
+      font-family: inherit;
+      font-size: 12.5px;
+      color: var(--text);
+      padding: 0;
+    }
+    .hist-search-inp::placeholder {
+      color: var(--text-secondary);
+    }
+    .hist-search-clear {
+      border: none;
+      background: rgba(60, 60, 67, 0.22);
+      color: #FFFFFF;
+      width: 16px;
+      height: 16px;
+      border-radius: 99px;
+      font-size: 10px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+    .hist-filter-pills {
+      display: flex;
+      gap: 5px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .hist-filter-pills::-webkit-scrollbar { display: none; }
+    .hf-pill {
+      flex-shrink: 0;
+      border: 0.5px solid var(--border-light);
+      background: rgba(118, 118, 128, 0.08);
+      color: var(--text-secondary);
+      font-family: inherit;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 99px;
+      cursor: pointer;
+      transition: all 0.15s var(--spring-timing);
+    }
+    .hf-pill.active {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      border-color: var(--apple-blue);
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.22);
+    }
+    .hist-date-group {
+      margin-bottom: 8px;
+    }
+    .hist-date-hdr {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin: 6px 4px 4px 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .hist-date-subtotal {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--text);
+      background: rgba(118, 118, 128, 0.10);
+      padding: 2px 7px;
+      border-radius: 99px;
+    }
+    .hist-empty {
+      background: #FFFFFF;
+      border: 0.5px solid var(--border-light);
+      border-radius: 14px;
+      padding: 22px 14px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
     .ios-sec-hdr {
       font-size: 11px;
       font-weight: 600;
@@ -1658,13 +1766,27 @@
     </button>
   </div>
 
-  <!-- VISTA 2: ACTIVIDAD (Historial Inset Separators con ✕) -->
+  <!-- VISTA 2: ACTIVIDAD (Historial Inset Separators con Buscador, Filtros y Agrupación por Fecha) -->
   <div id="viewHistory" class="hidden">
+    <div class="hist-toolbar">
+      <div class="hist-search-wrap">
+        <span class="hist-search-ico">🔍</span>
+        <input type="text" id="histSearchInp" class="hist-search-inp" placeholder="Buscar concepto, categoría o fecha (ej. 25/10)..." oninput="onHistSearchChange()" />
+        <button type="button" id="histSearchClear" class="hist-search-clear" onclick="clearHistSearch()">✕</button>
+      </div>
+      <div class="hist-filter-pills">
+        <button type="button" class="hf-pill active" id="hfMonth" onclick="setHistFilter('month')">📅 <span id="hfMonthLbl">Mes actual</span></button>
+        <button type="button" class="hf-pill" id="hfAll" onclick="setHistFilter('all')">Todos (<span id="hfAllCount">67</span>)</button>
+        <button type="button" class="hf-pill" id="hfHarvey" onclick="setHistFilter('Harvey')">Harvey</button>
+        <button type="button" class="hf-pill" id="hfMayra" onclick="setHistFilter('Mayra')">Mayra</button>
+        <button type="button" class="hf-pill" id="hfMitad" onclick="setHistFilter('Mitad')">50/50</button>
+      </div>
+    </div>
     <div class="ios-sec-hdr">
-      <span>ÚLTIMAS TRANSACCIONES</span>
+      <span id="histSectionTitle">TRANSACCIONES DEL MES</span>
       <span style="font-size:9.5px;font-weight:500;text-transform:none;">Toca ✕ para eliminar</span>
     </div>
-    <div class="ios-list" id="historyList"></div>
+    <div id="historyList"></div>
   </div>
 
   <!-- VISTA 3: INSIGHTS, WRAPPED & ORÁCULO IA (Todo el análisis en un solo lugar) -->
@@ -2582,40 +2704,13 @@
         document.getElementById("cardCountChip").textContent = cnt + " reg.";
       }
 
-      // Historial Inset
-      const hl = document.getElementById("historyList");
-      hl.innerHTML = "";
-      combinedRecent.slice(0, 30).forEach(item => {
-        const meta = getCatMeta(item.cat);
-        const isPers = item.persona && item.persona.startsWith("Personal");
-        let wClass = "who-personal";
-        let displayWho = item.persona;
+      // Actualizar contadores y etiquetas de filtros en Actividad
+      const hfMonthLbl = document.getElementById("hfMonthLbl");
+      if (hfMonthLbl) hfMonthLbl.textContent = mName;
+      const hfAllCount = document.getElementById("hfAllCount");
+      if (hfAllCount) hfAllCount.textContent = combinedRecent.length;
 
-        if (item.persona === "Harvey") { wClass = "who-harvey"; }
-        else if (item.persona === "Mayra") { wClass = "who-mayra"; }
-        else if (isPers) { displayWho = item.persona.replace("Personal ", "Solo "); }
-
-        const row = document.createElement("div");
-        row.className = "tx-row";
-        row.innerHTML = `
-          <div class="tx-left">
-            <div class="tx-ico">${meta.ico}</div>
-            <div class="tx-info">
-              <div class="tx-title">${item.desc || meta.short} ${isPers ? '<span class="tx-badge-personal">Personal</span>' : ''}</div>
-              <div class="tx-sub">${meta.short} • ${item.fecha}</div>
-            </div>
-          </div>
-          <div class="tx-right-wrap">
-            <div class="tx-right">
-              <div class="tx-amount">${fmtSoles(item.monto)}</div>
-              <div class="tx-who ${wClass}">${displayWho}</div>
-            </div>
-            <button type="button" class="btn-del-tx" title="Eliminar registro">✕</button>
-          </div>
-        `;
-        row.querySelector(".btn-del-tx").onclick = () => promptDeleteExpense(item);
-        hl.appendChild(row);
-      });
+      renderHistoryList();
 
       // Anillos y Comparativa
       const denom = Math.max(1, mTot);
@@ -2631,7 +2726,10 @@
 
       const ml = document.getElementById("monthsComparisonList");
       ml.innerHTML = "";
-      [10, 9, 8, 7].forEach(mIdx => {
+      const maxMonthToShow = (monthMap["12"] && monthMap["12"].total > 0) || actualMonth === 12 ? 12 : Math.max(11, actualMonth);
+      const monthsOrder = [];
+      for (let mIdx = maxMonthToShow; mIdx >= 7; mIdx--) monthsOrder.push(mIdx);
+      monthsOrder.forEach(mIdx => {
         const md = monthMap[String(mIdx)] || { total: 0, harvey: 0, mayra: 0, liqH2M: 0 };
         const mc = md.total / 2.0;
         const ms = md.mayra - mc - md.liqH2M;
@@ -2640,10 +2738,19 @@
         else if (ms < -0.009) st = "M → H: " + fmtSoles(Math.abs(ms));
         const r = document.createElement("div");
         r.className = "tx-row";
+        r.style.cursor = "pointer";
+        if (mIdx === viewedMonthIdx) {
+          r.style.background = "rgba(0, 122, 255, 0.06)";
+        }
+        r.onclick = () => {
+          haptic(8);
+          viewedMonthIdx = mIdx;
+          renderMetrics();
+        };
         r.innerHTML = `
           <div class="tx-left">
             <div class="tx-info">
-              <div class="tx-title">${MONTH_NAMES[mIdx - 1]} 2026</div>
+              <div class="tx-title">${MONTH_NAMES[mIdx - 1]} 2026 ${mIdx === viewedMonthIdx ? '<span style="font-size:9.5px;color:var(--apple-blue);font-weight:700;">● Viendo</span>' : ''}</div>
               <div class="tx-sub">Harvey: ${fmtSoles(md.harvey)} • Mayra: ${fmtSoles(md.mayra)}</div>
             </div>
           </div>
@@ -2656,26 +2763,195 @@
       });
     }
 
+    let currentHistFilter = "month";
+    let currentHistSearch = "";
+
+    function setHistFilter(f) {
+      haptic(8);
+      currentHistFilter = f;
+      document.getElementById("hfMonth").classList.toggle("active", f === "month");
+      document.getElementById("hfAll").classList.toggle("active", f === "all");
+      document.getElementById("hfHarvey").classList.toggle("active", f === "Harvey");
+      document.getElementById("hfMayra").classList.toggle("active", f === "Mayra");
+      document.getElementById("hfMitad").classList.toggle("active", f === "Mitad");
+      renderHistoryList();
+    }
+
+    function onHistSearchChange() {
+      const inp = document.getElementById("histSearchInp");
+      currentHistSearch = (inp.value || "").trim().toLowerCase();
+      document.getElementById("histSearchClear").style.display = currentHistSearch ? "inline-flex" : "none";
+      renderHistoryList();
+    }
+
+    function clearHistSearch() {
+      haptic(8);
+      const inp = document.getElementById("histSearchInp");
+      inp.value = "";
+      currentHistSearch = "";
+      document.getElementById("histSearchClear").style.display = "none";
+      renderHistoryList();
+    }
+
+    function formatFriendlyDateHeader(dStr) {
+      const norm = normalizeDateStr(dStr);
+      const m = norm.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (!m) return `📅 ${norm || "Sin fecha"}`;
+      const day = parseInt(m[1], 10);
+      const mon = parseInt(m[2], 10);
+      const yr = parseInt(m[3], 10);
+      const dt = new Date(yr, mon - 1, day);
+      const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+      const mons = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+      return `📅 ${days[dt.getDay()]} ${String(day).padStart(2, "0")} ${mons[mon - 1]} ${yr}`;
+    }
+
+    function dateSortValue(dStr) {
+      const norm = normalizeDateStr(dStr);
+      const m = norm.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (!m) return 0;
+      return parseInt(`${m[3]}${m[2]}${m[1]}`, 10);
+    }
+
+    function renderHistoryList() {
+      const hl = document.getElementById("historyList");
+      if (!hl) return;
+      hl.innerHTML = "";
+      const allItems = window.__lastCombinedRecent || [];
+      const curMKey = String(viewedMonthIdx);
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+
+      let list = allItems.filter(item => {
+        if (currentHistSearch) {
+          const blob = `${item.desc || ""} ${item.cat || ""} ${item.persona || ""} ${item.fecha || ""} ${item.metodo || ""} ${item.monto || ""}`.toLowerCase();
+          if (!blob.includes(currentHistSearch)) return false;
+        }
+        if (currentHistFilter === "month" && !currentHistSearch) {
+          return getEventMonth(item) === curMKey;
+        }
+        if (currentHistFilter === "Harvey") return item.persona === "Harvey" || item.persona === "Personal Harvey";
+        if (currentHistFilter === "Mayra") return item.persona === "Mayra" || item.persona === "Personal Mayra";
+        if (currentHistFilter === "Mitad") return item.persona && item.persona.includes("Mitad");
+        return true;
+      });
+
+      const secTitle = document.getElementById("histSectionTitle");
+      if (secTitle) {
+        if (currentHistSearch) secTitle.textContent = `RESULTADOS (${list.length})`;
+        else if (currentHistFilter === "month") secTitle.textContent = `${mName} 2026 (${list.length} REG.)`;
+        else secTitle.textContent = `HISTORIAL (${list.length} REG.)`;
+      }
+
+      if (list.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "hist-empty";
+        empty.innerHTML = currentHistFilter === "month" && !currentHistSearch
+          ? `No hay gastos registrados en <strong>${mName} 2026</strong>.<br><span style="font-size:11px;">Toca las flechas <strong>‹ ${mName} ›</strong> arriba o el botón <strong>Todos (${allItems.length})</strong> para ver meses anteriores.</span>`
+          : `No se encontraron transacciones con ese filtro.`;
+        hl.appendChild(empty);
+        return;
+      }
+
+      // Agrupar por fecha ordenando de más reciente a más antigua
+      const groupsMap = new Map();
+      list.forEach(item => {
+        const k = normalizeDateStr(item.fecha) || "Sin fecha";
+        if (!groupsMap.has(k)) groupsMap.set(k, []);
+        groupsMap.get(k).push(item);
+      });
+
+      const sortedKeys = Array.from(groupsMap.keys()).sort((a, b) => dateSortValue(b) - dateSortValue(a));
+      sortedKeys.forEach(dateKey => {
+        const groupItems = groupsMap.get(dateKey);
+        const dayTotal = groupItems.reduce((acc, it) => acc + (Number(it.monto) || 0), 0);
+
+        const grpWrap = document.createElement("div");
+        grpWrap.className = "hist-date-group";
+
+        const hdr = document.createElement("div");
+        hdr.className = "hist-date-hdr";
+        hdr.innerHTML = `
+          <span>${formatFriendlyDateHeader(dateKey)}</span>
+          <span class="hist-date-subtotal">${fmtSoles(dayTotal)} (${groupItems.length})</span>
+        `;
+        grpWrap.appendChild(hdr);
+
+        const card = document.createElement("div");
+        card.className = "ios-list";
+        groupItems.forEach(item => {
+          const meta = getCatMeta(item.cat);
+          const isPers = item.persona && item.persona.startsWith("Personal");
+          let wClass = "who-personal";
+          let displayWho = item.persona;
+
+          if (item.persona === "Harvey") { wClass = "who-harvey"; }
+          else if (item.persona === "Mayra") { wClass = "who-mayra"; }
+          else if (isPers) { displayWho = item.persona.replace("Personal ", "Solo "); }
+
+          const row = document.createElement("div");
+          row.className = "tx-row";
+          row.innerHTML = `
+            <div class="tx-left">
+              <div class="tx-ico">${meta.ico}</div>
+              <div class="tx-info">
+                <div class="tx-title">${item.desc || meta.short} ${isPers ? '<span class="tx-badge-personal">Personal</span>' : ''}</div>
+                <div class="tx-sub">${meta.short} • ${item.metodo || "Yape / Plin"}</div>
+              </div>
+            </div>
+            <div class="tx-right-wrap">
+              <div class="tx-right">
+                <div class="tx-amount">${fmtSoles(item.monto)}</div>
+                <div class="tx-who ${wClass}">${displayWho}</div>
+              </div>
+              <button type="button" class="btn-del-tx" title="Eliminar registro">✕</button>
+            </div>
+          `;
+          row.querySelector(".btn-del-tx").onclick = () => promptDeleteExpense(item);
+          card.appendChild(row);
+        });
+
+        grpWrap.appendChild(card);
+        hl.appendChild(grpWrap);
+      });
+    }
+
     /* Modal Apple Wrapped */
     function openWrappedModal() {
       haptic(12);
       const curKey = String(viewedMonthIdx);
-      const curData = (baseState.byMonth && baseState.byMonth[curKey]) ? baseState.byMonth[curKey] : { total: 448.60, harvey: 301.60, mayra: 147.00, liqH2M: 0 };
-      const mTot = curData.total || 448.60;
+      const curData = (baseState.byMonth && baseState.byMonth[curKey]) ? baseState.byMonth[curKey] : { total: 0, harvey: 0, mayra: 0, liqH2M: 0 };
+      const mTot = curData.total || 0;
       const saved = MONTHLY_BUDGET - mTot;
       const mName = MONTH_NAMES[viewedMonthIdx - 1];
+
+      const allItems = window.__lastCombinedRecent || baseState.recent || [];
+      const monthItems = allItems.filter(r => getEventMonth(r) === curKey && !(r.persona && r.persona.startsWith("Personal")));
+
+      const catTotals = {};
+      let hormigaTot = 0;
+      monthItems.forEach(r => {
+        const c = r.cat || "Otros Imprevistos";
+        catTotals[c] = (catTotals[c] || 0) + (Number(r.monto) || 0);
+        if (c === "Antojos, Tambo y Cafés" || (r.desc && r.desc.toLowerCase().includes("tambo"))) {
+          hormigaTot += (Number(r.monto) || 0);
+        }
+      });
+
+      let topCatName = "Sin registros este mes";
+      let topCatVal = 0;
+      Object.entries(catTotals).forEach(([cName, val]) => {
+        if (val > topCatVal) {
+          topCatVal = val;
+          topCatName = cName;
+        }
+      });
+      const topMeta = getCatMeta(topCatName);
+      const topCatDisplay = topCatVal > 0 ? `${topMeta.ico} ${topMeta.short} (${fmtSoles(topCatVal)})` : "Sin gastos registrados";
 
       document.getElementById("wrpMonthTitle").textContent = mName;
       document.getElementById("wrpTotal").textContent = fmtSoles(mTot);
       document.getElementById("wrpSaved").textContent = (saved >= 0 ? "+" : "-") + fmtSoles(Math.abs(saved));
-      document.getElementById("wrpTopCat").textContent = "🍽️ Salidas y Delivery (S/ 238.20)";
-
-      let hormigaTot = 0;
-      baseState.recent.forEach(r => {
-        if (r.cat === "Antojos, Tambo y Cafés" || (r.desc && r.desc.toLowerCase().includes("tambo"))) {
-          hormigaTot += r.monto;
-        }
-      });
+      document.getElementById("wrpTopCat").textContent = topCatDisplay;
       document.getElementById("wrpHormiga").textContent = hormigaTot > 0 ? `Tambo y cafés: ${fmtSoles(hormigaTot)}` : "Bajo control (S/ 0.00)";
 
       const mc = mTot / 2.0;
@@ -2698,12 +2974,13 @@
       const mName = MONTH_NAMES[viewedMonthIdx - 1];
       const tot = document.getElementById("wrpTotal").textContent;
       const saved = document.getElementById("wrpSaved").textContent;
+      const topCat = document.getElementById("wrpTopCat").textContent;
       const settle = document.getElementById("wrpSettleStatus").textContent;
 
       const text = `📊 *Apple Wrapped — Finanzas ${mName} 2026*\n\n` +
         `🏠 *Gasto Total Hogar:* ${tot}\n` +
         `🎯 *Ahorro vs Meta (S/ 1,730):* ${saved}\n` +
-        `🍽️ *Categoría Principal:* Salidas a Comer y Delivery\n` +
+        `🏆 *Categoría Principal:* ${topCat}\n` +
         `🤝 *Estado de Cuentas:* ${settle}\n\n` +
         `_Generado automáticamente desde Finanzas 5.0 Pure Apple_ ✨`;
 
@@ -3068,6 +3345,46 @@
       renderMetrics();
     }
 
+    const CURRENT_BUILD_ID = "20261103_v9";
+
+    function mergeRecentRecords(incomingList, existingList, fallbackList) {
+      const seen = new Map();
+      const countKey = (it) => makeItemKey(it.persona, it.desc, it.monto, it.fecha);
+      const result = [];
+      const addList = (arr, isPrimary) => {
+        if (!Array.isArray(arr)) return;
+        for (const it of arr) {
+          if (!it) continue;
+          const k = countKey(it);
+          if (isPrimary || !seen.has(k)) {
+            seen.set(k, true);
+            result.push(it);
+          }
+        }
+      };
+      addList(incomingList, true);
+      addList(existingList, false);
+      addList(fallbackList, false);
+      return result;
+    }
+
+    async function checkLatestGitHubVersion() {
+      try {
+        if (!location.hostname.includes("github.io")) return;
+        const r = await fetch(location.pathname + "?_cb=" + Date.now(), { cache: "no-store" });
+        if (!r.ok) return;
+        const html = await r.text();
+        const m = html.match(/CURRENT_BUILD_ID\s*=\s*"([^"]+)"/);
+        if (m && m[1] && m[1] !== CURRENT_BUILD_ID) {
+          const lastReload = sessionStorage.getItem("hm_last_build_reload");
+          if (lastReload !== m[1]) {
+            sessionStorage.setItem("hm_last_build_reload", m[1]);
+            location.replace(location.pathname + "?v=" + encodeURIComponent(m[1]));
+          }
+        }
+      } catch (e) {}
+    }
+
     async function fetchCloudUpdates() {
       try {
         const rState = await fetch(`${NTFY_SERVER}/${TOPIC_STATE}/json?poll=1&since=all`);
@@ -3081,9 +3398,7 @@
                 let snap = null;
                 try { snap = JSON.parse(outer.message); } catch(e){}
                 if (snap && snap.type === "state_snapshot" && snap.ts >= (baseState.ts || 0) && snap.count > 0) {
-                  if (snap.recent && baseState.recent && snap.recent.length < baseState.recent.length) {
-                    snap.recent = [...snap.recent, ...baseState.recent.slice(snap.recent.length)];
-                  }
+                  snap.recent = mergeRecentRecords(snap.recent, baseState.recent, defaultState.recent);
                   baseState = snap;
                   try { localStorage.setItem("hm_cached_state_v8", JSON.stringify(baseState)); } catch(e){}
                 }
@@ -3246,6 +3561,7 @@
       flushOfflineQueue();
       fetchCloudUpdates();
       initRealtimeSSE();
+      checkLatestGitHubVersion();
       setInterval(() => { flushOfflineQueue(); fetchCloudUpdates(); }, 15000);
       window.addEventListener("online", () => { flushOfflineQueue(); fetchCloudUpdates(); initRealtimeSSE(); });
       window.addEventListener("focus", () => { flushOfflineQueue(); fetchCloudUpdates(); initRealtimeSSE(); });
