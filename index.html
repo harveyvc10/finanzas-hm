@@ -732,25 +732,88 @@
       color: var(--text-tertiary);
       font-weight: 400;
     }
-    .date-badge-btn {
-      border: 0.5px solid var(--border-light);
-      background: var(--surface);
-      color: var(--text-secondary);
-      font-size: 10.5px;
-      font-weight: 600;
-      padding: 3.5px 8.5px;
-      border-radius: 99px;
-      cursor: pointer;
-      font-family: inherit;
-      white-space: nowrap;
+    .inline-date-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      gap: 6px;
+      position: relative;
+      background: #FFFFFF;
+    }
+    .inline-date-row::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 14px;
+      right: 0;
+      height: 0.5px;
+      background: var(--separator);
+    }
+    .idr-left {
+      display: flex;
+      align-items: center;
+      gap: 5px;
       flex-shrink: 0;
+    }
+    .idr-status {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--apple-blue);
+      letter-spacing: 0.2px;
       display: inline-flex;
       align-items: center;
       gap: 3px;
+      margin-right: 2px;
+    }
+    .idr-qbtn {
+      border: none;
+      background: var(--surface);
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 99px;
+      cursor: pointer;
+      font-family: inherit;
       transition: all 0.16s var(--spring-timing);
     }
-    .date-badge-btn:active {
-      transform: scale(0.94);
+    .idr-qbtn.active {
+      background: var(--apple-blue);
+      color: #FFFFFF;
+      font-weight: 700;
+      box-shadow: 0 2px 6px rgba(0, 122, 255, 0.25);
+    }
+    .idr-qbtn:active {
+      transform: scale(0.95);
+    }
+    .idr-select-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      background: rgba(0, 122, 255, 0.06);
+      border: 1px solid rgba(0, 122, 255, 0.28);
+      border-radius: 10px;
+      padding: 3px 7px;
+    }
+    .idr-sel {
+      border: none;
+      background: transparent;
+      color: var(--apple-blue);
+      font-size: 11.5px;
+      font-weight: 700;
+      font-family: inherit;
+      padding: 1px 2px;
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: auto;
+      appearance: auto;
+    }
+    .idr-sep {
+      color: var(--text-tertiary);
+      font-size: 11px;
+      font-weight: 600;
+      margin: 0 1px;
     }
     .hidden-date-input {
       position: absolute;
@@ -1546,14 +1609,42 @@
       <div class="cat-grid" id="catGrid"></div>
     </div>
 
-    <!-- Formulario Inset Limpio: Concepto Full-Width + Chip Fecha Inteligente + Medio de Pago -->
+    <!-- Formulario Inset Limpio: Concepto Full-Width + Fila de Fecha Directa + Medio de Pago -->
     <div class="ios-list">
       <div class="ios-row">
         <input type="text" id="inpDesc" class="ios-row-input" placeholder="Concepto (ej. Plaza Vea, Cena, Tambo...)" />
-        <button type="button" class="date-badge-btn" id="dateBadgeBtn" onclick="triggerDatePicker()">
-          <span id="dateBadgeText">📅 Hoy</span>
-        </button>
         <input type="date" id="inpFecha" class="hidden-date-input" onchange="onDateChanged()" />
+      </div>
+      <div class="inline-date-row">
+        <div class="idr-left">
+          <span class="idr-status" id="dateBadgeText">📅 HOY</span>
+          <button type="button" class="idr-qbtn active" id="btnDateHoy" onclick="setQuickDateOffset(0)">Hoy</button>
+          <button type="button" class="idr-qbtn" id="btnDateAyer" onclick="setQuickDateOffset(-1)">Ayer</button>
+        </div>
+        <div class="idr-select-group">
+          <select id="inlineDateDay" class="idr-sel" onchange="onInlineSelectDateChange()"></select>
+          <span class="idr-sep">/</span>
+          <select id="inlineDateMonth" class="idr-sel" onchange="onInlineSelectDateChange()">
+            <option value="01">01 Ene</option>
+            <option value="02">02 Feb</option>
+            <option value="03">03 Mar</option>
+            <option value="04">04 Abr</option>
+            <option value="05">05 May</option>
+            <option value="06">06 Jun</option>
+            <option value="07">07 Jul</option>
+            <option value="08">08 Ago</option>
+            <option value="09">09 Sep</option>
+            <option value="10">10 Oct</option>
+            <option value="11">11 Nov</option>
+            <option value="12">12 Dic</option>
+          </select>
+          <span class="idr-sep">/</span>
+          <select id="inlineDateYear" class="idr-sel" onchange="onInlineSelectDateChange()">
+            <option value="2025">2025</option>
+            <option value="2026" selected>2026</option>
+            <option value="2027">2027</option>
+          </select>
+        </div>
       </div>
       <div class="quick-chips" id="quickChipsContainer"></div>
       <div class="method-row">
@@ -1751,11 +1842,11 @@
     let viewedMonthIdx = new Date().getMonth() + 1;
 
     let defaultState = {
-      ts: 1792472600,
-      count: 57,
-      total: 3655.10,
-      harvey: 1774.25,
-      mayra: 1880.85,
+      ts: 1793725000,
+      count: 67,
+      total: 3800.90,
+      harvey: 1838.45,
+      mayra: 1962.45,
       liqH2M: 0.0,
       totPersHarv: 0,
       totPersMay: 0,
@@ -1763,23 +1854,24 @@
         "7":  { total: 854.60,  harvey: 431.25, mayra: 423.35, liqH2M: 0, var: 278.50, fijo: 447.10, ocio: 129.00, persHarv: 0, persMay: 0 },
         "8":  { total: 1203.20, harvey: 582.20, mayra: 621.00, liqH2M: 0, var: 716.50, fijo: 330.00, ocio: 156.70, persHarv: 0, persMay: 0 },
         "9":  { total: 1105.20, harvey: 444.70, mayra: 660.50, liqH2M: 0, var: 728.30, fijo: 293.80, ocio: 83.10,  persHarv: 0, persMay: 0 },
-        "10": { total: 492.10,  harvey: 316.10, mayra: 176.00, liqH2M: 0, var: 318.70, fijo: 0.00,   ocio: 173.40, persHarv: 0, persMay: 0 }
+        "10": { total: 637.90,  harvey: 380.30, mayra: 257.60, liqH2M: 0, var: 464.50, fijo: 0.00,   ocio: 173.40, persHarv: 0, persMay: 0 }
       },
-      recent: [{"metodo":"Yape / Plin","desc":"Tambo","fecha":"19/10/2026","cat":"Supermercado y Mercado","monto":14.5,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Tambo","fecha":"19/10/2026","cat":"Supermercado y Mercado","monto":29.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Desayuno","fecha":"17/10/2026","cat":"Supermercado y Mercado","monto":22.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Turrón","fecha":"17/10/2026","cat":"Salidas a Comer y Delivery","monto":25.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"cena pollo a la bresa","fecha":"05/10/2026","cat":"Salidas a Comer y Delivery","monto":19.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"almuerzo y postre","fecha":"09/10/2026","cat":"Salidas a Comer y Delivery","monto":25.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Cena cierre de campaña","fecha":"01/10/2026","cat":"Salidas a Comer y Delivery","monto":26.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"04/10/2026","cat":"Supermercado y Mercado","monto":156.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Comida","fecha":"09/10/2026","cat":"Mascotas (Comida, Baño, Vet)","monto":18.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Compras super tottus","fecha":"09/10/2026","cat":"Supermercado y Mercado","monto":38.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Compras super tottus","fecha":"09/10/2026","cat":"Supermercado y Mercado","monto":40.3,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Almuerzo elecciones","fecha":"04/10/2026","cat":"Salidas a Comer y Delivery","monto":40.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"07/10/2026","cat":"Antojos, Tambo y Cafés","monto":20.8,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"07/10/2026","cat":"Antojos, Tambo y Cafés","monto":15.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/09/2026","cat":"Servicios (Luz, Agua, Internet)","monto":146.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/09/2026","cat":"Servicios (Luz, Agua, Internet)","monto":146.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"27/09/2026","cat":"Supermercado y Mercado","monto":152.7,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Compras de limpieza plaza vea","fecha":"26/09/2026","cat":"Hogar, Limpieza y Artículos","monto":170.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"20/09/2026","cat":"Supermercado y Mercado","monto":133.1,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"14/09/2026","cat":"Antojos, Tambo y Cafés","monto":26.4,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"13/09/2026","cat":"Supermercado y Mercado","monto":172.5,"persona":"Mayra"},{"metodo":"Efectivo","desc":"cine","fecha":"11/09/2026","cat":"Cine, Entretenimiento y Salidas","monto":28.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"pizza","fecha":"06/09/2026","cat":"Salidas a Comer y Delivery","monto":27.8,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"06/09/2026","cat":"Supermercado y Mercado","monto":100.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"31/08/2026","cat":"Antojos, Tambo y Cafés","monto":23.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"31/08/2026","cat":"Servicios (Luz, Agua, Internet)","monto":165.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"31/08/2026","cat":"Servicios (Luz, Agua, Internet)","monto":165.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"31/08/2026","cat":"Antojos, Tambo y Cafés","monto":29.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"cine","fecha":"28/08/2026","cat":"Cine, Entretenimiento y Salidas","monto":37.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"torta de cumpleaños","fecha":"30/08/2026","cat":"Otros Gastos del Hogar","monto":52.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"30/08/2026","cat":"Supermercado y Mercado","monto":115.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"30/08/2026","cat":"Supermercado y Mercado","monto":27.5,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Fruta","fecha":"22/08/2026","cat":"Supermercado y Mercado","monto":68.7,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Fruta","fecha":"22/08/2026","cat":"Supermercado y Mercado","monto":68.7,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Dolarcity","fecha":"05/08/2026","cat":"Hogar, Limpieza y Artículos","monto":29.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"17/08/2026","cat":"Antojos, Tambo y Cafés","monto":33.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"17/08/2026","cat":"Antojos, Tambo y Cafés","monto":33.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"16/08/2026","cat":"Supermercado y Mercado","monto":88.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"16/08/2026","cat":"Supermercado y Mercado","monto":90.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"09/08/2026","cat":"Supermercado y Mercado","monto":5.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"compras super","fecha":"08/08/2026","cat":"Supermercado y Mercado","monto":126.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Cuidado personal","fecha":"08/08/2026","cat":"Cuidado Personal y Ropa","monto":45.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":152.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":152.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"almuerzo","fecha":"30/07/2026","cat":"Salidas a Comer y Delivery","monto":65.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"pasaje","fecha":"26/07/2026","cat":"Transporte y Movilidad","monto":20.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"comida","fecha":"26/07/2026","cat":"Salidas a Comer y Delivery","monto":20.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"fruta","fecha":"26/07/2026","cat":"Supermercado y Mercado","monto":30.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"pollo","fecha":"26/07/2026","cat":"Supermercado y Mercado","monto":28.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"baño keyla","fecha":"25/07/2026","cat":"Mascotas (Comida, Baño, Vet)","monto":25.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"25/07/2026","cat":"Supermercado y Mercado","monto":49.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"25/07/2026","cat":"Supermercado y Mercado","monto":45.7,"persona":"Harvey"},{"metodo":"Tarjeta de débito","desc":"Tambo","fecha":"22/07/2026","cat":"Antojos, Tambo y Cafés","monto":24.0,"persona":"Harvey"},{"metodo":"Tarjeta de débito","desc":"Tambo","fecha":"20/07/2026","cat":"Antojos, Tambo y Cafés","monto":20.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de multa","fecha":"15/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":70.65,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de multa","fecha":"15/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":70.65,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"19/07/2026","cat":"Supermercado y Mercado","monto":80.0,"persona":"Mayra"}]
+      recent: [{"metodo":"Yape / Plin","desc":"Piña","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":8.0,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Fresa","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":5.0,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Gelatina","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":3.5,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Abarrotes","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":24.3,"persona":"Mayra"},{"metodo":"Yape / Plin","desc":"Queso","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":10.5,"persona":"Mayra"},{"metodo":"Yape / Plin","desc":"Tomate","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":5.7,"persona":"Mayra"},{"metodo":"Yape / Plin","desc":"Carne","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":32.7,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Verduras","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":9.1,"persona":"Mayra"},{"metodo":"Yape / Plin","desc":"Pollo","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":32.0,"persona":"Mayra"},{"metodo":"Yape / Plin","desc":"Bolsas","fecha":"25/10/2026","cat":"Supermercado y Mercado","monto":15.0,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Tambo","fecha":"19/10/2026","cat":"Supermercado y Mercado","monto":14.5,"persona":"Harvey"},{"metodo":"Yape / Plin","desc":"Tambo","fecha":"19/10/2026","cat":"Supermercado y Mercado","monto":29.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Desayuno","fecha":"17/10/2026","cat":"Supermercado y Mercado","monto":22.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Turrón","fecha":"17/10/2026","cat":"Salidas a Comer y Delivery","monto":25.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"cena pollo a la bresa","fecha":"05/10/2026","cat":"Salidas a Comer y Delivery","monto":19.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"almuerzo y postre","fecha":"09/10/2026","cat":"Salidas a Comer y Delivery","monto":25.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Cena cierre de campaña","fecha":"01/10/2026","cat":"Salidas a Comer y Delivery","monto":26.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"04/10/2026","cat":"Supermercado y Mercado","monto":156.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Comida","fecha":"09/10/2026","cat":"Mascotas (Comida, Baño, Vet)","monto":18.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Compras super tottus","fecha":"09/10/2026","cat":"Supermercado y Mercado","monto":38.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Compras super tottus","fecha":"09/10/2026","cat":"Supermercado y Mercado","monto":40.3,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Almuerzo elecciones","fecha":"04/10/2026","cat":"Salidas a Comer y Delivery","monto":40.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"07/10/2026","cat":"Antojos, Tambo y Cafés","monto":20.8,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"07/10/2026","cat":"Antojos, Tambo y Cafés","monto":15.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/09/2026","cat":"Servicios (Luz, Agua, Internet)","monto":146.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/09/2026","cat":"Servicios (Luz, Agua, Internet)","monto":146.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"27/09/2026","cat":"Supermercado y Mercado","monto":152.7,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Compras de limpieza plaza vea","fecha":"26/09/2026","cat":"Hogar, Limpieza y Artículos","monto":170.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"20/09/2026","cat":"Supermercado y Mercado","monto":133.1,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"14/09/2026","cat":"Antojos, Tambo y Cafés","monto":26.4,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"13/09/2026","cat":"Supermercado y Mercado","monto":172.5,"persona":"Mayra"},{"metodo":"Efectivo","desc":"cine","fecha":"11/09/2026","cat":"Cine, Entretenimiento y Salidas","monto":28.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"pizza","fecha":"06/09/2026","cat":"Salidas a Comer y Delivery","monto":27.8,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"06/09/2026","cat":"Supermercado y Mercado","monto":100.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"31/08/2026","cat":"Antojos, Tambo y Cafés","monto":23.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"31/08/2026","cat":"Servicios (Luz, Agua, Internet)","monto":165.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"31/08/2026","cat":"Servicios (Luz, Agua, Internet)","monto":165.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"31/08/2026","cat":"Antojos, Tambo y Cafés","monto":29.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"cine","fecha":"28/08/2026","cat":"Cine, Entretenimiento y Salidas","monto":37.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"torta de cumpleaños","fecha":"30/08/2026","cat":"Otros Gastos del Hogar","monto":52.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"30/08/2026","cat":"Supermercado y Mercado","monto":115.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"30/08/2026","cat":"Supermercado y Mercado","monto":27.5,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Fruta","fecha":"22/08/2026","cat":"Supermercado y Mercado","monto":68.7,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Fruta","fecha":"22/08/2026","cat":"Supermercado y Mercado","monto":68.7,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Dolarcity","fecha":"05/08/2026","cat":"Hogar, Limpieza y Artículos","monto":29.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Tambo","fecha":"17/08/2026","cat":"Antojos, Tambo y Cafés","monto":33.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Tambo","fecha":"17/08/2026","cat":"Antojos, Tambo y Cafés","monto":33.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"16/08/2026","cat":"Supermercado y Mercado","monto":88.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"16/08/2026","cat":"Supermercado y Mercado","monto":90.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana","fecha":"09/08/2026","cat":"Supermercado y Mercado","monto":5.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"compras super","fecha":"08/08/2026","cat":"Supermercado y Mercado","monto":126.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Cuidado personal","fecha":"08/08/2026","cat":"Cuidado Personal y Ropa","monto":45.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":152.9,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de servicios del hogar","fecha":"30/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":152.9,"persona":"Harvey"},{"metodo":"Efectivo","desc":"almuerzo","fecha":"30/07/2026","cat":"Salidas a Comer y Delivery","monto":65.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"pasaje","fecha":"26/07/2026","cat":"Transporte y Movilidad","monto":20.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"comida","fecha":"26/07/2026","cat":"Salidas a Comer y Delivery","monto":20.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"fruta","fecha":"26/07/2026","cat":"Supermercado y Mercado","monto":30.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"pollo","fecha":"26/07/2026","cat":"Supermercado y Mercado","monto":28.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"baño keyla","fecha":"25/07/2026","cat":"Mascotas (Comida, Baño, Vet)","monto":25.0,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"25/07/2026","cat":"Supermercado y Mercado","monto":49.8,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"25/07/2026","cat":"Supermercado y Mercado","monto":45.7,"persona":"Harvey"},{"metodo":"Tarjeta de débito","desc":"Tambo","fecha":"22/07/2026","cat":"Antojos, Tambo y Cafés","monto":24.0,"persona":"Harvey"},{"metodo":"Tarjeta de débito","desc":"Tambo","fecha":"20/07/2026","cat":"Antojos, Tambo y Cafés","monto":20.0,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Pago de multa","fecha":"15/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":70.65,"persona":"Harvey"},{"metodo":"Efectivo","desc":"Pago de multa","fecha":"15/07/2026","cat":"Servicios (Luz, Agua, Internet)","monto":70.65,"persona":"Mayra"},{"metodo":"Efectivo","desc":"Supermercado de la semana (Compra semanal)","fecha":"19/07/2026","cat":"Supermercado y Mercado","monto":80.0,"persona":"Mayra"}]
     };
 
     try {
       localStorage.removeItem("hm_cached_state_v2");
       localStorage.removeItem("hm_cached_state");
       localStorage.removeItem("hm_cached_state_v6");
+      localStorage.removeItem("hm_cached_state_v7");
     } catch (e) {}
 
     let baseState = defaultState;
     try {
-      const cached = localStorage.getItem("hm_cached_state_v7");
+      const cached = localStorage.getItem("hm_cached_state_v8");
       if (cached) {
         const parsed = JSON.parse(cached);
-        if (parsed && parsed.ts && parsed.count > 0) baseState = parsed;
+        if (parsed && parsed.ts && parsed.count >= defaultState.count) baseState = parsed;
       }
     } catch (e) {}
 
@@ -2133,7 +2225,17 @@
       const dd = String(dt.getDate()).padStart(2, "0");
       document.getElementById("inpFecha").value = `${yyyy}-${mm}-${dd}`;
       onDateChanged();
-      closeDateModal();
+      const dm = document.getElementById("dateModal");
+      if (dm) dm.classList.remove("show");
+    }
+
+    function onInlineSelectDateChange() {
+      haptic(8);
+      const dd = document.getElementById("inlineDateDay").value;
+      const mm = document.getElementById("inlineDateMonth").value;
+      const yyyy = document.getElementById("inlineDateYear").value;
+      document.getElementById("inpFecha").value = `${yyyy}-${mm}-${dd}`;
+      onDateChanged();
     }
 
     function applyManualDate() {
@@ -2152,12 +2254,45 @@
       if (!raw) return;
       const now = new Date();
       const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const yest = new Date();
+      yest.setDate(yest.getDate() - 1);
+      const yestIso = `${yest.getFullYear()}-${String(yest.getMonth() + 1).padStart(2, "0")}-${String(yest.getDate()).padStart(2, "0")}`;
+
+      const p = raw.split("-");
+      if (p.length === 3) {
+        const inDay = document.getElementById("inlineDateDay");
+        const inMon = document.getElementById("inlineDateMonth");
+        const inYr  = document.getElementById("inlineDateYear");
+        if (inDay && inDay.options.length === 0) {
+          for (let d = 1; d <= 31; d++) {
+            const opt = document.createElement("option");
+            const val = String(d).padStart(2, "0");
+            opt.value = val;
+            opt.textContent = val;
+            inDay.appendChild(opt);
+          }
+        }
+        if (inDay) inDay.value = p[2];
+        if (inMon) inMon.value = p[1];
+        if (inYr)  inYr.value  = p[0];
+      }
+
       const txtBadge = document.getElementById("dateBadgeText");
+      const btnHoy = document.getElementById("btnDateHoy");
+      const btnAyer = document.getElementById("btnDateAyer");
+
       if (raw === todayIso) {
-        txtBadge.textContent = "📅 Hoy";
+        if (txtBadge) txtBadge.textContent = "📅 HOY";
+        if (btnHoy) btnHoy.classList.add("active");
+        if (btnAyer) btnAyer.classList.remove("active");
+      } else if (raw === yestIso) {
+        if (txtBadge) txtBadge.textContent = "📅 AYER";
+        if (btnHoy) btnHoy.classList.remove("active");
+        if (btnAyer) btnAyer.classList.add("active");
       } else {
-        const p = raw.split("-");
-        txtBadge.textContent = `📅 ${p[2]}/${p[1]}`;
+        if (txtBadge) txtBadge.textContent = `📅 ${p[2]}/${p[1]}`;
+        if (btnHoy) btnHoy.classList.remove("active");
+        if (btnAyer) btnAyer.classList.remove("active");
       }
     }
 
@@ -2778,26 +2913,8 @@
     }
 
     async function sendToGoogleSheets(evObj) {
-      if (!GOOGLE_SHEETS_URL || evObj.type !== "new_expense") return;
-      try {
-        const payload = {
-          action: "add",
-          fecha: evObj.fecha,
-          quien: evObj.persona,
-          categoria: evObj.cat,
-          descripcion: evObj.desc || "",
-          monto: evObj.monto,
-          metodo: evObj.metodo || "Efectivo"
-        };
-        fetch(GOOGLE_SHEETS_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        }).catch(err => console.warn("Google Sheets sync:", err));
-      } catch (e) {
-        console.warn("sendToGoogleSheets err:", e);
-      }
+      // Desactivado para garantizar un solo Excel oficial centralizado (Control_Gastos_Pareja_2026.xlsx)
+      return;
     }
 
     async function sendToPowerAutomate(evObj) {
@@ -2964,8 +3081,11 @@
                 let snap = null;
                 try { snap = JSON.parse(outer.message); } catch(e){}
                 if (snap && snap.type === "state_snapshot" && snap.ts >= (baseState.ts || 0) && snap.count > 0) {
+                  if (snap.recent && baseState.recent && snap.recent.length < baseState.recent.length) {
+                    snap.recent = [...snap.recent, ...baseState.recent.slice(snap.recent.length)];
+                  }
                   baseState = snap;
-                  try { localStorage.setItem("hm_cached_state_v7", JSON.stringify(baseState)); } catch(e){}
+                  try { localStorage.setItem("hm_cached_state_v8", JSON.stringify(baseState)); } catch(e){}
                 }
               }
             } catch (e) {}
@@ -3066,6 +3186,7 @@
       const mm = String(now.getMonth() + 1).padStart(2, '0');
       const dd = String(now.getDate()).padStart(2, '0');
       document.getElementById("inpFecha").value = `${yyyy}-${mm}-${dd}`;
+      onDateChanged();
 
       // Marcar registros conocidos
       if (baseState.recent) {
