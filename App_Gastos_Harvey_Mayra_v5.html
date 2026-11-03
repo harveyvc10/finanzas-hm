@@ -2718,22 +2718,46 @@
         document.getElementById("oracleProjSave").textContent = (projectedSave >= 0 ? "+" : "-") + fmtSoles(Math.abs(projectedSave));
       }
 
-      // Card count badge
+      // Filtrar registros según el modo activo: 🏠 Hogar (Compartido) vs 👤 Solo Mío (Privado)
+      const vaultFilteredItems = combinedRecent.filter(it => {
+        const isPers = Boolean(it.persona && it.persona.startsWith("Personal"));
+        if (currentVaultMode === "personal") {
+          return it.persona === selectedPersonalPayer;
+        }
+        return !isPers;
+      });
+      window.__lastVaultFilteredRecent = vaultFilteredItems;
+
+      // Card count badge (muestra solo la cantidad del modo activo: Hogar o Privado)
+      const activeModeCount = vaultFilteredItems.length;
       const qLen = getOfflineQueue().length;
       const dot = document.getElementById("netDot");
       if (qLen > 0) {
         dot.classList.add("offline");
-        document.getElementById("cardCountChip").textContent = `${cnt} reg. (${qLen} pend.)`;
+        document.getElementById("cardCountChip").textContent = `${activeModeCount} reg. (${qLen} pend.)`;
       } else {
         dot.classList.remove("offline");
-        document.getElementById("cardCountChip").textContent = cnt + " reg.";
+        document.getElementById("cardCountChip").textContent = activeModeCount + " reg.";
       }
 
-      // Actualizar contadores y etiquetas de filtros en Actividad
+      // Actualizar contadores y etiquetas de filtros en Actividad según modo
       const hfMonthLbl = document.getElementById("hfMonthLbl");
       if (hfMonthLbl) hfMonthLbl.textContent = mName;
       const hfAllCount = document.getElementById("hfAllCount");
-      if (hfAllCount) hfAllCount.textContent = combinedRecent.length;
+      if (hfAllCount) hfAllCount.textContent = activeModeCount;
+
+      const isPersMode = (currentVaultMode === "personal");
+      const hfHarveyEl = document.getElementById("hfHarvey");
+      const hfMayraEl  = document.getElementById("hfMayra");
+      const hfMitadEl  = document.getElementById("hfMitad");
+      if (hfHarveyEl) hfHarveyEl.style.display = isPersMode ? "none" : "";
+      if (hfMayraEl)  hfMayraEl.style.display  = isPersMode ? "none" : "";
+      if (hfMitadEl)  hfMitadEl.style.display  = isPersMode ? "none" : "";
+      if (isPersMode && ["Harvey", "Mayra", "Mitad"].includes(currentHistFilter)) {
+        currentHistFilter = "month";
+        document.getElementById("hfMonth").classList.add("active");
+        document.getElementById("hfAll").classList.remove("active");
+      }
 
       renderHistoryList();
 
@@ -2842,9 +2866,11 @@
       const hl = document.getElementById("historyList");
       if (!hl) return;
       hl.innerHTML = "";
-      const allItems = window.__lastCombinedRecent || [];
+      const allItems = window.__lastVaultFilteredRecent || [];
       const curMKey = String(viewedMonthIdx);
       const mName = MONTH_NAMES[viewedMonthIdx - 1];
+      const isPersMode = (currentVaultMode === "personal");
+      const modeLabel = isPersMode ? (selectedPersonalPayer === "Personal Harvey" ? "PRIVADO HARVEY" : "PRIVADO MAYRA") : "HOGAR COMPARTIDO";
 
       let list = allItems.filter(item => {
         if (currentHistSearch) {
@@ -2854,17 +2880,19 @@
         if (currentHistFilter === "month" && !currentHistSearch) {
           return getEventMonth(item) === curMKey;
         }
-        if (currentHistFilter === "Harvey") return item.persona === "Harvey" || item.persona === "Personal Harvey";
-        if (currentHistFilter === "Mayra") return item.persona === "Mayra" || item.persona === "Personal Mayra";
-        if (currentHistFilter === "Mitad") return item.persona && item.persona.includes("Mitad");
+        if (!isPersMode) {
+          if (currentHistFilter === "Harvey") return item.persona === "Harvey";
+          if (currentHistFilter === "Mayra") return item.persona === "Mayra";
+          if (currentHistFilter === "Mitad") return item.persona && item.persona.includes("Mitad");
+        }
         return true;
       });
 
       const secTitle = document.getElementById("histSectionTitle");
       if (secTitle) {
-        if (currentHistSearch) secTitle.textContent = `RESULTADOS (${list.length})`;
-        else if (currentHistFilter === "month") secTitle.textContent = `${mName} 2026 (${list.length} REG.)`;
-        else secTitle.textContent = `HISTORIAL (${list.length} REG.)`;
+        if (currentHistSearch) secTitle.textContent = `${modeLabel} · RESULTADOS (${list.length})`;
+        else if (currentHistFilter === "month") secTitle.textContent = `${modeLabel} · ${mName} 2026 (${list.length} REG.)`;
+        else secTitle.textContent = `${modeLabel} · TODOS (${list.length} REG.)`;
       }
 
       if (list.length === 0) {
@@ -3381,7 +3409,7 @@
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261103_v10";
+    const CURRENT_BUILD_ID = "20261103_v11";
 
     async function resyncUnconfirmedEventsToCloud() {
       // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
