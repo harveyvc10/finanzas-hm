@@ -2016,6 +2016,31 @@
     let knownEventIds = new Set();
     let isInitialCloudFetch = true;
 
+    function loadPersistentEvents() {
+      try {
+        const kArr = JSON.parse(localStorage.getItem("hm_known_ids_v8") || "[]");
+        if (Array.isArray(kArr)) kArr.forEach(id => knownEventIds.add(id));
+      } catch (e) {}
+      try {
+        const pArr = JSON.parse(localStorage.getItem("hm_pending_events_v8") || "[]");
+        if (Array.isArray(pArr)) pArr.forEach(ev => { if (ev && ev.id) { pendingEvents.set(ev.id, ev); knownEventIds.add(ev.id); } });
+      } catch (e) {}
+      try {
+        const dArr = JSON.parse(localStorage.getItem("hm_delete_events_v8") || "[]");
+        if (Array.isArray(dArr)) dArr.forEach(ev => { if (ev && ev.id) { deleteEvents.set(ev.id, ev); knownEventIds.add(ev.id); } });
+      } catch (e) {}
+    }
+
+    function savePersistentEvents() {
+      try {
+        localStorage.setItem("hm_known_ids_v8", JSON.stringify(Array.from(knownEventIds).slice(-500)));
+        localStorage.setItem("hm_pending_events_v8", JSON.stringify(Array.from(pendingEvents.values())));
+        localStorage.setItem("hm_delete_events_v8", JSON.stringify(Array.from(deleteEvents.values())));
+      } catch (e) {}
+    }
+
+    loadPersistentEvents();
+
     // Registrar Service Worker para permitir notificaciones Push en PWA instalada
     if ("serviceWorker" in navigator) {
       try {
@@ -3243,6 +3268,8 @@
         sendToGoogleSheets(evObj);
       }
       if (evObj.type === "delete_expense") deleteEvents.set(evObj.id, evObj);
+      knownEventIds.add(evObj.id);
+      savePersistentEvents();
       renderMetrics();
 
       try {
@@ -3250,7 +3277,7 @@
           method: "POST",
           headers: {
             "Title": (evObj.type === "new_expense") ? `Finanzas: ${evObj.persona} anotó ${fmtSoles(evObj.monto)}` : "Finanzas: Registro eliminado",
-            "Priority": "default",
+            "Priority": "high",
             "Cache": "yes"
           },
           body: JSON.stringify(evObj)
@@ -3321,31 +3348,65 @@
       } catch (e) {}
     }
 
-    function handleIncomingCloudEvent(ev) {
+    function handleIncomingCloudEvent(ev, silent = false) {
       if (!ev || !ev.id) return;
-      if (knownEventIds.has(ev.id)) return;
+      const alreadyKnown = knownEventIds.has(ev.id);
       knownEventIds.add(ev.id);
+
+      const nowSec = Math.floor(Date.now() / 1000);
+      const isRecentEvent = ev.ts && (nowSec - ev.ts) < 120;
+      const shouldNotify = notificationsEnabled && !silent && !alreadyKnown && (!isInitialCloudFetch || isRecentEvent);
 
       if (ev.type === "new_expense") {
         pendingEvents.set(ev.id, ev);
-        const catMeta = getCatMeta(ev.cat);
-        triggerInAppNotification(
-          `🔔 ${ev.persona} anotó ${fmtSoles(ev.monto)}`,
-          `${ev.desc || ev.cat} • ${ev.metodo || 'Hogar'}`,
-          catMeta.ico || "🔔"
-        );
+        if (shouldNotify) {
+          const catMeta = getCatMeta(ev.cat);
+          triggerInAppNotification(
+            `🔔 ${ev.persona} anotó ${fmtSoles(ev.monto)}`,
+            `${ev.desc || ev.cat} • ${ev.metodo || 'Hogar'}`,
+            catMeta.ico || "🔔"
+          );
+        }
       } else if (ev.type === "delete_expense") {
         deleteEvents.set(ev.id, ev);
-        triggerInAppNotification(
-          `🗑️ Registro Eliminado`,
-          `${ev.persona} eliminó ${ev.desc || ev.cat} • S/ ${Number(ev.monto).toFixed(2)}`,
-          "🗑️"
-        );
+        if (shouldNotify) {
+          triggerInAppNotification(
+            `🗑️ Registro Eliminado`,
+            `${ev.persona} eliminó ${ev.desc || ev.cat} • S/ ${Number(ev.monto).toFixed(2)}`,
+            "🗑️"
+          );
+        }
       }
+      savePersistentEvents();
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261103_v9";
+    const CURRENT_BUILD_ID = "20261103_v10";
+
+    async function resyncUnconfirmedEventsToCloud() {
+      // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
+      // los mantiene vivos en ntfy.sh cada 8 horas para que cuando prendas la PC pasen todos al Excel sin perder ninguno.
+      try {
+        const nowSec = Math.floor(Date.now() / 1000);
+        const snapTs = baseState.ts || 0;
+        let changed = false;
+        for (const [id, ev] of pendingEvents.entries()) {
+          if (ev.ts <= snapTs) {
+            pendingEvents.delete(id);
+            changed = true;
+          } else if (!ev._lastResendTs || (nowSec - ev._lastResendTs) > 28800) {
+            ev._lastResendTs = nowSec;
+            changed = true;
+            fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
+              method: "POST",
+              headers: { "Priority": "low", "Cache": "yes" },
+              body: JSON.stringify(ev)
+            }).catch(() => {});
+          }
+        }
+        if (changed) savePersistentEvents();
+      } catch (e) {}
+    }
 
     function mergeRecentRecords(incomingList, existingList, fallbackList) {
       const seen = new Map();
@@ -3416,14 +3477,18 @@
               if (outer.event === "message" && outer.message) {
                 const ev = JSON.parse(outer.message);
                 if (ev && ev.id && !knownEventIds.has(ev.id)) {
-                  handleIncomingCloudEvent(ev);
+                  handleIncomingCloudEvent(ev, isInitialCloudFetch);
                 }
               }
             } catch (e) {}
           }
         }
+        isInitialCloudFetch = false;
+        resyncUnconfirmedEventsToCloud();
         renderMetrics();
-      } catch (e) {}
+      } catch (e) {
+        isInitialCloudFetch = false;
+      }
     }
 
     async function submitExpense() {
