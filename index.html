@@ -3399,9 +3399,9 @@
       knownEventIds.add(ev.id);
 
       const nowSec = Math.floor(Date.now() / 1000);
-      const isRecentEvent = ev.ts && (nowSec - ev.ts) < 120;
+      const isRecentEvent = ev.ts && (nowSec - ev.ts) < 86400;
       const isPersonal = ev.persona && String(ev.persona).startsWith("Personal");
-      const shouldNotify = notificationsEnabled && !silent && !alreadyKnown && !isPersonal && (!isInitialCloudFetch || isRecentEvent);
+      const shouldNotify = notificationsEnabled && !alreadyKnown && !isPersonal && (!isInitialCloudFetch || isRecentEvent);
 
       if (ev.type === "new_expense") {
         pendingEvents.set(ev.id, ev);
