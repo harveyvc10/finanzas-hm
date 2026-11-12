@@ -1925,6 +1925,7 @@
     const TOPIC_STATE  = "hm_gastos_pareja_2026_state_v6";
     const TOPIC_NOTIF  = "hm_gastos_pareja_2026_notif_v6";
     const TOPIC_NOTIF_SHORT = "hm_gastos_alertas";
+    const TOPIC_NOTIF_HM = "hm_gastos_alerta_hm";
     const POWER_AUTOMATE_URL = "https://default4b83561bae09421a83f253c50c7773.ca.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/05/workflows/6128c1c6427c43bfb40072f5aff8da1c/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=Ji6uDA7BOA5gXfCIQdfLorGRg8vZhkWzRdm6oovYU4A";
     const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwRFXZXjxbnOkE-c4McdBMlwwzgsOu5GnRsSt-WR5NmGuNieO2HjO2Xyr60tCUStRRHSQ/exec";
     const MONTHLY_BUDGET = 1730.00;
@@ -2174,8 +2175,20 @@
 
     let notifBannerTimer = null;
     function triggerInAppNotification(title, body, icon = "🔔") {
-      // Desactivado para evitar notificaciones duplicadas con ntfy
-      return;
+      playAppleChime();
+      haptic([35, 70, 45]);
+
+      const banner = document.getElementById("appleNotifBanner");
+      if (banner) {
+        document.getElementById("anTitle").textContent = title;
+        document.getElementById("anBody").textContent = body;
+        document.getElementById("anIcon").textContent = icon;
+        banner.classList.add("show");
+        if (notifBannerTimer) clearTimeout(notifBannerTimer);
+        notifBannerTimer = setTimeout(() => {
+          banner.classList.remove("show");
+        }, 4500);
+      }
     }
 
     function dismissNotifBanner() {
@@ -2186,18 +2199,26 @@
 
     async function testNotification() {
       haptic([15, 60, 20]);
-      fetch(`${NTFY_SERVER}/${TOPIC_NOTIF_SHORT}`, {
-        method: "POST",
-        headers: {
-          "Title": "✓ Finanzas H&M (Prueba)",
-          "Priority": "high",
-          "Icon": "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
-          "Attach": "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
-          "Click": "https://harveyvc10.github.io/finanzas-hm/"
-        },
-        body: "🔔 ¡Prueba exitosa! 1 sola notificación instantánea con pantalla bloqueada."
-      }).catch(() => {});
-      showIsland("Pulso de prueba enviado");
+      unlockAudio();
+      playAppleChime();
+      triggerInAppNotification(
+        "✓ Finanzas (Prueba)", 
+        "¡Así sonará tu iPhone cuando anoten un gasto! 🛒", 
+        "🛒"
+      );
+      showIsland("🔔 Notificación enviada a tu iPhone");
+      [TOPIC_NOTIF_HM, TOPIC_NOTIF, TOPIC_NOTIF_SHORT].forEach(topic => {
+        fetch(`${NTFY_SERVER}/${topic}`, {
+          method: "POST",
+          headers: {
+            "Title": "✓ Finanzas H&M (Prueba)",
+            "Priority": "high",
+            "Attach": "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
+            "Click": "https://harveyvc10.github.io/finanzas-hm/"
+          },
+          body: "🛒 Supermercado • Prueba exitosa (Yape / Plin)"
+        }).catch(() => {});
+      });
     }
 
     async function sendLocalNotification(title, body) {
@@ -3291,11 +3312,29 @@
       savePersistentEvents();
       renderMetrics();
 
+      if (notificationsEnabled) {
+        const dispWho = String(evObj.persona || "").replace(/^Personal\s+/i, "");
+        if (evObj.type === "new_expense") {
+          const catMeta = getCatMeta(evObj.cat);
+          triggerInAppNotification(
+            `✓ ${dispWho} anotó ${fmtSoles(evObj.monto)}`,
+            `${evObj.desc || evObj.cat} • ${evObj.metodo || 'Yape / Plin'}`,
+            (catMeta && catMeta.ico) ? catMeta.ico : "🔔"
+          );
+        } else if (evObj.type === "delete_expense") {
+          triggerInAppNotification(
+            `🗑️ Registro Eliminado`,
+            `${dispWho} eliminó ${evObj.desc || evObj.cat} • S/ ${Number(evObj.monto).toFixed(2)}`,
+            "🗑️"
+          );
+        }
+      }
+
       try {
         const res = await fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
           method: "POST",
           headers: {
-            "Title": (evObj.type === "new_expense") ? `Finanzas: ${evObj.persona} anotó ${fmtSoles(evObj.monto)}` : "Finanzas: Registro eliminado",
+            "Title": (evObj.type === "new_expense") ? `Finanzas: ${evObj.persona} anoto ${fmtSoles(evObj.monto)}` : "Finanzas: Registro eliminado",
             "Priority": "high",
             "Cache": "yes"
           },
@@ -3327,17 +3366,19 @@
         const cleanBody = isNew
           ? `${ico} ${evObj.desc || evObj.cat} • ${evObj.metodo || "Yape / Plin"}`
           : `Se eliminó: ${evObj.desc || evObj.cat} (${evObj.fecha})`;
-        fetch(`${NTFY_SERVER}/${TOPIC_NOTIF_SHORT}`, {
-          method: "POST",
-          headers: {
-            "Title": cleanTitle,
-            "Priority": "high",
-            "Icon": "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
-            "Attach": "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
-            "Click": "https://harveyvc10.github.io/finanzas-hm/"
-          },
-          body: cleanBody
-        }).catch(() => {});
+        
+        [TOPIC_NOTIF_HM, TOPIC_NOTIF, TOPIC_NOTIF_SHORT].forEach(topic => {
+          fetch(`${NTFY_SERVER}/${topic}`, {
+            method: "POST",
+            headers: {
+              "Title": cleanTitle,
+              "Priority": "high",
+              "Attach": "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
+              "Click": "https://harveyvc10.github.io/finanzas-hm/"
+            },
+            body: cleanBody
+          }).catch(() => {});
+        });
       } catch (e) {}
     }
 
@@ -3432,7 +3473,7 @@
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261112_121915";
+    const CURRENT_BUILD_ID = "20261112_123400";
 
     async function resyncUnconfirmedEventsToCloud() {
       // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
@@ -3551,6 +3592,8 @@
         document.getElementById("inpMonto").focus();
         return;
       }
+      unlockAudio();
+      playAppleChime();
       haptic([15, 60, 20]);
       const descVal = document.getElementById("inpDesc").value.trim() || selectedCat;
       const fechaIso = document.getElementById("inpFecha").value;
@@ -3579,13 +3622,6 @@
       knownEventIds.add(expObj.id);
       document.getElementById("inpMonto").value = "";
       document.getElementById("inpDesc").value = "";
-
-      const catMeta = getCatMeta(selectedCat);
-      triggerInAppNotification(
-        `✓ ${payer} anotó ${fmtSoles(montoVal)}`,
-        `${descVal} • ${selectedMethod}`,
-        catMeta.ico || "✓"
-      );
 
       await dispatchCloudEvent(expObj, currentVaultMode === "personal" ? "Guardado en Personal (Deuda: S/ 0)" : "Sincronizado con Excel Hogar");
 
