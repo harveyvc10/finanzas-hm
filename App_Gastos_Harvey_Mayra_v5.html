@@ -1640,7 +1640,7 @@
         <button type="button" class="scope-pill-btn active" id="btnScopeMonth" onclick="toggleScope('month')">Mes</button>
         <button type="button" class="scope-pill-btn" id="btnScopeYear" onclick="toggleScope('year')">Año</button>
         <button type="button" class="notif-btn" id="headerNotifBtn" onclick="openNotifModal()" title="Configurar Notificaciones">🔔</button>
-        <div class="live-badge">
+        <div class="live-badge" onclick="manualForceSync()" style="cursor:pointer;" title="Toca para sincronizar ahora">
           <span class="live-dot" id="netDot"></span>
           <span id="cardCountChip">55 reg.</span>
         </div>
@@ -3363,7 +3363,19 @@
       if (q.length === 0) return;
       const remaining = [];
       let sentAny = false;
+      const baseRecent = baseState.recent || [];
       for (const ev of q) {
+        // Si este gasto ya existe en el snapshot de Excel (baseState), se considera sincronizado y se limpia
+        const alreadyInExcel = baseRecent.some(r => 
+          r.persona === ev.persona && 
+          Math.abs(Number(r.monto) - Number(ev.monto)) < 0.01 && 
+          (r.desc === ev.desc || r.cat === ev.cat)
+        );
+        if (alreadyInExcel) {
+          sentAny = true;
+          continue;
+        }
+
         try {
           if (ev.type === "new_expense") {
             sendToPowerAutomate(ev);
@@ -3381,15 +3393,25 @@
           if (res.ok) {
             sentAny = true;
             sendCleanPushAlert(ev);
+          } else {
+            remaining.push(ev);
           }
-          else remaining.push(ev);
         } catch (e) { remaining.push(ev); }
       }
       saveOfflineQueue(remaining);
       if (sentAny) {
         renderMetrics();
-        showIsland("Pendientes sincronizados");
+        showIsland("✓ Pendientes sincronizados");
       }
+    }
+
+    async function manualForceSync() {
+      haptic([10, 30, 10]);
+      showIsland("Sincronizando con Excel...");
+      await flushOfflineQueue();
+      await fetchCloudUpdates();
+      checkLatestGitHubVersion();
+      renderMetrics();
     }
 
     let eventSource = null;
@@ -3449,7 +3471,7 @@
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261115_173700";
+    const CURRENT_BUILD_ID = "20261115_175000";
 
     async function resyncUnconfirmedEventsToCloud() {
       // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
@@ -3500,7 +3522,8 @@
     async function checkLatestGitHubVersion() {
       try {
         if (!location.hostname.includes("github.io")) return;
-        const r = await fetch(location.pathname + "?_cb=" + Date.now(), { cache: "no-store" });
+        const targetUrl = location.pathname.endsWith(".html") ? location.pathname : (location.pathname.replace(/\/?$/, "/") + "index.html");
+        const r = await fetch(targetUrl + "?_cb=" + Date.now(), { cache: "no-store" });
         if (!r.ok) return;
         const html = await r.text();
         const m = html.match(/CURRENT_BUILD_ID\s*=\s*"([^"]+)"/);
@@ -3508,7 +3531,7 @@
           const lastReload = sessionStorage.getItem("hm_last_build_reload");
           if (lastReload !== m[1]) {
             sessionStorage.setItem("hm_last_build_reload", m[1]);
-            location.replace(location.pathname + "?v=" + encodeURIComponent(m[1]));
+            location.replace(targetUrl + "?v=" + encodeURIComponent(m[1]));
           }
         }
       } catch (e) {}
