@@ -3475,7 +3475,7 @@
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261115_180000";
+    const CURRENT_BUILD_ID = "20261115_180500";
 
     async function resyncUnconfirmedEventsToCloud() {
       // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
@@ -3550,9 +3550,16 @@
           for (const line of lines) {
             try {
               const outer = JSON.parse(line);
-              if (outer.event === "message" && outer.message) {
+              if (outer.event === "message") {
                 let snap = null;
-                try { snap = JSON.parse(outer.message); } catch(e){}
+                if (outer.message && typeof outer.message === "string" && outer.message.trim().startsWith("{")) {
+                  try { snap = JSON.parse(outer.message); } catch(e){}
+                } else if (outer.attachment && outer.attachment.url) {
+                  try {
+                    const rAtt = await fetch(outer.attachment.url);
+                    if (rAtt.ok) { snap = await rAtt.json(); }
+                  } catch(e){}
+                }
                 if (snap && snap.type === "state_snapshot" && snap.ts >= (baseState.ts || 0) && snap.count > 0) {
                   if (!snap.recent || snap.recent.length < snap.count) {
                     snap.recent = mergeRecentRecords(snap.recent, baseState.recent, defaultState.recent);
