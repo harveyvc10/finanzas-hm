@@ -3364,12 +3364,14 @@
       const remaining = [];
       let sentAny = false;
       const baseRecent = baseState.recent || [];
+      const normP = (p) => String(p || "").replace(/^Personal\s+/i, "").trim().toLowerCase();
+      const normCat = (c) => String(c || "").replace(/^Personal\s*-\s*/i, "").trim().toLowerCase();
       for (const ev of q) {
         // Si este gasto ya existe en el snapshot de Excel (baseState), se considera sincronizado y se limpia
         const alreadyInExcel = baseRecent.some(r => 
-          r.persona === ev.persona && 
+          normP(r.persona) === normP(ev.persona) && 
           Math.abs(Number(r.monto) - Number(ev.monto)) < 0.01 && 
-          (r.desc === ev.desc || r.cat === ev.cat)
+          (normCat(r.cat) === normCat(ev.cat) || String(r.desc || "").toLowerCase() === String(ev.desc || "").toLowerCase() || !ev.desc)
         );
         if (alreadyInExcel) {
           sentAny = true;
@@ -3408,10 +3410,12 @@
     async function manualForceSync() {
       haptic([10, 30, 10]);
       showIsland("Sincronizando con Excel...");
+      await fetchCloudUpdates();
       await flushOfflineQueue();
       await fetchCloudUpdates();
       checkLatestGitHubVersion();
       renderMetrics();
+      showIsland("✓ Sincronizado");
     }
 
     let eventSource = null;
@@ -3471,7 +3475,7 @@
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261115_175000";
+    const CURRENT_BUILD_ID = "20261115_180000";
 
     async function resyncUnconfirmedEventsToCloud() {
       // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
