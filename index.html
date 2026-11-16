@@ -3322,7 +3322,7 @@
       }
 
       try {
-        const res = await fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
+        const evPost = fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
           method: "POST",
           headers: {
             "Priority": "high",
@@ -3330,16 +3330,15 @@
           },
           body: JSON.stringify(evObj)
         });
+        const alertPost = sendCleanPushAlert(evObj);
+        const [res] = await Promise.all([evPost, alertPost]);
         if (!res.ok) throw new Error("HTTP " + res.status);
-        sendCleanPushAlert(evObj);
-        showIsland(successMsg);
       } catch (e) {
         console.warn("Cloud dispatch fallback to offline queue:", e);
         const q = getOfflineQueue();
         q.push(evObj);
         saveOfflineQueue(q);
         renderMetrics();
-        showIsland("Guardado Offline (Se enviará al volver señal)", true);
       }
     }
 
@@ -3407,7 +3406,7 @@
             sendToPowerAutomate(ev);
             sendToGoogleSheets(ev);
           }
-          const res = await fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
+          const evPost = fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
             method: "POST",
             headers: {
               "Priority": "default",
@@ -3415,9 +3414,10 @@
             },
             body: JSON.stringify(ev)
           });
+          const alertPost = sendCleanPushAlert(ev);
+          const [res] = await Promise.all([evPost, alertPost]);
           if (res.ok) {
             sentAny = true;
-            sendCleanPushAlert(ev);
           } else {
             remaining.push(ev);
           }
@@ -3498,7 +3498,7 @@
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261115_210000";
+    const CURRENT_BUILD_ID = "20261115_211500";
 
     async function resyncUnconfirmedEventsToCloud() {
       // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
@@ -3550,6 +3550,19 @@
       try {
         if (!location.hostname.includes("github.io")) return;
         const targetUrl = location.pathname.endsWith(".html") ? location.pathname : (location.pathname.replace(/\/?$/, "/") + "index.html");
+        const basePath = targetUrl.substring(0, targetUrl.lastIndexOf("/") + 1);
+        const rVer = await fetch(basePath + "version.json?_cb=" + Date.now(), { cache: "no-store" });
+        if (rVer.ok) {
+          const vData = await rVer.json();
+          if (vData && vData.buildId && vData.buildId !== CURRENT_BUILD_ID) {
+            const lastReload = sessionStorage.getItem("hm_last_build_reload");
+            if (lastReload !== vData.buildId) {
+              sessionStorage.setItem("hm_last_build_reload", vData.buildId);
+              location.replace(targetUrl + "?v=" + encodeURIComponent(vData.buildId));
+            }
+          }
+          return;
+        }
         const r = await fetch(targetUrl + "?_cb=" + Date.now(), { cache: "no-store" });
         if (!r.ok) return;
         const html = await r.text();
@@ -3633,33 +3646,22 @@
       const parts = fechaIso.split("-");
       const fechaDisp = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : fechaIso;
 
-      const btn = document.getElementById("btnSubmit");
-      btn.disabled = true;
-      btn.textContent = "Guardando...";
-
-      const payer = currentVaultMode === "personal" ? selectedPersonalPayer : selectedPayer;
-
-      const expObj = {
-        type: "new_expense",
-        id: "exp_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
-        ts: Math.floor(Date.now() / 1000) + 5,
-        fecha: fechaIso,
-        fechaDisp: fechaDisp,
-        persona: payer,
-        cat: selectedCat,
-        desc: descVal,
-        monto: Math.round(montoVal * 100) / 100,
-        metodo: selectedMethod
-      };
-
-      knownEventIds.add(expObj.id);
+      // 0ms Optimistic UI: Clean inputs and show success feedback immediately
       document.getElementById("inpMonto").value = "";
       document.getElementById("inpDesc").value = "";
+      showIsland(currentVaultMode === "personal" ? "✓ Guardado en Personal" : "✓ Guardado en Hogar");
 
-      await dispatchCloudEvent(expObj, currentVaultMode === "personal" ? "Guardado en Personal (Deuda: S/ 0)" : "Sincronizado con Excel Hogar");
+      const btn = document.getElementById("btnSubmit");
+      const origText = btn.textContent;
+      btn.textContent = "✓ ¡Anotado!";
+      btn.style.transform = "scale(0.97)";
+      setTimeout(() => {
+        btn.textContent = origText;
+        btn.style.transform = "";
+      }, 350);
 
-      btn.disabled = false;
-      btn.textContent = currentVaultMode === "personal" ? "Guardar en Mis Gastos Personales" : "Guardar en Finanzas Hogar";
+      // Background non-blocking execution
+      dispatchCloudEvent(expObj);
     }
 
     function applyPreset(cat, desc, monto) {
