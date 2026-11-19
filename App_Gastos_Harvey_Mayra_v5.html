@@ -3498,7 +3498,7 @@
       renderMetrics();
     }
 
-    const CURRENT_BUILD_ID = "20261115_211500";
+    const CURRENT_BUILD_ID = "20261119_112200";
 
     async function resyncUnconfirmedEventsToCloud() {
       // Si la PC estuvo apagada varios días y aún hay gastos en pendingEvents que no están en el snapshot del Excel,
@@ -3645,6 +3645,21 @@
       const fechaIso = document.getElementById("inpFecha").value;
       const parts = fechaIso.split("-");
       const fechaDisp = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : fechaIso;
+
+      const payer = currentVaultMode === "personal" ? selectedPersonalPayer : selectedPayer;
+
+      const expObj = {
+        type: "new_expense",
+        id: "exp_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
+        ts: Math.floor(Date.now() / 1000) + 5,
+        fecha: fechaIso,
+        fechaDisp: fechaDisp,
+        persona: payer,
+        cat: selectedCat,
+        desc: descVal,
+        monto: Math.round(montoVal * 100) / 100,
+        metodo: selectedMethod
+      };
 
       // 0ms Optimistic UI: Clean inputs and show success feedback immediately
       document.getElementById("inpMonto").value = "";
