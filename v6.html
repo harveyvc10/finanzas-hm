@@ -1,0 +1,2601 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Finanzas" />
+  <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <link rel="apple-touch-icon" sizes="180x180" href="cartera-1b-cuero-blanco.png" />
+  <link rel="icon" type="image/png" href="cartera-1b-cuero-blanco.png" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Finanzas</title>
+  <style>
+    :root {
+      --bg: #F2F2F7;
+      --card: #FFFFFF;
+      --elevated: #FFFFFF;
+      --fill: rgba(120, 120, 128, 0.12);
+      --fill-2: rgba(120, 120, 128, 0.08);
+      --label: #000000;
+      --label-2: rgba(60, 60, 67, 0.60);
+      --label-3: rgba(60, 60, 67, 0.36);
+      --sep: rgba(60, 60, 67, 0.18);
+      --blue: #007AFF;
+      --green: #34C759;
+      --red: #FF3B30;
+      --orange: #FF9500;
+      --purple: #AF52DE;
+      --teal: #30B0C7;
+      --indigo: #5856D6;
+      --pink: #FF2D55;
+      --brown: #A2845E;
+      --tab-bg: rgba(249, 249, 249, 0.86);
+      --sheet-bg: #F2F2F7;
+      --seg-bg: rgba(118, 118, 128, 0.12);
+      --seg-active: #FFFFFF;
+      --seg-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 0.5px 1px rgba(0,0,0,0.04);
+      --card-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      --island-bg: #1C1C1E;
+      --island-fg: #FFFFFF;
+      --accent: var(--blue);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --card: #1C1C1E;
+        --elevated: #2C2C2E;
+        --fill: rgba(120, 120, 128, 0.28);
+        --fill-2: rgba(120, 120, 128, 0.18);
+        --label: #FFFFFF;
+        --label-2: rgba(235, 235, 245, 0.60);
+        --label-3: rgba(235, 235, 245, 0.36);
+        --sep: rgba(84, 84, 88, 0.60);
+        --blue: #0A84FF;
+        --green: #30D158;
+        --red: #FF453A;
+        --orange: #FF9F0A;
+        --purple: #BF5AF2;
+        --teal: #40C8E0;
+        --indigo: #5E5CE6;
+        --pink: #FF375F;
+        --brown: #AC8E68;
+        --tab-bg: rgba(28, 28, 30, 0.84);
+        --sheet-bg: #1C1C1E;
+        --seg-bg: rgba(118, 118, 128, 0.24);
+        --seg-active: #3A3A3C;
+        --seg-shadow: 0 2px 6px rgba(0,0,0,0.35);
+        --card-shadow: none;
+        --island-bg: #2C2C2E;
+        --island-fg: #FFFFFF;
+      }
+    }
+
+    body.personal-mode { --accent: var(--green); }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--label);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, sans-serif;
+      overscroll-behavior-y: contain;
+    }
+
+    body {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: calc(env(safe-area-inset-top, 12px) + 8px) 16px calc(env(safe-area-inset-bottom, 20px) + 78px) 16px;
+      min-height: 100dvh;
+    }
+
+    /* Pull-to-Refresh Indicator */
+    .ptr-indicator {
+      height: 0;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--label-2);
+      transition: height 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .ptr-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--sep);
+      border-top-color: var(--label-2);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Dynamic Island Toast */
+    .toast-pill {
+      position: fixed;
+      top: calc(env(safe-area-inset-top, 12px) + 6px);
+      left: 50%;
+      transform: translateX(-50%) translateY(-80px) scale(0.92);
+      background: var(--island-bg);
+      color: var(--island-fg);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 13.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+      transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+      white-space: nowrap;
+    }
+    .toast-pill.show {
+      transform: translateX(-50%) translateY(0) scale(1);
+      opacity: 1;
+    }
+    .toast-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+    .toast-dot.warn { background: var(--orange); }
+
+    /* Top Navigation Bar */
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .vault-seg {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      background: var(--seg-bg);
+      padding: 2.5px;
+      border-radius: 10px;
+      height: 36px;
+    }
+    .vault-seg-btn {
+      border: none;
+      background: transparent;
+      color: var(--label-2);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+    }
+    .vault-seg-btn.active {
+      background: var(--seg-active);
+      color: var(--label);
+      box-shadow: var(--seg-shadow);
+    }
+
+    .nav-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: none;
+      background: var(--card);
+      color: var(--label);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      box-shadow: var(--card-shadow);
+      flex-shrink: 0;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+    .nav-icon-btn:active { transform: scale(0.92); opacity: 0.7; }
+    .nav-icon-btn svg { width: 18px; height: 18px; }
+    .sync-dot-badge {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 1.5px solid var(--card);
+    }
+    .sync-dot-badge.pending { background: var(--orange); }
+    .sync-dot-badge.offline { background: var(--red); }
+
+    /* Apple Card Balance Summary */
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .balance-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .period-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .period-arrow {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: var(--label-2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .period-arrow:active { background: var(--fill); }
+    .period-arrow svg { width: 14px; height: 14px; }
+    .period-lbl {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--label-2);
+      letter-spacing: -0.01em;
+    }
+
+    .scope-toggle {
+      display: inline-flex;
+      background: var(--seg-bg);
+      padding: 2px;
+      border-radius: 8px;
+    }
+    .scope-btn {
+      border: none;
+      background: transparent;
+      color: var(--label-2);
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .scope-btn.active {
+      background: var(--seg-active);
+      color: var(--label);
+      box-shadow: var(--seg-shadow);
+    }
+
+    .balance-main {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .hero-total {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.1;
+    }
+    .settle-pill {
+      border: none;
+      background: rgba(0, 122, 255, 0.12);
+      color: var(--blue);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-variant-numeric: tabular-nums;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+    .settle-pill:active { transform: scale(0.96); opacity: 0.75; }
+    .settle-pill.settled, .settle-pill.personal {
+      background: rgba(52, 199, 89, 0.14);
+      color: var(--green);
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 0.5px solid var(--sep);
+    }
+    .stat-col { display: flex; flex-direction: column; gap: 2px; }
+    .stat-lbl { font-size: 11.5px; font-weight: 500; color: var(--label-2); }
+    .stat-val {
+      font-size: 15px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+    }
+
+    .budget-strip {
+      margin-top: 12px;
+      cursor: pointer;
+    }
+    .budget-track {
+      height: 5px;
+      background: var(--fill);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .budget-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--blue);
+      transition: width 0.35s cubic-bezier(0.25, 0.8, 0.25, 1), background 0.25s ease;
+    }
+    .budget-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11.5px;
+      color: var(--label-2);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Section Header (iOS Inset Grouped style) */
+    .sec-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px 6px 16px;
+      margin-top: 16px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--label-2);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    /* Segmented Control (Payer) */
+    .ios-seg {
+      display: flex;
+      background: var(--seg-bg);
+      padding: 2.5px;
+      border-radius: 10px;
+      margin-bottom: 14px;
+    }
+    .seg-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--label-2);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .seg-btn.active {
+      background: var(--seg-active);
+      color: var(--label);
+      box-shadow: var(--seg-shadow);
+    }
+
+    /* Hero Amount Input */
+    .amount-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 4px 0 2px 0;
+    }
+    .mic-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      background: var(--fill);
+      color: var(--accent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: transform 0.12s ease, background 0.15s ease;
+    }
+    .mic-btn:active { transform: scale(0.92); }
+    .mic-btn svg { width: 19px; height: 19px; }
+
+    .amount-input-wrap {
+      flex: 1;
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-end;
+      gap: 4px;
+      cursor: text;
+    }
+    .amount-currency {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--label-2);
+    }
+    .amount-input {
+      width: 100%;
+      max-width: 220px;
+      border: none;
+      background: transparent;
+      color: var(--label);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      font-size: 38px;
+      font-weight: 700;
+      text-align: right;
+      letter-spacing: -0.03em;
+      font-variant-numeric: tabular-nums;
+      outline: none;
+      padding: 0;
+    }
+    .amount-input::placeholder { color: var(--label-3); }
+    .amount-input::-webkit-inner-spin-button,
+    .amount-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+    /* Category Grid (SF Symbols style) */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px 6px;
+    }
+    .cat-btn {
+      border: none;
+      background: transparent;
+      border-radius: 12px;
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease, transform 0.12s ease;
+    }
+    .cat-btn:active { transform: scale(0.94); }
+    .cat-btn.active { background: var(--fill); }
+
+    .cat-icon-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+    .cat-btn.active .cat-icon-circle {
+      transform: scale(1.06);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    .cat-icon-circle svg { width: 19px; height: 19px; }
+    .cat-lbl {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--label-2);
+      text-align: center;
+      line-height: 1.15;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .cat-btn.active .cat-lbl {
+      color: var(--label);
+      font-weight: 600;
+    }
+
+    /* Inset Grouped Form List */
+    .inset-group {
+      background: var(--card);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px;
+      box-shadow: var(--card-shadow);
+    }
+    .inset-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      padding: 10px 16px;
+      gap: 12px;
+      position: relative;
+    }
+    .inset-row + .inset-row::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 16px;
+      right: 0;
+      height: 0.5px;
+      background: var(--sep);
+    }
+    .inset-row-lbl {
+      font-size: 15.5px;
+      font-weight: 400;
+      color: var(--label);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .inset-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--label);
+      font-family: inherit;
+      font-size: 15.5px;
+      outline: none;
+      text-align: right;
+      min-width: 0;
+    }
+    .inset-input.left { text-align: left; }
+    .inset-input::placeholder { color: var(--label-3); }
+
+    .date-pills {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .ios-pill-btn {
+      border: none;
+      background: var(--fill);
+      color: var(--label);
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      padding: 6px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: background 0.15s ease;
+    }
+    .ios-pill-btn.active {
+      background: rgba(0, 122, 255, 0.14);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .ios-pill-btn:active { opacity: 0.7; }
+
+    .method-scroll {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 2px 0;
+    }
+    .method-scroll::-webkit-scrollbar { display: none; }
+    .m-chip {
+      border: none;
+      background: var(--fill-2);
+      color: var(--label-2);
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 500;
+      padding: 6px 11px;
+      border-radius: 999px;
+      white-space: nowrap;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .m-chip.active {
+      background: var(--accent);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    /* Primary iOS Button */
+    .btn-primary {
+      width: 100%;
+      height: 52px;
+      border: none;
+      border-radius: 14px;
+      background: var(--accent);
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 16.5px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      transition: transform 0.14s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.14s ease, background 0.2s ease;
+    }
+    .btn-primary:active { transform: scale(0.975); opacity: 0.88; }
+
+    /* Search Bar (iOS UISearchBar style) */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--fill);
+      border-radius: 11px;
+      padding: 0 12px;
+      height: 38px;
+      margin-bottom: 10px;
+    }
+    .search-bar svg { width: 16px; height: 16px; color: var(--label-2); flex-shrink: 0; }
+    .search-bar input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--label);
+      font-family: inherit;
+      font-size: 15.5px;
+      outline: none;
+    }
+    .search-bar input::placeholder { color: var(--label-2); }
+    .search-clear {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: none;
+      background: var(--label-3);
+      color: var(--card);
+      font-size: 11px;
+      font-weight: 700;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .filter-scroll {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      margin-bottom: 12px;
+    }
+    .filter-scroll::-webkit-scrollbar { display: none; }
+
+    /* Swipe-to-Delete Transaction Rows */
+    .date-group-hdr {
+      padding: 12px 16px 6px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--label-2);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .tx-group {
+      background: var(--card);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 6px;
+      box-shadow: var(--card-shadow);
+    }
+    .swipe-container {
+      position: relative;
+      overflow: hidden;
+      background: var(--red);
+    }
+    .swipe-container + .swipe-container::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 60px;
+      right: 0;
+      height: 0.5px;
+      background: var(--sep);
+      z-index: 3;
+    }
+    .swipe-delete-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 84px;
+      background: var(--red);
+      color: #FFFFFF;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-family: inherit;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .swipe-delete-bg svg { width: 18px; height: 18px; }
+
+    .tx-row {
+      position: relative;
+      z-index: 2;
+      background: var(--card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 16px;
+      gap: 12px;
+      transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+      touch-action: pan-y;
+      user-select: none;
+    }
+    .tx-row.dragging { transition: none; }
+    .tx-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+      flex: 1;
+    }
+    .tx-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .tx-ico svg { width: 17px; height: 17px; }
+    .tx-meta { min-width: 0; flex: 1; }
+    .tx-title {
+      font-size: 15.5px;
+      font-weight: 500;
+      color: var(--label);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tx-sub {
+      font-size: 12.5px;
+      color: var(--label-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 1px;
+    }
+    .tx-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .tx-amt {
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--label);
+      font-variant-numeric: tabular-nums;
+    }
+    .tx-who {
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--label-2);
+      margin-top: 1px;
+    }
+    .tx-who.harvey { color: var(--blue); }
+    .tx-who.mayra { color: var(--purple); }
+    .tx-who.personal { color: var(--green); }
+
+    /* Insights / Resumen */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .kpi-box {
+      background: var(--fill-2);
+      border-radius: 10px;
+      padding: 10px;
+    }
+    .kpi-lbl { font-size: 11px; color: var(--label-2); font-weight: 500; }
+    .kpi-val { font-size: 15px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
+
+    .dist-row { margin-top: 12px; }
+    .dist-hdr {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 5px;
+      font-variant-numeric: tabular-nums;
+    }
+    .dist-track {
+      height: 6px;
+      background: var(--fill);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .dist-fill { height: 100%; border-radius: 99px; }
+
+    /* Native iOS Switch */
+    .ios-switch {
+      position: relative;
+      display: inline-block;
+      width: 51px;
+      height: 31px;
+      flex-shrink: 0;
+    }
+    .ios-switch input { opacity: 0; width: 0; height: 0; }
+    .ios-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--fill);
+      border-radius: 99px;
+      transition: background 0.25s ease;
+      cursor: pointer;
+    }
+    .ios-slider::before {
+      content: "";
+      position: absolute;
+      width: 27px;
+      height: 27px;
+      left: 2px;
+      top: 2px;
+      background: #FFFFFF;
+      border-radius: 50%;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .ios-switch input:checked + .ios-slider { background: var(--green); }
+    .ios-switch input:checked + .ios-slider::before { transform: translateX(20px); }
+
+    /* Action Row Button inside Inset Group */
+    .row-action-btn {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: var(--blue);
+      font-family: inherit;
+      font-size: 15.5px;
+      font-weight: 500;
+      text-align: left;
+      padding: 13px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .row-action-btn:active { background: var(--fill-2); }
+    .row-action-btn.danger { color: var(--red); }
+
+    /* Native iOS Bottom Sheet */
+    .sheet-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.42);
+      z-index: 1500;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.24s ease;
+    }
+    .sheet-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .sheet {
+      width: 100%;
+      max-width: 480px;
+      background: var(--sheet-bg);
+      border-radius: 20px 20px 0 0;
+      padding: 10px 18px calc(env(safe-area-inset-bottom, 16px) + 18px) 18px;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+      max-height: 88dvh;
+      overflow-y: auto;
+    }
+    .sheet-backdrop.open .sheet { transform: translateY(0); }
+    .sheet-handle {
+      width: 36px;
+      height: 5px;
+      border-radius: 99px;
+      background: var(--label-3);
+      margin: 0 auto 14px auto;
+    }
+    .sheet-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .sheet-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .sheet-close-btn {
+      border: none;
+      background: var(--fill);
+      color: var(--label-2);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      font-size: 14px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .sheet-amount {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+      font-size: 34px;
+      font-weight: 700;
+      text-align: center;
+      margin: 8px 0;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.03em;
+    }
+    .sheet-desc {
+      font-size: 14px;
+      color: var(--label-2);
+      text-align: center;
+      line-height: 1.45;
+      margin-bottom: 18px;
+    }
+    .sheet-btn {
+      width: 100%;
+      height: 50px;
+      border: none;
+      border-radius: 14px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+    }
+    .sheet-btn.primary { background: var(--blue); color: #FFFFFF; }
+    .sheet-btn.danger { background: var(--red); color: #FFFFFF; }
+    .sheet-btn.secondary { background: var(--card); color: var(--label); }
+
+    /* Native Date Input inside Sheet */
+    .native-date-picker {
+      width: 100%;
+      height: 48px;
+      border: none;
+      background: var(--card);
+      color: var(--label);
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 12px;
+      padding: 0 14px;
+      margin-bottom: 14px;
+      outline: none;
+    }
+
+    /* Tab Bar (Frosted Glass Cupertino) */
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      background: var(--tab-bg);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-top: 0.5px solid var(--sep);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 6px 8px calc(env(safe-area-inset-bottom, 10px) + 4px) 8px;
+      z-index: 1000;
+    }
+    .tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--label-2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-family: inherit;
+      font-size: 10.5px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 2px 0;
+    }
+    .tab-btn svg { width: 22px; height: 22px; }
+    .tab-btn.active { color: var(--accent); font-weight: 600; }
+
+    .hidden { display: none !important; }
+    .empty-state {
+      text-align: center;
+      padding: 36px 20px;
+      color: var(--label-2);
+      font-size: 14.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pull to Refresh -->
+  <div class="ptr-indicator" id="ptrIndicator">
+    <div class="ptr-spinner"></div>
+    <span id="ptrText">Actualizando...</span>
+  </div>
+
+  <!-- Toast Pill -->
+  <div class="toast-pill" id="toastPill">
+    <span class="toast-dot" id="toastDot"></span>
+    <span id="toastText">Guardado</span>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="nav-bar">
+    <div class="vault-seg" role="tablist" aria-label="Bóveda">
+      <button type="button" class="vault-seg-btn active" id="btnModeHogar" onclick="setVaultMode('hogar')">Hogar</button>
+      <button type="button" class="vault-seg-btn" id="btnModePersonal" onclick="setVaultMode('personal')">Personal</button>
+    </div>
+    <button type="button" class="nav-icon-btn" id="btnSyncHeader" onclick="manualForceSync()" aria-label="Sincronizar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/>
+      </svg>
+      <span class="sync-dot-badge" id="netDot"></span>
+    </button>
+    <button type="button" class="nav-icon-btn" id="btnNotifHeader" onclick="openSheet('notifSheet')" aria-label="Notificaciones">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- Apple Card Balance Card -->
+  <section class="card" id="heroCard">
+    <div class="balance-top">
+      <div class="period-nav">
+        <button type="button" class="period-arrow" onclick="shiftMonth(-1)" aria-label="Mes anterior">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <span class="period-lbl" id="heroPeriodLbl">Noviembre 2026</span>
+        <button type="button" class="period-arrow" onclick="shiftMonth(1)" aria-label="Mes siguiente">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      </div>
+      <div class="scope-toggle" id="scopeToggle">
+        <button type="button" class="scope-btn active" id="btnScopeMonth" onclick="toggleScope('month')">Mes</button>
+        <button type="button" class="scope-btn" id="btnScopeYear" onclick="toggleScope('year')">Año</button>
+      </div>
+    </div>
+
+    <div class="balance-main">
+      <div class="hero-total" id="heroTotalAmount">S/ 0.00</div>
+      <button type="button" class="settle-pill" id="heroSettlementPill" onclick="promptSettleCurrent()">Al día</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-col">
+        <span class="stat-lbl" id="statLbl1">Harvey</span>
+        <span class="stat-val" id="statVal1">S/ 0.00</span>
+      </div>
+      <div class="stat-col">
+        <span class="stat-lbl" id="statLbl2">Mayra</span>
+        <span class="stat-val" id="statVal2">S/ 0.00</span>
+      </div>
+      <div class="stat-col">
+        <span class="stat-lbl" id="statLbl3">Cuota 50%</span>
+        <span class="stat-val" id="statVal3">S/ 0.00</span>
+      </div>
+    </div>
+
+    <div class="budget-strip" id="budgetStrip" onclick="switchView('insights')">
+      <div class="budget-track">
+        <div class="budget-fill" id="budgetFill" style="width: 0%;"></div>
+      </div>
+      <div class="budget-meta">
+        <span id="budgetLeftLbl">Presupuesto mensual</span>
+        <span id="budgetRightLbl">0%</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- VIEW 1: REGISTRAR -->
+  <main id="viewForm">
+    <section class="card" style="padding: 14px 16px;">
+      <div class="ios-seg" id="segPayerHogar">
+        <button type="button" class="seg-btn active" id="segHarvey" onclick="selectPayer('Harvey')">Harvey</button>
+        <button type="button" class="seg-btn" id="segMayra" onclick="selectPayer('Mayra')">Mayra</button>
+        <button type="button" class="seg-btn" id="segMitad" onclick="selectPayer('Mitad c/u (Ya saldado)')">50 / 50</button>
+      </div>
+      <div class="ios-seg hidden" id="segPayerPersonal">
+        <button type="button" class="seg-btn active" id="segPersHarv" onclick="selectPersonalPayer('Personal Harvey')">Solo Harvey</button>
+        <button type="button" class="seg-btn" id="segPersMay" onclick="selectPersonalPayer('Personal Mayra')">Solo Mayra</button>
+      </div>
+
+      <div class="amount-row">
+        <button type="button" class="mic-btn" onclick="openSheet('dictateSheet')" aria-label="Dictar gasto">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </button>
+        <div class="amount-input-wrap" onclick="document.getElementById('inpMonto').focus()">
+          <span class="amount-currency">S/</span>
+          <input type="number" id="inpMonto" class="amount-input" inputmode="decimal" step="0.01" placeholder="0.00" />
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="padding: 10px 8px;">
+      <div class="cat-grid" id="catGrid"></div>
+    </section>
+
+    <section class="inset-group">
+      <div class="inset-row">
+        <span class="inset-row-lbl">Concepto</span>
+        <input type="text" id="inpDesc" class="inset-input" placeholder="Plaza Vea, Cena, Tambo..." />
+      </div>
+      <div class="inset-row">
+        <span class="inset-row-lbl">Fecha</span>
+        <div class="date-pills">
+          <button type="button" class="ios-pill-btn active" id="btnDateDisplay" onclick="openSheet('dateSheet')">Hoy</button>
+          <button type="button" class="ios-pill-btn" id="btnQuickAyer" onclick="setQuickDateOffset(-1)">Ayer</button>
+        </div>
+      </div>
+      <div class="inset-row" style="flex-direction: column; align-items: stretch; gap: 8px; padding-top: 10px; padding-bottom: 12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="inset-row-lbl" style="font-size:13.5px; color:var(--label-2);">Medio de pago</span>
+        </div>
+        <div class="method-scroll" id="methodGrid"></div>
+      </div>
+    </section>
+
+    <button type="button" id="btnSubmit" class="btn-primary" onclick="submitExpense()">
+      Guardar gasto
+    </button>
+  </main>
+
+  <!-- VIEW 2: ACTIVIDAD -->
+  <main id="viewHistory" class="hidden">
+    <div class="search-bar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="histSearchInp" placeholder="Buscar concepto, categoría o fecha" oninput="onHistSearchChange()" />
+      <button type="button" id="histSearchClear" class="search-clear" onclick="clearHistSearch()">✕</button>
+    </div>
+
+    <div class="filter-scroll">
+      <button type="button" class="m-chip active" id="hfMonth" onclick="setHistFilter('month')">Este mes</button>
+      <button type="button" class="m-chip" id="hfAll" onclick="setHistFilter('all')">Todos (<span id="hfAllCount">0</span>)</button>
+      <button type="button" class="m-chip" id="hfHarvey" onclick="setHistFilter('Harvey')">Harvey</button>
+      <button type="button" class="m-chip" id="hfMayra" onclick="setHistFilter('Mayra')">Mayra</button>
+      <button type="button" class="m-chip" id="hfMitad" onclick="setHistFilter('Mitad')">50/50</button>
+    </div>
+
+    <div id="historyList"></div>
+  </main>
+
+  <!-- VIEW 3: RESUMEN (INSIGHTS) -->
+  <main id="viewInsights" class="hidden">
+    <div class="sec-hdr" style="margin-top:0;">
+      <span id="oracleMonthTitle">Proyección del mes</span>
+      <span id="oracleHealthBadge" style="color:var(--green); text-transform:none; font-weight:600;">En ritmo</span>
+    </div>
+
+    <section class="card">
+      <div style="font-size:14px; color:var(--label-2); line-height:1.4;" id="oracleNarrative">
+        Calculando proyección del mes...
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi-box">
+          <div class="kpi-lbl">Ritmo / día</div>
+          <div class="kpi-val" id="oracleDailyRate">S/ 0.00</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-lbl">Proy. cierre</div>
+          <div class="kpi-val" id="oracleProjTotal" style="color:var(--blue);">S/ 0.00</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-lbl">Ahorro est.</div>
+          <div class="kpi-val" id="oracleProjSave" style="color:var(--green);">S/ 0.00</div>
+        </div>
+      </div>
+
+      <div class="dist-row">
+        <div class="dist-hdr"><span>Hogar variable</span><span id="ringVarVal">S/ 0.00 (0%)</span></div>
+        <div class="dist-track"><div class="dist-fill" id="ringVarBar" style="width:0%; background:var(--blue);"></div></div>
+      </div>
+      <div class="dist-row">
+        <div class="dist-hdr"><span>Servicios fijos</span><span id="ringFijoVal">S/ 0.00 (0%)</span></div>
+        <div class="dist-track"><div class="dist-fill" id="ringFijoBar" style="width:0%; background:var(--purple);"></div></div>
+      </div>
+      <div class="dist-row">
+        <div class="dist-hdr"><span>Ocio y salidas</span><span id="ringOcioVal">S/ 0.00 (0%)</span></div>
+        <div class="dist-track"><div class="dist-fill" id="ringOcioBar" style="width:0%; background:var(--orange);"></div></div>
+      </div>
+    </section>
+
+    <div class="sec-hdr">Acciones y sincronización</div>
+    <section class="inset-group">
+      <div class="inset-row">
+        <div>
+          <div style="font-size:15.5px;">Estado de la nube</div>
+          <div style="font-size:12.5px; color:var(--label-2);" id="syncStatusSub">Conectado · 0 pendientes</div>
+        </div>
+        <span style="font-size:13px; font-weight:600; color:var(--green);" id="syncStatusPill">En línea</span>
+      </div>
+      <button type="button" class="row-action-btn" onclick="openSummarySheet()">
+        <span>Compartir resumen mensual</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+      </button>
+      <button type="button" class="row-action-btn" onclick="manualForceSync()">
+        <span>Sincronizar ahora</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+      </button>
+      <button type="button" class="row-action-btn" onclick="exportDataCsv()">
+        <span>Exportar respaldo (CSV)</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      </button>
+    </section>
+
+    <div class="sec-hdr">Gastos recurrentes</div>
+    <section class="inset-group">
+      <button type="button" class="row-action-btn" onclick="applyPreset('Servicios (Luz, Agua, Internet)', 'Pago de Servicios Hogar', 175)">
+        <span style="color:var(--label);">Servicios del mes (Luz, Agua, Internet)</span>
+        <span style="font-size:13.5px; color:var(--label-2);">S/ 175</span>
+      </button>
+      <button type="button" class="row-action-btn" onclick="applyPreset('Mascotas (Comida, Baño, Vet)', 'Keyla (Comida / Baño)', 70)">
+        <span style="color:var(--label);">Keyla mensual (Comida y baño)</span>
+        <span style="font-size:13.5px; color:var(--label-2);">S/ 70</span>
+      </button>
+    </section>
+
+    <div class="sec-hdr">Historial mensual</div>
+    <section class="inset-group" id="monthsComparisonList"></section>
+  </main>
+
+  <!-- SHEETS (Native iOS Modals) -->
+  <!-- 1. Action / Confirm Sheet -->
+  <div class="sheet-backdrop" id="actionSheet" onclick="if(event.target===this)closeSheet('actionSheet')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title" id="modalTitle">Confirmar</span>
+        <button type="button" class="sheet-close-btn" onclick="closeSheet('actionSheet')">✕</button>
+      </div>
+      <div class="sheet-amount" id="modalAmount">S/ 0.00</div>
+      <div class="sheet-desc" id="modalDesc"></div>
+      <button type="button" class="sheet-btn primary" id="modalConfirmBtn">Confirmar</button>
+      <button type="button" class="sheet-btn secondary" onclick="closeSheet('actionSheet')">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- 2. Date Sheet -->
+  <div class="sheet-backdrop" id="dateSheet" onclick="if(event.target===this)closeSheet('dateSheet')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title">Fecha del gasto</span>
+        <button type="button" class="sheet-close-btn" onclick="closeSheet('dateSheet')">✕</button>
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:14px;">
+        <button type="button" class="ios-pill-btn" style="justify-content:center; padding:10px;" onclick="setQuickDateOffset(0); closeSheet('dateSheet');">Hoy</button>
+        <button type="button" class="ios-pill-btn" style="justify-content:center; padding:10px;" onclick="setQuickDateOffset(-1); closeSheet('dateSheet');">Ayer</button>
+        <button type="button" class="ios-pill-btn" style="justify-content:center; padding:10px;" onclick="setQuickDateOffset(-2); closeSheet('dateSheet');">Antier</button>
+      </div>
+      <input type="date" id="inpFecha" class="native-date-picker" onchange="onDateChanged()" />
+      <button type="button" class="sheet-btn primary" onclick="closeSheet('dateSheet')">Listo</button>
+    </div>
+  </div>
+
+  <!-- 3. Voice / Quick Dictate Sheet -->
+  <div class="sheet-backdrop" id="dictateSheet" onclick="if(event.target===this)closeSheet('dictateSheet')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title">Registro por frase</span>
+        <button type="button" class="sheet-close-btn" onclick="closeSheet('dictateSheet')">✕</button>
+      </div>
+      <div class="inset-group" style="margin-bottom:12px;">
+        <div class="inset-row">
+          <input type="text" id="aiInput" class="inset-input left" placeholder="Ej: Mayra pagó 48.50 en Tambo con Yape" oninput="updateMagicPreview()" />
+          <button type="button" id="aiMicBtn" class="mic-btn" style="width:34px; height:34px;" onclick="toggleVoiceDictation()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="inset-group" style="margin-bottom:14px;">
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Pagó</span><strong id="aiPrevWho">Harvey</strong></div>
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Monto</span><strong id="aiPrevMonto" style="color:var(--blue);">S/ 0.00</strong></div>
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Categoría</span><strong id="aiPrevCat">Supermercado</strong></div>
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Concepto</span><strong id="aiPrevDesc">—</strong></div>
+      </div>
+      <button type="button" class="sheet-btn primary" onclick="executeMagicSave(true)">Guardar ahora</button>
+      <button type="button" class="sheet-btn secondary" onclick="executeMagicSave(false)">Pasar al formulario</button>
+    </div>
+  </div>
+
+  <!-- 4. Notifications Sheet -->
+  <div class="sheet-backdrop" id="notifSheet" onclick="if(event.target===this)closeSheet('notifSheet')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title">Notificaciones</span>
+        <button type="button" class="sheet-close-btn" onclick="closeSheet('notifSheet')">✕</button>
+      </div>
+      <div class="inset-group" style="margin-bottom:14px;">
+        <div class="inset-row">
+          <div>
+            <div style="font-size:15.5px;">Avisos de gastos</div>
+            <div style="font-size:12.5px; color:var(--label-2);">Canal ntfy: hm_finanzas_v7_alertas</div>
+          </div>
+          <label class="ios-switch">
+            <input type="checkbox" id="chkNotifModal" onchange="toggleNotifications(this.checked)" />
+            <span class="ios-slider"></span>
+          </label>
+        </div>
+      </div>
+      <button type="button" class="sheet-btn primary" onclick="testNotification()">Enviar alerta de prueba</button>
+      <button type="button" class="sheet-btn secondary" onclick="closeSheet('notifSheet')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- 5. Monthly Summary Sheet -->
+  <div class="sheet-backdrop" id="summarySheet" onclick="if(event.target===this)closeSheet('summarySheet')">
+    <div class="sheet">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header">
+        <span class="sheet-title" id="wrpMonthTitle">Resumen mensual</span>
+        <button type="button" class="sheet-close-btn" onclick="closeSheet('summarySheet')">✕</button>
+      </div>
+      <div class="inset-group" style="margin-bottom:14px;">
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Total compartido</span><strong id="wrpTotal">S/ 0.00</strong></div>
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Ahorro vs presupuesto</span><strong id="wrpSaved" style="color:var(--green);">S/ 0.00</strong></div>
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Categoría principal</span><strong id="wrpTopCat">—</strong></div>
+        <div class="inset-row"><span class="inset-row-lbl" style="color:var(--label-2);">Liquidación</span><strong id="wrpSettleStatus" style="color:var(--blue);">—</strong></div>
+      </div>
+      <button type="button" class="sheet-btn primary" onclick="shareWrappedWhatsApp()">Compartir por WhatsApp</button>
+      <button type="button" class="sheet-btn secondary" onclick="closeSheet('summarySheet')">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- Tab Bar (SF Symbols Fill/Outline per HIG) -->
+  <nav class="tab-bar" role="tablist">
+    <button type="button" class="tab-btn active" id="tabForm" onclick="switchView('form')">
+      <svg id="tabIcoForm" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+      <span>Registrar</span>
+    </button>
+    <button type="button" class="tab-btn" id="tabHist" onclick="switchView('history')">
+      <svg id="tabIcoHist" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg>
+      <span>Actividad</span>
+    </button>
+    <button type="button" class="tab-btn" id="tabIns" onclick="switchView('insights')">
+      <svg id="tabIcoIns" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      <span>Resumen</span>
+    </button>
+  </nav>
+
+  <script>
+    const NTFY_SERVER  = "https://ntfy.sh";
+    const TOPIC_EVENTS = "hm_finanzas_v7_events";
+    const TOPIC_STATE  = "hm_finanzas_v7_state";
+    const TOPIC_NOTIF  = "hm_finanzas_v7_alertas";
+    const MONTHLY_BUDGET = 1730.00;
+    const CURRENT_BUILD_ID = "20261119_v6_apple_hig";
+
+    const MONTH_NAMES = [
+      "Enero","Febrero","Marzo","Abril","Mayo","Junio",
+      "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
+    ];
+    const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+    /* SF Symbols Style Monochrome Vector Icons + Semantic Apple Tints */
+    const CATEGORIES = [
+      { name: "Supermercado y Mercado", short: "Super", block: "var", color: "#007AFF", bg: "rgba(0,122,255,0.13)", svg: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.6 12.4a1 1 0 0 0 1 .8h9.7a1 1 0 0 0 1-.8L21 7H6"/>' },
+      { name: "Salidas a Comer y Delivery", short: "Comida", block: "ocio", color: "#FF9500", bg: "rgba(255,149,0,0.14)", svg: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>' },
+      { name: "Antojos, Tambo y Cafés", short: "Café", block: "ocio", color: "#A2845E", bg: "rgba(162,132,94,0.16)", svg: '<path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" y1="2" x2="6" y2="4"/><line x1="10" y1="2" x2="10" y2="4"/><line x1="14" y1="2" x2="14" y2="4"/>' },
+      { name: "Servicios (Luz, Agua, Internet)", short: "Servicios", block: "fijo", color: "#AF52DE", bg: "rgba(175,82,222,0.14)", svg: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>' },
+      { name: "Hogar, Limpieza y Artículos", short: "Hogar", block: "var", color: "#30B0C7", bg: "rgba(48,176,199,0.14)", svg: '<path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>' },
+      { name: "Mascotas (Comida, Baño, Vet)", short: "Mascotas", block: "var", color: "#FF2D55", bg: "rgba(255,45,85,0.13)", svg: '<circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/>' },
+      { name: "Cine, Entretenimiento y Salidas", short: "Ocio", block: "ocio", color: "#5856D6", bg: "rgba(88,86,214,0.14)", svg: '<rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/>' },
+      { name: "Salud y Farmacia", short: "Salud", block: "var", color: "#FF3B30", bg: "rgba(255,59,48,0.13)", svg: '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>' },
+      { name: "Cuidado Personal y Ropa", short: "Personal", block: "var", color: "#32ADE6", bg: "rgba(50,173,230,0.14)", svg: '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>' },
+      { name: "Transporte y Movilidad", short: "Movilidad", block: "var", color: "#007AFF", bg: "rgba(0,122,255,0.13)", svg: '<path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/>' },
+      { name: "Otros Gastos del Hogar", short: "Otros", block: "var", color: "#8E8E93", bg: "rgba(142,142,147,0.16)", svg: '<path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>' },
+      { name: "Ahorro / Meta en Pareja", short: "Ahorro", block: "save", color: "#34C759", bg: "rgba(52,199,89,0.14)", svg: '<line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/>' }
+    ];
+
+    const METHODS = ["Yape / Plin", "Efectivo", "Tarjeta de débito", "Tarjeta de crédito", "Transferencia"];
+
+    let currentVaultMode = localStorage.getItem("hm_vault_mode_v5") || "hogar";
+    let currentScope = localStorage.getItem("hm_scope_v5") || "month";
+    let selectedPayer = localStorage.getItem("hm_payer_v5") || "Harvey";
+    let selectedPersonalPayer = localStorage.getItem("hm_pers_payer_v5") || "Personal Harvey";
+    let selectedCat = CATEGORIES[0].name;
+    let selectedMethod = localStorage.getItem("hm_method_v5") || "Yape / Plin";
+    let viewedMonthIdx = new Date().getMonth() + 1;
+    let currentHistFilter = "month";
+    let currentHistSearch = "";
+    let notificationsEnabled = localStorage.getItem("hm_notif_enabled_v5") !== "false";
+
+    let defaultState = {"type":"state_snapshot","ts":1794789731,"count":117,"total":5426.10,"harvey":3071.65,"mayra":2354.45,"liqH2M":0,"cuota":2713.05,"saldo":-358.60,"statusTxt":"Mayra transfiere a Harvey: S/ 358.60","totPersHarv":258.07,"totPersMay":91.5,"byMonth":{"7":{"total":854.60,"harvey":431.25,"mayra":423.35,"liqH2M":0,"var":322.5,"fijo":447.10,"ocio":85,"persHarv":0,"persMay":0},"8":{"total":1203.2,"harvey":582.2,"mayra":621.0,"liqH2M":0,"var":835.3,"fijo":330,"ocio":37.9,"persHarv":0,"persMay":0},"9":{"total":1105.2,"harvey":444.7,"mayra":660.5,"liqH2M":0,"var":754.7,"fijo":293.8,"ocio":56.7,"persHarv":0,"persMay":0},"10":{"total":876.1,"harvey":445.3,"mayra":430.8,"liqH2M":0,"var":680.6,"fijo":0,"ocio":195.5,"persHarv":0,"persMay":0},"11":{"total":1387.0,"harvey":1168.2,"mayra":218.8,"liqH2M":0,"var":1356.0,"fijo":0,"ocio":31,"persHarv":258.07,"persMay":91.5},"12":{"total":0,"harvey":0,"mayra":0,"liqH2M":0,"var":0,"fijo":0,"ocio":0,"persHarv":0,"persMay":0}},"recent":[{"fecha":"15/11/2026","persona":"Personal Mayra","cat":"Personal - Supermercado y Mercado","desc":"Uñas","monto":45,"metodo":"Yape / Plin"},{"fecha":"05/11/2026","persona":"Personal Mayra","cat":"Personal - Transporte y Movilidad","desc":"Pasajes","monto":6.5,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Personal Mayra","cat":"Personal - Servicios (Luz, Agua, Internet)","desc":"Sandalias","monto":40,"metodo":"Yape / Plin"},{"fecha":"13/11/2026","persona":"Personal Harvey","cat":"Personal - Antojos, Tambo y Cafés","desc":"Antojos, Tambo y Cafés","monto":12,"metodo":"Yape / Plin"},{"fecha":"12/11/2026","persona":"Personal Harvey","cat":"Personal - Otros Gastos del Hogar","desc":"Prueba","monto":2,"metodo":"Yape / Plin"},{"fecha":"12/11/2026","persona":"Personal Harvey","cat":"Personal - Salidas a Comer y Delivery","desc":"Menú Miércoles","monto":15,"metodo":"Yape / Plin"},{"fecha":"11/11/2026","persona":"Personal Harvey","cat":"Personal - Cine, Entretenimiento y Salidas","desc":"Despedida","monto":72.67,"metodo":"Yape / Plin"},{"fecha":"11/11/2026","persona":"Personal Harvey","cat":"Personal - Transporte y Movilidad","desc":"Transporte y Movilidad","monto":5,"metodo":"Yape / Plin"},{"fecha":"11/11/2026","persona":"Personal Harvey","cat":"Personal - Transporte y Movilidad","desc":"Transporte y Movilidad","monto":5,"metodo":"Yape / Plin"},{"fecha":"10/11/2026","persona":"Personal Harvey","cat":"Personal - Supermercado y Mercado","desc":"Gaseosa","monto":4,"metodo":"Yape / Plin"},{"fecha":"09/11/2026","persona":"Personal Harvey","cat":"Personal - Cine, Entretenimiento y Salidas","desc":"Pichanga","monto":11.5,"metodo":"Yape / Plin"},{"fecha":"09/11/2026","persona":"Personal Harvey","cat":"Personal - Transporte y Movilidad","desc":"Transporte y Movilidad","monto":6.5,"metodo":"Yape / Plin"},{"fecha":"05/11/2026","persona":"Personal Harvey","cat":"Personal - Antojos, Tambo y Cafés","desc":"Tambo","monto":2,"metodo":"Yape / Plin"},{"fecha":"05/11/2026","persona":"Personal Harvey","cat":"Personal - Antojos, Tambo y Cafés","desc":"Tambo","monto":2,"metodo":"Yape / Plin"},{"fecha":"04/11/2026","persona":"Personal Harvey","cat":"Personal - Antojos, Tambo y Cafés","desc":"Tambo","monto":6,"metodo":"Yape / Plin"},{"fecha":"04/11/2026","persona":"Personal Harvey","cat":"Personal - Salidas a Comer y Delivery","desc":"Menú diario","monto":14.5,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Personal Harvey","cat":"Personal - Servicios (Luz, Agua, Internet)","desc":"Globos","monto":11,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Personal Harvey","cat":"Personal - Servicios (Luz, Agua, Internet)","desc":"Entel","monto":32.9,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Personal Harvey","cat":"Personal - Supermercado y Mercado","desc":"Te","monto":10,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Personal Harvey","cat":"Personal - Supermercado y Mercado","desc":"Marla","monto":20,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Personal Harvey","cat":"Personal - Supermercado y Mercado","desc":"Gaseosa","monto":6,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Personal Harvey","cat":"Personal - Otros Gastos del Hogar","desc":"Cumple Gus","monto":20,"metodo":"Yape / Plin"},{"fecha":"15/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Prueba","monto":888,"metodo":"Yape / Plin"},{"fecha":"15/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Abarrotes","monto":22,"metodo":"Yape / Plin"},{"fecha":"15/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Carnes","monto":54,"metodo":"Yape / Plin"},{"fecha":"15/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Compras de la semana","monto":52.6,"metodo":"Yape / Plin"},{"fecha":"15/11/2026","persona":"Harvey","cat":"Cuidado Personal y Ropa","desc":"Caja cocina","monto":77.4,"metodo":"Yape / Plin"},{"fecha":"13/11/2026","persona":"Harvey","cat":"Antojos, Tambo y Cafés","desc":"Pechuga cena","monto":15,"metodo":"Yape / Plin"},{"fecha":"11/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Gaseosa","monto":6,"metodo":"Yape / Plin"},{"fecha":"09/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Tambo","monto":30.8,"metodo":"Yape / Plin"},{"fecha":"09/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Abarrote","monto":39.4,"metodo":"Yape / Plin"},{"fecha":"09/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Verdura","monto":4,"metodo":"Yape / Plin"},{"fecha":"09/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Verdura","monto":9.8,"metodo":"Yape / Plin"},{"fecha":"09/11/2026","persona":"Harvey","cat":"Mascotas (Comida, Baño, Vet)","desc":"Comida","monto":9.5,"metodo":"Yape / Plin"},{"fecha":"08/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Pizza","monto":14,"metodo":"Yape / Plin"},{"fecha":"08/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Fruta","monto":9.5,"metodo":"Yape / Plin"},{"fecha":"08/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Pollo","monto":26,"metodo":"Yape / Plin"},{"fecha":"07/11/2026","persona":"Mayra","cat":"Transporte y Movilidad","desc":"Recarga de tarjeta","monto":10,"metodo":"Yape / Plin"},{"fecha":"07/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Fideo","monto":2.5,"metodo":"Yape / Plin"},{"fecha":"08/11/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Piña","monto":7,"metodo":"Yape / Plin"},{"fecha":"05/11/2026","persona":"Harvey","cat":"Antojos, Tambo y Cafés","desc":"Cena","monto":16,"metodo":"Yape / Plin"},{"fecha":"03/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Desengrasante","monto":19,"metodo":"Yape / Plin"},{"fecha":"02/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"tambo","monto":36.7,"metodo":"Yape / Plin"},{"fecha":"01/11/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Compras de la semana","monto":37.8,"metodo":"Yape / Plin"},{"fecha":"29/10/2026","persona":"Mayra","cat":"Hogar, Limpieza y Artículos","desc":"Cuidado personal","monto":20,"metodo":"Yape / Plin"},{"fecha":"26/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Tambo","monto":22.5,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Piña","monto":8,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Fresa","monto":5,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Gelatina","monto":3.5,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Abarrotes","monto":24.3,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Queso","monto":10.5,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Tomate","monto":5.7,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Carne","monto":32.7,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Verduras","monto":9.1,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Pollo","monto":32,"metodo":"Yape / Plin"},{"fecha":"25/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Bolsas","monto":15,"metodo":"Yape / Plin"},{"fecha":"24/10/2026","persona":"Mayra","cat":"Cine, Entretenimiento y Salidas","desc":"almuerzo jockey","monto":28.8,"metodo":"Yape / Plin"},{"fecha":"19/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Tambo","monto":14.5,"metodo":"Yape / Plin"},{"fecha":"19/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Tambo","monto":29,"metodo":"Yape / Plin"},{"fecha":"17/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Compras de la semana","monto":94.4,"metodo":"Yape / Plin"},{"fecha":"17/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Desayuno","monto":22,"metodo":"Efectivo"},{"fecha":"17/10/2026","persona":"Mayra","cat":"Cine, Entretenimiento y Salidas","desc":"Turrón","monto":25,"metodo":"Efectivo"},{"fecha":"14/10/2026","persona":"Mayra","cat":"Cine, Entretenimiento y Salidas","desc":"cena jockey","monto":30,"metodo":"Yape / Plin"},{"fecha":"11/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Compras de la semana","monto":42.5,"metodo":"Yape / Plin"},{"fecha":"09/10/2026","persona":"Mayra","cat":"Cine, Entretenimiento y Salidas","desc":"almuerzo y postre","monto":25.8,"metodo":"Efectivo"},{"fecha":"09/10/2026","persona":"Harvey","cat":"Mascotas (Comida, Baño, Vet)","desc":"Comida","monto":18,"metodo":"Efectivo"},{"fecha":"09/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Compras super tottus","monto":38,"metodo":"Efectivo"},{"fecha":"09/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Compras super tottus","monto":40.3,"metodo":"Efectivo"},{"fecha":"07/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Tambo","monto":20.8,"metodo":"Efectivo"},{"fecha":"07/10/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Tambo","monto":15.9,"metodo":"Efectivo"},{"fecha":"05/10/2026","persona":"Harvey","cat":"Cine, Entretenimiento y Salidas","desc":"cena pollo a la bresa","monto":19.9,"metodo":"Efectivo"},{"fecha":"04/10/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":156.9,"metodo":"Efectivo"},{"fecha":"04/10/2026","persona":"Mayra","cat":"Cine, Entretenimiento y Salidas","desc":"Almuerzo elecciones","monto":40,"metodo":"Efectivo"},{"fecha":"01/10/2026","persona":"Harvey","cat":"Cine, Entretenimiento y Salidas","desc":"Cena cierre de campaña","monto":26,"metodo":"Efectivo"},{"fecha":"30/09/2026","persona":"Harvey","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de servicios del hogar","monto":146.9,"metodo":"Efectivo"},{"fecha":"30/09/2026","persona":"Mayra","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de servicios del hogar","monto":146.9,"metodo":"Efectivo"},{"fecha":"27/09/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":152.7,"metodo":"Efectivo"},{"fecha":"26/09/2026","persona":"Harvey","cat":"Hogar, Limpieza y Artículos","desc":"Compras de limpieza plaza vea","monto":170,"metodo":"Efectivo"},{"fecha":"20/09/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":133.1,"metodo":"Efectivo"},{"fecha":"14/09/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Tambo","monto":26.4,"metodo":"Efectivo"},{"fecha":"13/09/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":172.5,"metodo":"Efectivo"},{"fecha":"11/09/2026","persona":"Mayra","cat":"Cine, Entretenimiento y Salidas","desc":"cine","monto":28.9,"metodo":"Efectivo"},{"fecha":"06/09/2026","persona":"Harvey","cat":"Cine, Entretenimiento y Salidas","desc":"pizza","monto":27.8,"metodo":"Efectivo"},{"fecha":"06/09/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":100,"metodo":"Efectivo"},{"fecha":"31/08/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Tambo","monto":23.8,"metodo":"Efectivo"},{"fecha":"31/08/2026","persona":"Mayra","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de servicios del hogar","monto":165,"metodo":"Efectivo"},{"fecha":"31/08/2026","persona":"Harvey","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de servicios del hogar","monto":165,"metodo":"Efectivo"},{"fecha":"31/08/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Tambo","monto":29,"metodo":"Efectivo"},{"fecha":"30/08/2026","persona":"Mayra","cat":"Otros Gastos del Hogar","desc":"torta de cumpleaños","monto":52,"metodo":"Efectivo"},{"fecha":"30/08/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":115.8,"metodo":"Efectivo"},{"fecha":"30/08/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":27.5,"metodo":"Efectivo"},{"fecha":"28/08/2026","persona":"Mayra","cat":"Cine, Entretenimiento y Salidas","desc":"cine","monto":37.9,"metodo":"Efectivo"},{"fecha":"22/08/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Fruta","monto":68.7,"metodo":"Efectivo"},{"fecha":"22/08/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Fruta","monto":68.7,"metodo":"Efectivo"},{"fecha":"17/08/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Tambo","monto":33,"metodo":"Efectivo"},{"fecha":"17/08/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Tambo","monto":33,"metodo":"Efectivo"},{"fecha":"16/08/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":88,"metodo":"Efectivo"},{"fecha":"16/08/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana (Compra semanal)","monto":90.8,"metodo":"Efectivo"},{"fecha":"09/08/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana","monto":5,"metodo":"Efectivo"},{"fecha":"08/08/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"compras super","monto":126,"metodo":"Efectivo"},{"fecha":"08/08/2026","persona":"Harvey","cat":"Hogar, Limpieza y Artículos","desc":"Cuidado personal","monto":45,"metodo":"Efectivo"},{"fecha":"05/08/2026","persona":"Mayra","cat":"Hogar, Limpieza y Artículos","desc":"Dolarcity","monto":29,"metodo":"Efectivo"},{"fecha":"30/07/2026","persona":"Mayra","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de servicios del hogar","monto":152.9,"metodo":"Efectivo"},{"fecha":"30/07/2026","persona":"Harvey","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de servicios del hogar","monto":152.9,"metodo":"Efectivo"},{"fecha":"30/07/2026","persona":"Harvey","cat":"Cine, Entretenimiento y Salidas","desc":"almuerzo","monto":65,"metodo":"Efectivo"},{"fecha":"26/07/2026","persona":"Mayra","cat":"Transporte y Movilidad","desc":"pasaje","monto":20,"metodo":"Efectivo"},{"fecha":"26/07/2026","persona":"Harvey","cat":"Cine, Entretenimiento y Salidas","desc":"comida","monto":20,"metodo":"Efectivo"},{"fecha":"26/07/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"fruta","monto":30,"metodo":"Efectivo"},{"fecha":"26/07/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"pollo","monto":28,"metodo":"Efectivo"},{"fecha":"25/07/2026","persona":"Harvey","cat":"Mascotas (Comida, Baño, Vet)","desc":"baño keyla","monto":25,"metodo":"Efectivo"},{"fecha":"25/07/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana (Compra semanal)","monto":49.8,"metodo":"Efectivo"},{"fecha":"25/07/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Supermercado de la semana (Compra semanal)","monto":45.7,"metodo":"Efectivo"},{"fecha":"22/07/2026","persona":"Harvey","cat":"Supermercado y Mercado","desc":"Tambo","monto":24,"metodo":"Tarjeta de débito"},{"fecha":"20/07/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Tambo","monto":20,"metodo":"Tarjeta de débito"},{"fecha":"19/07/2026","persona":"Mayra","cat":"Supermercado y Mercado","desc":"Supermercado de la semana (Compra semanal)","monto":80,"metodo":"Efectivo"},{"fecha":"15/07/2026","persona":"Harvey","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de multa","monto":70.65,"metodo":"Efectivo"},{"fecha":"15/07/2026","persona":"Mayra","cat":"Servicios (Luz, Agua, Internet)","desc":"Pago de multa","monto":70.65,"metodo":"Efectivo"}]};
+
+    let baseState = defaultState;
+    try {
+      const cached = localStorage.getItem("hm_cached_state_v9");
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed && parsed.ts && parsed.ts > defaultState.ts && parsed.count >= defaultState.count) baseState = parsed;
+      }
+    } catch (e) {}
+
+    let pendingEvents = new Map();
+    let deleteEvents = new Map();
+    let knownEventIds = new Set();
+    let isInitialCloudFetch = true;
+    let currentAnnualSaldo = 0;
+    let currentMonthSaldo = 0;
+
+    function haptic(pattern = 10) {
+      try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
+    }
+
+    let audioCtx = null;
+    function playChime() {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!audioCtx) audioCtx = new AC();
+        if (audioCtx.state === "suspended") audioCtx.resume();
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(880, now);
+        osc.frequency.exponentialRampToValueAtTime(1318.5, now + 0.09);
+        gain.gain.setValueAtTime(0.06, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.19);
+      } catch (e) {}
+    }
+
+    let toastTimer = null;
+    function showToast(msg, warn = false) {
+      const el = document.getElementById("toastPill");
+      document.getElementById("toastText").textContent = msg;
+      document.getElementById("toastDot").className = "toast-dot" + (warn ? " warn" : "");
+      el.classList.add("show");
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove("show"), 2400);
+    }
+
+    function openSheet(id) {
+      haptic(8);
+      if (id === "notifSheet") {
+        document.getElementById("chkNotifModal").checked = notificationsEnabled;
+      }
+      document.getElementById(id).classList.add("open");
+    }
+    function closeSheet(id) {
+      haptic(6);
+      document.getElementById(id).classList.remove("open");
+    }
+
+    function fmtSoles(n) {
+      return "S/ " + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function getCatMeta(catName) {
+      const clean = String(catName || "").replace(/^Personal\s*-\s*/i, "").trim();
+      return CATEGORIES.find(c => c.name === clean) || CATEGORIES[10];
+    }
+
+    function renderCatSvg(meta) {
+      return `<svg viewBox="0 0 24 24" fill="none" stroke="${meta.color}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${meta.svg}</svg>`;
+    }
+
+    /* Persistence */
+    function loadPersistentEvents() {
+      try {
+        const kArr = JSON.parse(localStorage.getItem("hm_known_ids_v8") || "[]");
+        if (Array.isArray(kArr)) kArr.forEach(id => knownEventIds.add(id));
+        const pArr = JSON.parse(localStorage.getItem("hm_pending_ev_v8") || "[]");
+        if (Array.isArray(pArr)) pArr.forEach(ev => { if (ev && ev.id) pendingEvents.set(ev.id, ev); });
+        const dArr = JSON.parse(localStorage.getItem("hm_delete_ev_v8") || "[]");
+        if (Array.isArray(dArr)) dArr.forEach(ev => { if (ev && ev.id) deleteEvents.set(ev.id, ev); });
+      } catch (e) {}
+    }
+
+    function savePersistentEvents() {
+      try {
+        localStorage.setItem("hm_known_ids_v8", JSON.stringify(Array.from(knownEventIds).slice(-400)));
+        localStorage.setItem("hm_pending_ev_v8", JSON.stringify(Array.from(pendingEvents.values()).slice(-200)));
+        localStorage.setItem("hm_delete_ev_v8", JSON.stringify(Array.from(deleteEvents.values()).slice(-200)));
+      } catch (e) {}
+    }
+
+    function getOfflineQueue() {
+      try { return JSON.parse(localStorage.getItem("hm_offline_queue_v2") || "[]"); } catch (e) { return []; }
+    }
+    function saveOfflineQueue(q) {
+      try { localStorage.setItem("hm_offline_queue_v2", JSON.stringify(q)); } catch (e) {}
+    }
+
+    /* Date Helpers */
+    function getIsoOffset(days) {
+      const d = new Date();
+      d.setDate(d.getDate() + days);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, "0");
+      const day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function setQuickDateOffset(days) {
+      haptic(8);
+      const iso = getIsoOffset(days);
+      document.getElementById("inpFecha").value = iso;
+      onDateChanged();
+    }
+
+    function onDateChanged() {
+      const val = document.getElementById("inpFecha").value || getIsoOffset(0);
+      const hoy = getIsoOffset(0);
+      const ayer = getIsoOffset(-1);
+      const dispBtn = document.getElementById("btnDateDisplay");
+      const ayerBtn = document.getElementById("btnQuickAyer");
+
+      if (val === hoy) {
+        dispBtn.textContent = "Hoy";
+        dispBtn.classList.add("active");
+        ayerBtn.classList.remove("active");
+      } else if (val === ayer) {
+        dispBtn.textContent = "Ayer";
+        dispBtn.classList.remove("active");
+        ayerBtn.classList.add("active");
+      } else {
+        const p = val.split("-");
+        dispBtn.textContent = p.length === 3 ? `${p[2]} ${MONTH_NAMES[parseInt(p[1],10)-1].slice(0,3)}` : val;
+        dispBtn.classList.add("active");
+        ayerBtn.classList.remove("active");
+      }
+    }
+
+    function normalizeDateStr(d) {
+      if (!d) return "";
+      d = String(d).trim();
+      const mIso = d.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+      if (mIso) return `${mIso[3].padStart(2,"0")}/${mIso[2].padStart(2,"0")}/${mIso[1]}`;
+      const mSlash = d.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+      if (mSlash) return `${mSlash[1].padStart(2,"0")}/${mSlash[2].padStart(2,"0")}/${mSlash[3]}`;
+      return d;
+    }
+
+    function getEventMonth(ev) {
+      if (ev.fecha && ev.fecha.includes("-")) return String(parseInt(ev.fecha.split("-")[1], 10));
+      if (ev.fecha && ev.fecha.includes("/")) return String(parseInt(ev.fecha.split("/")[1], 10));
+      if (ev.fechaDisp && ev.fechaDisp.includes("/")) return String(parseInt(ev.fechaDisp.split("/")[1], 10));
+      return String(new Date().getMonth() + 1);
+    }
+
+    function dateSortValue(dStr) {
+      const norm = normalizeDateStr(dStr);
+      const m = norm.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (!m) return 0;
+      return parseInt(`${m[3]}${m[2]}${m[1]}`, 10);
+    }
+
+    function formatFriendlyDateHeader(dStr) {
+      const norm = normalizeDateStr(dStr);
+      const m = norm.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (!m) return norm || "Sin fecha";
+      const day = parseInt(m[1], 10), mon = parseInt(m[2], 10), yr = parseInt(m[3], 10);
+      const dt = new Date(yr, mon - 1, day);
+      const days = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+      return `${days[dt.getDay()]} ${day} de ${MONTH_NAMES[mon - 1]}`;
+    }
+
+    function makeItemKey(persona, desc, monto, fecha) {
+      return `${(persona||"").trim()}|${(desc||"").trim().toLowerCase()}|${Number(monto||0).toFixed(2)}|${normalizeDateStr(fecha)}`;
+    }
+
+    /* Vault & Selectors */
+    function setVaultMode(mode) {
+      haptic(10);
+      currentVaultMode = mode;
+      localStorage.setItem("hm_vault_mode_v5", mode);
+      const isPers = mode === "personal";
+      document.body.classList.toggle("personal-mode", isPers);
+      document.getElementById("btnModeHogar").classList.toggle("active", !isPers);
+      document.getElementById("btnModePersonal").classList.toggle("active", isPers);
+      document.getElementById("segPayerHogar").classList.toggle("hidden", isPers);
+      document.getElementById("segPayerPersonal").classList.toggle("hidden", !isPers);
+      document.getElementById("scopeToggle").classList.toggle("hidden", isPers);
+      document.getElementById("btnSubmit").textContent = isPers ? "Guardar gasto personal" : "Guardar gasto";
+      renderMetrics();
+    }
+
+    function toggleScope(sc) {
+      haptic(8);
+      currentScope = sc;
+      localStorage.setItem("hm_scope_v5", sc);
+      document.getElementById("btnScopeMonth").classList.toggle("active", sc === "month");
+      document.getElementById("btnScopeYear").classList.toggle("active", sc === "year");
+      renderMetrics();
+    }
+
+    function shiftMonth(delta) {
+      haptic(8);
+      viewedMonthIdx += delta;
+      if (viewedMonthIdx < 1) viewedMonthIdx = 12;
+      if (viewedMonthIdx > 12) viewedMonthIdx = 1;
+      renderMetrics();
+    }
+
+    function selectPayer(p) {
+      haptic(6);
+      selectedPayer = p;
+      localStorage.setItem("hm_payer_v5", p);
+      document.getElementById("segHarvey").classList.toggle("active", p === "Harvey");
+      document.getElementById("segMayra").classList.toggle("active", p === "Mayra");
+      document.getElementById("segMitad").classList.toggle("active", p.includes("Mitad"));
+    }
+
+    function selectPersonalPayer(p) {
+      haptic(6);
+      selectedPersonalPayer = p;
+      localStorage.setItem("hm_pers_payer_v5", p);
+      document.getElementById("segPersHarv").classList.toggle("active", p === "Personal Harvey");
+      document.getElementById("segPersMay").classList.toggle("active", p === "Personal Mayra");
+      renderMetrics();
+    }
+
+    function renderSelectors() {
+      const cg = document.getElementById("catGrid");
+      cg.innerHTML = "";
+      CATEGORIES.forEach(c => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "cat-btn" + (selectedCat === c.name ? " active" : "");
+        b.dataset.catName = c.name;
+        b.innerHTML = `
+          <div class="cat-icon-circle" style="background:${c.bg};">${renderCatSvg(c)}</div>
+          <span class="cat-lbl">${c.short}</span>
+        `;
+        b.onclick = () => {
+          haptic(6);
+          selectedCat = c.name;
+          cg.querySelectorAll(".cat-btn").forEach(x => x.classList.toggle("active", x.dataset.catName === c.name));
+        };
+        cg.appendChild(b);
+      });
+
+      const mg = document.getElementById("methodGrid");
+      mg.innerHTML = "";
+      METHODS.forEach(m => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "m-chip" + (selectedMethod === m ? " active" : "");
+        b.textContent = m;
+        b.onclick = () => {
+          haptic(6);
+          selectedMethod = m;
+          localStorage.setItem("hm_method_v5", m);
+          mg.querySelectorAll(".m-chip").forEach(x => x.classList.toggle("active", x.textContent === m));
+        };
+        mg.appendChild(b);
+      });
+    }
+
+    /* Core Metrics & Balance Engine (100% compatible with v5 data) */
+    function renderMetrics() {
+      let tot = baseState.total || 0;
+      let harv = baseState.harvey || 0;
+      let may = baseState.mayra || 0;
+      let liqH2M = baseState.liqH2M || 0;
+      let combinedRecent = (baseState.recent || []).map(r => ({ ...r }));
+
+      let monthMap = {};
+      for (let m = 1; m <= 12; m++) {
+        const k = String(m);
+        const src = (baseState.byMonth && baseState.byMonth[k]) ? baseState.byMonth[k] : {};
+        monthMap[k] = {
+          total: src.total || 0, harvey: src.harvey || 0, mayra: src.mayra || 0,
+          liqH2M: src.liqH2M || 0, var: src.var || 0, fijo: src.fijo || 0,
+          ocio: src.ocio || 0, persHarv: src.persHarv || 0, persMay: src.persMay || 0
+        };
+      }
+
+      const existingKeys = new Set(combinedRecent.map(r => makeItemKey(r.persona, r.desc, r.monto, r.fecha)));
+
+      for (const ev of pendingEvents.values()) {
+        const k = makeItemKey(ev.persona, ev.desc, ev.monto, ev.fechaDisp || ev.fecha);
+        if (existingKeys.has(k)) continue;
+        existingKeys.add(k);
+        const mKey = getEventMonth(ev);
+        const val = Number(ev.monto) || 0;
+        const p = String(ev.persona || "");
+        const md = monthMap[mKey] || monthMap["11"];
+
+        if (p === "Personal Harvey") { md.persHarv += val; }
+        else if (p === "Personal Mayra") { md.persMay += val; }
+        else if (p.includes("Liquidación")) {
+          if (p.includes("Harvey")) { liqH2M += val; md.liqH2M += val; }
+          else { liqH2M -= val; md.liqH2M -= val; }
+        } else {
+          tot += val; md.total += val;
+          if (p === "Harvey") { harv += val; md.harvey += val; }
+          else if (p === "Mayra") { may += val; md.mayra += val; }
+          else { harv += val/2; may += val/2; md.harvey += val/2; md.mayra += val/2; }
+          const blk = getCatMeta(ev.cat).block;
+          if (blk === "fijo") md.fijo += val;
+          else if (blk === "ocio") md.ocio += val;
+          else md.var += val;
+        }
+        combinedRecent.unshift({
+          id: ev.id, fecha: ev.fechaDisp || normalizeDateStr(ev.fecha),
+          persona: ev.persona, cat: ev.cat, desc: ev.desc, monto: val, metodo: ev.metodo
+        });
+      }
+
+      // Apply deletions
+      for (const del of deleteEvents.values()) {
+        const dk = makeItemKey(del.persona, del.desc, del.monto, del.fecha);
+        const idx = combinedRecent.findIndex(r => (del.targetId && r.id === del.targetId) || makeItemKey(r.persona, r.desc, r.monto, r.fecha) === dk);
+        if (idx >= 0) {
+          const r = combinedRecent.splice(idx, 1)[0];
+          const mKey = getEventMonth(r);
+          const val = Number(r.monto) || 0;
+          const p = String(r.persona || "");
+          const md = monthMap[mKey] || monthMap["11"];
+          if (p === "Personal Harvey") md.persHarv = Math.max(0, md.persHarv - val);
+          else if (p === "Personal Mayra") md.persMay = Math.max(0, md.persMay - val);
+          else if (!p.includes("Liquidación")) {
+            tot = Math.max(0, tot - val); md.total = Math.max(0, md.total - val);
+            if (p === "Harvey") { harv = Math.max(0, harv - val); md.harvey = Math.max(0, md.harvey - val); }
+            else if (p === "Mayra") { may = Math.max(0, may - val); md.mayra = Math.max(0, md.mayra - val); }
+            else { harv = Math.max(0, harv - val/2); may = Math.max(0, may - val/2); md.harvey = Math.max(0, md.harvey - val/2); md.mayra = Math.max(0, md.mayra - val/2); }
+            const blk = getCatMeta(r.cat).block;
+            if (blk === "fijo") md.fijo = Math.max(0, md.fijo - val);
+            else if (blk === "ocio") md.ocio = Math.max(0, md.ocio - val);
+            else md.var = Math.max(0, md.var - val);
+          }
+        }
+      }
+
+      window.__lastCombinedRecent = combinedRecent;
+      const isPers = currentVaultMode === "personal";
+      const vaultItems = combinedRecent.filter(r => {
+        const p = String(r.persona || "");
+        return isPers ? (p === selectedPersonalPayer) : (!p.startsWith("Personal"));
+      });
+      window.__lastVaultFilteredRecent = vaultItems;
+
+      const mKey = String(viewedMonthIdx);
+      const curData = monthMap[mKey] || { total:0, harvey:0, mayra:0, liqH2M:0, var:0, fijo:0, ocio:0, persHarv:0, persMay:0 };
+      const mTot = curData.total, mHarv = curData.harvey, mMay = curData.mayra;
+      const mCuota = mTot / 2;
+      const mSaldo = mMay - mCuota - (curData.liqH2M || 0);
+      const cuota = tot / 2;
+      const saldo = may - cuota - liqH2M;
+      currentMonthSaldo = mSaldo;
+      currentAnnualSaldo = saldo;
+
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+      const pill = document.getElementById("heroSettlementPill");
+
+      if (isPers) {
+        const isHarv = selectedPersonalPayer === "Personal Harvey";
+        const pTot = isHarv ? curData.persHarv : curData.persMay;
+        document.getElementById("heroPeriodLbl").textContent = `${mName} 2026`;
+        document.getElementById("heroTotalAmount").textContent = fmtSoles(pTot);
+        pill.textContent = "Privado";
+        pill.className = "settle-pill personal";
+        pill.onclick = null;
+        document.getElementById("statLbl1").textContent = "Perfil";
+        document.getElementById("statVal1").textContent = isHarv ? "Harvey" : "Mayra";
+        document.getElementById("statLbl2").textContent = "Registros";
+        document.getElementById("statVal2").textContent = String(vaultItems.filter(r => getEventMonth(r) === mKey).length);
+        document.getElementById("statLbl3").textContent = "Deuda";
+        document.getElementById("statVal3").textContent = "S/ 0.00";
+        document.getElementById("budgetStrip").classList.add("hidden");
+      } else {
+        document.getElementById("budgetStrip").classList.remove("hidden");
+        const isMonth = currentScope === "month";
+        const aTot = isMonth ? mTot : tot;
+        const aHarv = isMonth ? mHarv : harv;
+        const aMay = isMonth ? mMay : may;
+        const aCuota = isMonth ? mCuota : cuota;
+        const aSaldo = isMonth ? mSaldo : saldo;
+
+        document.getElementById("heroPeriodLbl").textContent = isMonth ? `${mName} 2026` : "Acumulado 2026";
+        document.getElementById("heroTotalAmount").textContent = fmtSoles(aTot);
+
+        if (aSaldo > 0.009) {
+          pill.textContent = `Harvey → Mayra · ${fmtSoles(aSaldo)}`;
+          pill.className = "settle-pill";
+        } else if (aSaldo < -0.009) {
+          pill.textContent = `Mayra → Harvey · ${fmtSoles(Math.abs(aSaldo))}`;
+          pill.className = "settle-pill";
+        } else {
+          pill.textContent = "Al día · S/ 0.00";
+          pill.className = "settle-pill settled";
+        }
+        pill.onclick = () => promptSettleCurrent();
+
+        document.getElementById("statLbl1").textContent = "Harvey";
+        document.getElementById("statVal1").textContent = fmtSoles(aHarv);
+        document.getElementById("statLbl2").textContent = "Mayra";
+        document.getElementById("statVal2").textContent = fmtSoles(aMay);
+        document.getElementById("statLbl3").textContent = "Cuota 50%";
+        document.getElementById("statVal3").textContent = fmtSoles(aCuota);
+
+        const pct = Math.min(100, Math.round((mTot / MONTHLY_BUDGET) * 100));
+        const fillEl = document.getElementById("budgetFill");
+        fillEl.style.width = pct + "%";
+        fillEl.style.background = pct >= 100 ? "var(--red)" : (pct >= 80 ? "var(--orange)" : "var(--blue)");
+        document.getElementById("budgetLeftLbl").textContent = `Presupuesto ${mName.toLowerCase()} (${fmtSoles(MONTHLY_BUDGET)})`;
+        document.getElementById("budgetRightLbl").textContent = `${pct}%`;
+      }
+
+      // Sync dot & honest status
+      const qLen = getOfflineQueue().length;
+      const dot = document.getElementById("netDot");
+      const syncSub = document.getElementById("syncStatusSub");
+      const syncPill = document.getElementById("syncStatusPill");
+      if (!navigator.onLine) {
+        dot.className = "sync-dot-badge offline";
+        if (syncPill) { syncPill.textContent = "Sin señal"; syncPill.style.color = "var(--red)"; }
+      } else if (qLen > 0) {
+        dot.className = "sync-dot-badge pending";
+        if (syncPill) { syncPill.textContent = `${qLen} pend.`; syncPill.style.color = "var(--orange)"; }
+      } else {
+        dot.className = "sync-dot-badge";
+        if (syncPill) { syncPill.textContent = "En línea"; syncPill.style.color = "var(--green)"; }
+      }
+      if (syncSub) syncSub.textContent = `${combinedRecent.length} registros en memoria · ${qLen} pendientes`;
+
+      // Activity filter counters
+      document.getElementById("hfAllCount").textContent = vaultItems.length;
+      document.getElementById("hfHarvey").classList.toggle("hidden", isPers);
+      document.getElementById("hfMayra").classList.toggle("hidden", isPers);
+      document.getElementById("hfMitad").classList.toggle("hidden", isPers);
+
+      renderHistoryList();
+      renderInsights(curData, mName, monthMap, mSaldo);
+    }
+
+    function renderInsights(curData, mName, monthMap, mSaldo) {
+      const mTot = curData.total || 0;
+      const now = new Date();
+      const totalDays = DAYS_IN_MONTH[viewedMonthIdx - 1] || 30;
+      const elapsed = (viewedMonthIdx === now.getMonth() + 1) ? Math.max(1, now.getDate()) : totalDays;
+      const daily = mTot / elapsed;
+      const proj = daily * totalDays;
+      const save = MONTHLY_BUDGET - proj;
+
+      document.getElementById("oracleMonthTitle").textContent = `Proyección · ${mName}`;
+      document.getElementById("oracleDailyRate").textContent = fmtSoles(daily);
+      document.getElementById("oracleProjTotal").textContent = fmtSoles(proj);
+      const saveEl = document.getElementById("oracleProjSave");
+      saveEl.textContent = (save >= 0 ? "+" : "-") + fmtSoles(Math.abs(save));
+      saveEl.style.color = save >= 0 ? "var(--green)" : "var(--red)";
+
+      const badge = document.getElementById("oracleHealthBadge");
+      const narr = document.getElementById("oracleNarrative");
+      if (save >= 0) {
+        badge.textContent = "En ritmo";
+        badge.style.color = "var(--green)";
+        narr.textContent = `Al ritmo actual de ${fmtSoles(daily)}/día, cerrarían ${mName.toLowerCase()} ahorrando ${fmtSoles(save)} respecto al presupuesto.`;
+      } else {
+        badge.textContent = "Por encima";
+        badge.style.color = "var(--orange)";
+        narr.textContent = `El ritmo diario (${fmtSoles(daily)}) proyecta superar el presupuesto mensual en ${fmtSoles(Math.abs(save))}.`;
+      }
+
+      const denom = Math.max(1, mTot);
+      const pVar = Math.min(100, Math.round((curData.var / denom) * 100));
+      const pFijo = Math.min(100, Math.round((curData.fijo / denom) * 100));
+      const pOcio = Math.min(100, Math.round((curData.ocio / denom) * 100));
+      document.getElementById("ringVarVal").textContent = `${fmtSoles(curData.var)} (${mTot > 0 ? pVar : 0}%)`;
+      document.getElementById("ringVarBar").style.width = (mTot > 0 ? pVar : 0) + "%";
+      document.getElementById("ringFijoVal").textContent = `${fmtSoles(curData.fijo)} (${mTot > 0 ? pFijo : 0}%)`;
+      document.getElementById("ringFijoBar").style.width = (mTot > 0 ? pFijo : 0) + "%";
+      document.getElementById("ringOcioVal").textContent = `${fmtSoles(curData.ocio)} (${mTot > 0 ? pOcio : 0}%)`;
+      document.getElementById("ringOcioBar").style.width = (mTot > 0 ? pOcio : 0) + "%";
+
+      // Monthly comparison list
+      const ml = document.getElementById("monthsComparisonList");
+      ml.innerHTML = "";
+      const maxM = Math.max(11, new Date().getMonth() + 1);
+      for (let mIdx = maxM; mIdx >= 7; mIdx--) {
+        const md = monthMap[String(mIdx)] || { total:0, harvey:0, mayra:0, liqH2M:0 };
+        const ms = md.mayra - (md.total / 2) - (md.liqH2M || 0);
+        let st = "Al día";
+        if (ms > 0.009) st = `H → M · ${fmtSoles(ms)}`;
+        else if (ms < -0.009) st = `M → H · ${fmtSoles(Math.abs(ms))}`;
+
+        const row = document.createElement("div");
+        row.className = "inset-row";
+        row.style.cursor = "pointer";
+        row.onclick = () => { haptic(8); viewedMonthIdx = mIdx; renderMetrics(); switchView("form"); };
+        row.innerHTML = `
+          <div>
+            <div style="font-size:15.5px; font-weight:${mIdx === viewedMonthIdx ? '700' : '500'}; color:${mIdx === viewedMonthIdx ? 'var(--blue)' : 'var(--label)'};">${MONTH_NAMES[mIdx - 1]} 2026</div>
+            <div style="font-size:12.5px; color:var(--label-2);">H: ${fmtSoles(md.harvey)} · M: ${fmtSoles(md.mayra)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:15.5px; font-weight:600; font-variant-numeric:tabular-nums;">${fmtSoles(md.total)}</div>
+            <div style="font-size:12px; color:var(--label-2);">${st}</div>
+          </div>
+        `;
+        ml.appendChild(row);
+      }
+
+      // Update Summary Sheet data
+      document.getElementById("wrpMonthTitle").textContent = `Resumen · ${mName} 2026`;
+      document.getElementById("wrpTotal").textContent = fmtSoles(mTot);
+      document.getElementById("wrpSaved").textContent = (MONTHLY_BUDGET - mTot >= 0 ? "+" : "-") + fmtSoles(Math.abs(MONTHLY_BUDGET - mTot));
+      document.getElementById("wrpSettleStatus").textContent = mSaldo > 0.009 ? `Harvey → Mayra (${fmtSoles(mSaldo)})` : (mSaldo < -0.009 ? `Mayra → Harvey (${fmtSoles(Math.abs(mSaldo))})` : "Al día");
+      const mItems = (window.__lastVaultFilteredRecent || []).filter(r => getEventMonth(r) === String(viewedMonthIdx));
+      const catSum = {};
+      mItems.forEach(r => { catSum[r.cat] = (catSum[r.cat] || 0) + Number(r.monto || 0); });
+      const top = Object.entries(catSum).sort((a,b) => b[1] - a[1])[0];
+      document.getElementById("wrpTopCat").textContent = top ? `${getCatMeta(top[0]).short} (${fmtSoles(top[1])})` : "Sin gastos";
+    }
+
+    /* Activity List with Native iOS Swipe-to-Delete */
+    let activeSwipedRow = null;
+    function closeAllSwipes() {
+      if (activeSwipedRow) {
+        activeSwipedRow.style.transform = "translateX(0px)";
+        activeSwipedRow = null;
+      }
+    }
+
+    function attachSwipeHandler(rowEl, item) {
+      let startX = 0, startY = 0, curX = 0, isDragging = false, lockedHorizontal = null;
+      rowEl.addEventListener("touchstart", (e) => {
+        if (activeSwipedRow && activeSwipedRow !== rowEl) closeAllSwipes();
+        const t = e.touches[0];
+        startX = t.clientX;
+        startY = t.clientY;
+        curX = 0;
+        isDragging = true;
+        lockedHorizontal = null;
+      }, { passive: true });
+
+      rowEl.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+        const t = e.touches[0];
+        const dx = t.clientX - startX;
+        const dy = t.clientY - startY;
+        if (lockedHorizontal === null) {
+          if (Math.abs(dx) > 8 || Math.abs(dy) > 8) {
+            lockedHorizontal = Math.abs(dx) > Math.abs(dy);
+          }
+        }
+        if (!lockedHorizontal) return;
+        rowEl.classList.add("dragging");
+        curX = Math.max(-96, Math.min(0, dx));
+        rowEl.style.transform = `translateX(${curX}px)`;
+      }, { passive: true });
+
+      rowEl.addEventListener("touchend", () => {
+        if (!isDragging) return;
+        isDragging = false;
+        rowEl.classList.remove("dragging");
+        if (curX < -44) {
+          rowEl.style.transform = "translateX(-84px)";
+          activeSwipedRow = rowEl;
+          haptic(8);
+        } else {
+          rowEl.style.transform = "translateX(0px)";
+          if (activeSwipedRow === rowEl) activeSwipedRow = null;
+        }
+      });
+
+      // Desktop / quick tap fallback: tap opens detail/delete sheet if not swiped
+      rowEl.addEventListener("click", () => {
+        if (activeSwipedRow === rowEl) {
+          closeAllSwipes();
+          return;
+        }
+        promptDeleteExpense(item);
+      });
+    }
+
+    function setHistFilter(f) {
+      haptic(6);
+      currentHistFilter = f;
+      ["hfMonth","hfAll","hfHarvey","hfMayra","hfMitad"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle("active", (id === "hf" + f.charAt(0).toUpperCase() + f.slice(1)) || (f === "month" && id === "hfMonth") || (f === "all" && id === "hfAll"));
+      });
+      renderHistoryList();
+    }
+
+    function onHistSearchChange() {
+      const val = document.getElementById("histSearchInp").value.trim().toLowerCase();
+      currentHistSearch = val;
+      document.getElementById("histSearchClear").style.display = val ? "inline-flex" : "none";
+      renderHistoryList();
+    }
+    function clearHistSearch() {
+      document.getElementById("histSearchInp").value = "";
+      currentHistSearch = "";
+      document.getElementById("histSearchClear").style.display = "none";
+      renderHistoryList();
+    }
+
+    function renderHistoryList() {
+      const hl = document.getElementById("historyList");
+      hl.innerHTML = "";
+      const allItems = window.__lastVaultFilteredRecent || [];
+      const curMKey = String(viewedMonthIdx);
+      const isPers = currentVaultMode === "personal";
+
+      let list = allItems.filter(item => {
+        if (currentHistSearch) {
+          const blob = `${item.desc||""} ${item.cat||""} ${item.persona||""} ${item.fecha||""} ${item.metodo||""} ${item.monto||""}`.toLowerCase();
+          if (!blob.includes(currentHistSearch)) return false;
+        }
+        if (currentHistFilter === "month" && !currentHistSearch) return getEventMonth(item) === curMKey;
+        if (!isPers) {
+          if (currentHistFilter === "Harvey") return item.persona === "Harvey";
+          if (currentHistFilter === "Mayra") return item.persona === "Mayra";
+          if (currentHistFilter === "Mitad") return item.persona && item.persona.includes("Mitad");
+        }
+        return true;
+      });
+
+      if (list.length === 0) {
+        hl.innerHTML = `<div class="empty-state">No hay movimientos en esta vista.</div>`;
+        return;
+      }
+
+      const groups = new Map();
+      list.forEach(item => {
+        const k = normalizeDateStr(item.fecha) || "Sin fecha";
+        if (!groups.has(k)) groups.set(k, []);
+        groups.get(k).push(item);
+      });
+
+      const sortedDates = Array.from(groups.keys()).sort((a,b) => dateSortValue(b) - dateSortValue(a));
+
+      sortedDates.forEach(dateKey => {
+        const hdr = document.createElement("div");
+        hdr.className = "date-group-hdr";
+        hdr.textContent = formatFriendlyDateHeader(dateKey);
+        hl.appendChild(hdr);
+
+        const grp = document.createElement("div");
+        grp.className = "tx-group";
+
+        groups.get(dateKey).forEach(item => {
+          const meta = getCatMeta(item.cat);
+          const sc = document.createElement("div");
+          sc.className = "swipe-container";
+
+          const delBg = document.createElement("button");
+          delBg.type = "button";
+          delBg.className = "swipe-delete-bg";
+          delBg.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg><span>Eliminar</span>`;
+          delBg.onclick = (e) => {
+            e.stopPropagation();
+            closeAllSwipes();
+            promptDeleteExpense(item);
+          };
+
+          const row = document.createElement("div");
+          row.className = "tx-row";
+          const pStr = String(item.persona || "");
+          const whoCls = pStr.startsWith("Personal") ? "personal" : (pStr === "Harvey" ? "harvey" : (pStr === "Mayra" ? "mayra" : ""));
+          const whoDisp = pStr.replace(/^Personal\s+/i, "");
+
+          row.innerHTML = `
+            <div class="tx-left">
+              <div class="tx-ico" style="background:${meta.bg};">${renderCatSvg(meta)}</div>
+              <div class="tx-meta">
+                <div class="tx-title">${item.desc || meta.short}</div>
+                <div class="tx-sub">${meta.short} · ${item.metodo || "Yape / Plin"}</div>
+              </div>
+            </div>
+            <div class="tx-right">
+              <div class="tx-amt">${fmtSoles(item.monto)}</div>
+              <div class="tx-who ${whoCls}">${whoDisp}</div>
+            </div>
+          `;
+
+          attachSwipeHandler(row, item);
+          sc.appendChild(delBg);
+          sc.appendChild(row);
+          grp.appendChild(sc);
+        });
+
+        hl.appendChild(grp);
+      });
+    }
+
+    /* Actions & Modals */
+    function promptSettleCurrent() {
+      const isMonth = currentScope === "month";
+      const s = isMonth ? currentMonthSaldo : currentAnnualSaldo;
+      if (Math.abs(s) <= 0.009) { showToast("Las cuentas están al día"); return; }
+      const absM = Math.round(Math.abs(s) * 100) / 100;
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+      const who = s > 0 ? "Harvey transfiere a Mayra" : "Mayra transfiere a Harvey";
+      const payerType = s > 0 ? "Liquidación (Harvey → Mayra)" : "Liquidación (Mayra → Harvey)";
+
+      document.getElementById("modalTitle").textContent = isMonth ? `Saldar ${mName}` : "Saldar acumulado";
+      document.getElementById("modalAmount").textContent = fmtSoles(absM);
+      document.getElementById("modalDesc").textContent = `${who}. Se registrará la transferencia para dejar el saldo en S/ 0.00.`;
+      const btn = document.getElementById("modalConfirmBtn");
+      btn.className = "sheet-btn primary";
+      btn.textContent = "Confirmar liquidación";
+      btn.onclick = () => {
+        closeSheet("actionSheet");
+        const iso = getIsoOffset(0);
+        const p = iso.split("-");
+        showToast("Cuentas saldadas");
+        dispatchCloudEvent({
+          type: "new_expense",
+          id: "exp_" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
+          ts: Math.floor(Date.now() / 1000) + 5,
+          fecha: iso, fechaDisp: `${p[2]}/${p[1]}/${p[0]}`,
+          persona: payerType, cat: "Liquidación / Cuadre de Cuentas",
+          desc: isMonth ? `Liquidación ${mName}` : "Liquidación anual",
+          monto: absM, metodo: "Yape / Plin"
+        });
+      };
+      openSheet("actionSheet");
+    }
+
+    function promptDeleteExpense(item) {
+      document.getElementById("modalTitle").textContent = item.desc || getCatMeta(item.cat).short;
+      document.getElementById("modalAmount").textContent = fmtSoles(item.monto);
+      document.getElementById("modalDesc").textContent = `${item.persona} · ${item.fecha} · ${item.metodo || "Yape / Plin"}`;
+      const btn = document.getElementById("modalConfirmBtn");
+      btn.className = "sheet-btn danger";
+      btn.textContent = "Eliminar registro";
+      btn.onclick = () => {
+        closeSheet("actionSheet");
+        showToast("Registro eliminado");
+        dispatchCloudEvent({
+          type: "delete_expense",
+          id: "del_" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
+          targetId: item.id || null,
+          ts: Math.floor(Date.now() / 1000) + 5,
+          fecha: item.fecha, persona: item.persona,
+          cat: item.cat, desc: item.desc, monto: Number(item.monto)
+        });
+      };
+      openSheet("actionSheet");
+    }
+
+    function openSummarySheet() { openSheet("summarySheet"); }
+
+    function shareWrappedWhatsApp() {
+      const mName = MONTH_NAMES[viewedMonthIdx - 1];
+      const tot = document.getElementById("wrpTotal").textContent;
+      const sav = document.getElementById("wrpSaved").textContent;
+      const top = document.getElementById("wrpTopCat").textContent;
+      const st = document.getElementById("wrpSettleStatus").textContent;
+      const text = `Resumen Finanzas ${mName} 2026\n• Total compartido: ${tot}\n• Ahorro vs presupuesto: ${sav}\n• Categoría principal: ${top}\n• Liquidación: ${st}`;
+      window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank");
+    }
+
+    /* Voice / Phrase Parser */
+    function parseMagicPhrase(txt) {
+      const t = (txt || "").trim();
+      const lower = t.toLowerCase();
+      let who = selectedPayer;
+      if (lower.includes("mayra")) who = "Mayra";
+      else if (lower.includes("harvey")) who = "Harvey";
+      else if (lower.includes("mitad") || lower.includes("50")) who = "Mitad c/u (Ya saldado)";
+
+      const mNum = t.match(/(\d+(?:[.,]\d{1,2})?)/);
+      const monto = mNum ? parseFloat(mNum[1].replace(",", ".")) : 0;
+
+      let cat = CATEGORIES[0].name;
+      if (/tambo|caf[eé]|helado|antojo/.test(lower)) cat = "Antojos, Tambo y Cafés";
+      else if (/cena|almuerzo|men[uú]|delivery|rappi|pizza|pollo|chifa|comer/.test(lower)) cat = "Salidas a Comer y Delivery";
+      else if (/luz|agua|internet|entel|claro|movistar|servicio/.test(lower)) cat = "Servicios (Luz, Agua, Internet)";
+      else if (/keyla|mascota|vet|ba[ñn]o|arena/.test(lower)) cat = "Mascotas (Comida, Baño, Vet)";
+      else if (/uber|taxi|pasaje|metro|bus|gasolina/.test(lower)) cat = "Transporte y Movilidad";
+      else if (/farmacia|pastilla|doctor|salud|inkafarma/.test(lower)) cat = "Salud y Farmacia";
+      else if (/cine|entrada|salida/.test(lower)) cat = "Cine, Entretenimiento y Salidas";
+
+      let metodo = selectedMethod;
+      if (/efectivo/.test(lower)) metodo = "Efectivo";
+      else if (/cr[eé]dito/.test(lower)) metodo = "Tarjeta de crédito";
+      else if (/d[eé]bito/.test(lower)) metodo = "Tarjeta de débito";
+      else if (/yape|plin/.test(lower)) metodo = "Yape / Plin";
+
+      const desc = t.replace(/\b(harvey|mayra|pag[oó]|gast[oó]|en|con|soles|yape|plin|efectivo)\b/gi, "").replace(/\d+(?:[.,]\d{1,2})?/g, "").replace(/\s+/g, " ").trim();
+      return { persona: who, monto: Math.round(monto*100)/100, cat, desc: desc ? desc.charAt(0).toUpperCase() + desc.slice(1) : getCatMeta(cat).short, metodo };
+    }
+
+    function updateMagicPreview() {
+      const p = parseMagicPhrase(document.getElementById("aiInput").value);
+      document.getElementById("aiPrevWho").textContent = p.persona;
+      document.getElementById("aiPrevMonto").textContent = fmtSoles(p.monto);
+      document.getElementById("aiPrevCat").textContent = getCatMeta(p.cat).short;
+      document.getElementById("aiPrevDesc").textContent = p.desc || "—";
+    }
+
+    function toggleVoiceDictation() {
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SR) { showToast("Dictado por voz no disponible aquí", true); return; }
+      const rec = new SR();
+      rec.lang = "es-PE";
+      rec.onresult = (e) => {
+        document.getElementById("aiInput").value = e.results[0][0].transcript;
+        updateMagicPreview();
+      };
+      rec.start();
+      showToast("Escuchando...");
+    }
+
+    function executeMagicSave(immediate) {
+      const p = parseMagicPhrase(document.getElementById("aiInput").value);
+      if (!p.monto || p.monto <= 0) { showToast("Indica un monto válido", true); return; }
+      selectPayer(p.persona);
+      selectedCat = p.cat;
+      selectedMethod = p.metodo;
+      renderSelectors();
+      document.getElementById("inpMonto").value = p.monto;
+      document.getElementById("inpDesc").value = p.desc;
+      document.getElementById("aiInput").value = "";
+      closeSheet("dictateSheet");
+      if (immediate) submitExpense();
+    }
+
+    /* 0ms Optimistic Expense Submit */
+    async function submitExpense() {
+      const montoVal = parseFloat(document.getElementById("inpMonto").value);
+      if (!montoVal || montoVal <= 0) {
+        haptic(25);
+        document.getElementById("inpMonto").focus();
+        return;
+      }
+      playChime();
+      haptic([12, 40, 15]);
+
+      const descVal = document.getElementById("inpDesc").value.trim() || getCatMeta(selectedCat).short;
+      const fechaIso = document.getElementById("inpFecha").value || getIsoOffset(0);
+      const parts = fechaIso.split("-");
+      const fechaDisp = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : fechaIso;
+      const payer = currentVaultMode === "personal" ? selectedPersonalPayer : selectedPayer;
+
+      const expObj = {
+        type: "new_expense",
+        id: "exp_" + Date.now() + "_" + Math.random().toString(36).slice(2, 7),
+        ts: Math.floor(Date.now() / 1000) + 5,
+        fecha: fechaIso,
+        fechaDisp: fechaDisp,
+        persona: payer,
+        cat: selectedCat,
+        desc: descVal,
+        monto: Math.round(montoVal * 100) / 100,
+        metodo: selectedMethod
+      };
+
+      document.getElementById("inpMonto").value = "";
+      document.getElementById("inpDesc").value = "";
+      showToast(currentVaultMode === "personal" ? "Guardado en Personal" : "Guardado en Hogar");
+
+      const btn = document.getElementById("btnSubmit");
+      const orig = btn.textContent;
+      btn.textContent = "Anotado";
+      btn.style.transform = "scale(0.975)";
+      setTimeout(() => { btn.textContent = orig; btn.style.transform = ""; }, 320);
+
+      dispatchCloudEvent(expObj);
+    }
+
+    /* Cloud Sync & Parallel Push Alerts */
+    function sendCleanPushAlert(evObj) {
+      if (!evObj || !notificationsEnabled) return Promise.resolve();
+      const meta = getCatMeta(evObj.cat);
+      const isNew = evObj.type === "new_expense";
+      const isPers = String(evObj.persona || "").startsWith("Personal");
+      const who = String(evObj.persona || "Alguien").replace(/^Personal\s+/i, "");
+      const prefix = isPers ? "Personal" : "Hogar";
+
+      const payload = {
+        topic: TOPIC_NOTIF,
+        title: isNew ? `${prefix}: ${who} anotó ${fmtSoles(evObj.monto)}` : `${prefix}: ${who} eliminó ${fmtSoles(evObj.monto)}`,
+        message: isNew ? `${evObj.desc || meta.short} · ${evObj.metodo || "Yape / Plin"}` : `Eliminado: ${evObj.desc || meta.short}`,
+        priority: 5,
+        tags: ["moneybag"],
+        icon: "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
+        attach: "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
+        filename: "cartera.png",
+        click: "https://harveyvc10.github.io/finanzas-hm/v6.html"
+      };
+      return fetch(NTFY_SERVER, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).catch(() => {});
+    }
+
+    async function dispatchCloudEvent(evObj) {
+      if (evObj.type === "new_expense") pendingEvents.set(evObj.id, evObj);
+      if (evObj.type === "delete_expense") deleteEvents.set(evObj.id, evObj);
+      knownEventIds.add(evObj.id);
+      savePersistentEvents();
+      renderMetrics();
+
+      try {
+        const evPost = fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, {
+          method: "POST",
+          headers: { "Priority": "high", "Cache": "yes" },
+          body: JSON.stringify(evObj)
+        });
+        const alertPost = sendCleanPushAlert(evObj);
+        const [res] = await Promise.all([evPost, alertPost]);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+      } catch (e) {
+        const q = getOfflineQueue();
+        q.push(evObj);
+        saveOfflineQueue(q);
+        renderMetrics();
+      }
+    }
+
+    async function flushOfflineQueue() {
+      const q = getOfflineQueue();
+      if (!q.length) return;
+      const rem = [];
+      let sent = false;
+      const baseRec = baseState.recent || [];
+      const normP = p => String(p||"").replace(/^Personal\s+/i,"").trim().toLowerCase();
+      for (const ev of q) {
+        const dup = baseRec.some(r => normP(r.persona) === normP(ev.persona) && Math.abs(Number(r.monto) - Number(ev.monto)) < 0.01 && String(r.desc||"").toLowerCase() === String(ev.desc||"").toLowerCase());
+        if (dup) { sent = true; continue; }
+        try {
+          const [res] = await Promise.all([
+            fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}`, { method: "POST", headers: { "Priority": "default", "Cache": "yes" }, body: JSON.stringify(ev) }),
+            sendCleanPushAlert(ev)
+          ]);
+          if (res.ok) sent = true; else rem.push(ev);
+        } catch (e) { rem.push(ev); }
+      }
+      saveOfflineQueue(rem);
+      if (sent) { renderMetrics(); showToast("Pendientes sincronizados"); }
+    }
+
+    async function fetchCloudUpdates() {
+      try {
+        const rState = await fetch(`${NTFY_SERVER}/${TOPIC_STATE}/json?poll=1&since=all`);
+        if (rState.ok) {
+          const lines = (await rState.text()).trim().split("\n").filter(Boolean);
+          for (const line of lines) {
+            try {
+              const outer = JSON.parse(line);
+              if (outer.event === "message") {
+                let snap = null;
+                if (outer.message && outer.message.trim().startsWith("{")) snap = JSON.parse(outer.message);
+                else if (outer.attachment && outer.attachment.url) {
+                  const rAtt = await fetch(outer.attachment.url);
+                  if (rAtt.ok) snap = await rAtt.json();
+                }
+                if (snap && snap.type === "state_snapshot" && snap.ts >= (baseState.ts || 0) && snap.count > 0) {
+                  baseState = snap;
+                  try { localStorage.setItem("hm_cached_state_v9", JSON.stringify(baseState)); } catch(e){}
+                }
+              }
+            } catch (e) {}
+          }
+        }
+        const rEv = await fetch(`${NTFY_SERVER}/${TOPIC_EVENTS}/json?poll=1&since=all`);
+        if (rEv.ok) {
+          const lines2 = (await rEv.text()).trim().split("\n").filter(Boolean);
+          for (const line of lines2) {
+            try {
+              const outer = JSON.parse(line);
+              if (outer.event === "message" && outer.message && outer.message.trim().startsWith("{")) {
+                const ev = JSON.parse(outer.message);
+                if (ev && ev.id && !knownEventIds.has(ev.id)) {
+                  knownEventIds.add(ev.id);
+                  if (ev.type === "new_expense") pendingEvents.set(ev.id, ev);
+                  else if (ev.type === "delete_expense") deleteEvents.set(ev.id, ev);
+                  savePersistentEvents();
+                }
+              }
+            } catch (e) {}
+          }
+        }
+        isInitialCloudFetch = false;
+        renderMetrics();
+      } catch (e) { isInitialCloudFetch = false; }
+    }
+
+    let eventSource = null;
+    function initRealtimeSSE() {
+      try {
+        if (eventSource) { try { eventSource.close(); } catch(e){} }
+        eventSource = new EventSource(`${NTFY_SERVER}/${TOPIC_EVENTS}/sse`);
+        eventSource.onmessage = (e) => {
+          try {
+            const outer = JSON.parse(e.data);
+            if (outer.event === "message" && outer.message && outer.message.trim().startsWith("{")) {
+              const ev = JSON.parse(outer.message);
+              if (ev && ev.id && !knownEventIds.has(ev.id)) {
+                knownEventIds.add(ev.id);
+                if (ev.type === "new_expense") pendingEvents.set(ev.id, ev);
+                else if (ev.type === "delete_expense") deleteEvents.set(ev.id, ev);
+                savePersistentEvents();
+                renderMetrics();
+                playChime();
+                showToast(`${ev.persona}: ${fmtSoles(ev.monto)}`);
+              }
+            }
+          } catch (err) {}
+        };
+      } catch (e) {}
+    }
+
+    async function manualForceSync() {
+      haptic(10);
+      showToast("Sincronizando...");
+      await fetchCloudUpdates();
+      await flushOfflineQueue();
+      renderMetrics();
+      showToast("Sincronizado");
+    }
+
+    function toggleNotifications(val) {
+      notificationsEnabled = val;
+      localStorage.setItem("hm_notif_enabled_v5", val ? "true" : "false");
+      showToast(val ? "Avisos activados" : "Avisos silenciados");
+    }
+
+    async function testNotification() {
+      haptic(12);
+      playChime();
+      showToast("Enviando alerta...");
+      const payload = {
+        topic: TOPIC_NOTIF,
+        title: "Finanzas · Prueba v6",
+        message: "Conexión activa en pantalla de bloqueo",
+        priority: 5,
+        tags: ["moneybag"],
+        icon: "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
+        attach: "https://harveyvc10.github.io/finanzas-hm/cartera-1b-cuero-blanco.png",
+        filename: "cartera.png",
+        click: "https://harveyvc10.github.io/finanzas-hm/v6.html"
+      };
+      try {
+        const res = await fetch(NTFY_SERVER, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+        showToast(res.ok ? "Alerta enviada" : "Error al enviar", !res.ok);
+      } catch (e) { showToast("Sin conexión", true); }
+    }
+
+    function applyPreset(cat, desc, monto) {
+      haptic(10);
+      selectedCat = cat;
+      renderSelectors();
+      document.getElementById("inpDesc").value = desc;
+      document.getElementById("inpMonto").value = monto;
+      switchView("form");
+      showToast(`Listo: ${desc}`);
+    }
+
+    function exportDataCsv() {
+      haptic(8);
+      const rows = [["Fecha","Persona","Categoría","Concepto","Monto","Medio"]];
+      (window.__lastCombinedRecent || []).forEach(r => rows.push([r.fecha||"", r.persona||"", r.cat||"", r.desc||"", r.monto||0, r.metodo||""]));
+      const csv = rows.map(r => r.map(x => `"${String(x).replace(/"/g,'""')}"`).join(",")).join("\n");
+      const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `Finanzas_HM_${getIsoOffset(0)}.csv`;
+      a.click();
+      showToast("CSV exportado");
+    }
+
+    /* Tab Navigation (SF Symbol Fill/Outline switch per HIG) */
+    function switchView(v) {
+      haptic(6);
+      closeAllSwipes();
+      document.getElementById("viewForm").classList.toggle("hidden", v !== "form");
+      document.getElementById("viewHistory").classList.toggle("hidden", v !== "history");
+      document.getElementById("viewInsights").classList.toggle("hidden", v !== "insights");
+
+      document.getElementById("tabForm").classList.toggle("active", v === "form");
+      document.getElementById("tabHist").classList.toggle("active", v === "history");
+      document.getElementById("tabIns").classList.toggle("active", v === "insights");
+
+      document.getElementById("tabIcoForm").innerHTML = v === "form"
+        ? '<path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>'
+        : '<circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.9"/><line x1="12" y1="8" x2="12" y2="16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>';
+
+      document.getElementById("tabIcoHist").innerHTML = v === "history"
+        ? '<rect x="4" y="3" width="16" height="18" rx="2.5" fill="currentColor"/><line x1="8" y1="8" x2="16" y2="8" stroke="var(--bg)" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="var(--bg)" stroke-width="2" stroke-linecap="round"/><line x1="8" y1="16" x2="12" y2="16" stroke="var(--bg)" stroke-width="2" stroke-linecap="round"/>'
+        : '<rect x="4" y="3" width="16" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.9"/><line x1="8" y1="8" x2="16" y2="8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><line x1="8" y1="12" x2="16" y2="12" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><line x1="8" y1="16" x2="12" y2="16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>';
+
+      document.getElementById("tabIcoIns").innerHTML = v === "insights"
+        ? '<rect x="16" y="9" width="4" height="12" rx="1.5" fill="currentColor"/><rect x="10" y="3" width="4" height="18" rx="1.5" fill="currentColor"/><rect x="4" y="13" width="4" height="8" rx="1.5" fill="currentColor"/>'
+        : '<line x1="18" y1="20" x2="18" y2="10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="12" y1="20" x2="12" y2="4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="6" y1="20" x2="6" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>';
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* Native Pull-to-Refresh */
+    (function initPullToRefresh() {
+      let startY = 0, pulling = false;
+      const ptr = document.getElementById("ptrIndicator");
+      document.addEventListener("touchstart", (e) => {
+        if (window.scrollY <= 0) { startY = e.touches[0].clientY; pulling = true; }
+      }, { passive: true });
+      document.addEventListener("touchmove", (e) => {
+        if (!pulling) return;
+        const dy = e.touches[0].clientY - startY;
+        if (dy > 12 && window.scrollY <= 0) {
+          ptr.style.height = Math.min(54, dy * 0.45) + "px";
+        }
+      }, { passive: true });
+      document.addEventListener("touchend", async () => {
+        if (!pulling) return;
+        pulling = false;
+        const h = parseFloat(ptr.style.height || "0");
+        if (h >= 38) {
+          ptr.style.height = "44px";
+          await manualForceSync();
+        }
+        ptr.style.height = "0px";
+      });
+    })();
+
+    /* Boot */
+    function init() {
+      loadPersistentEvents();
+      document.getElementById("inpFecha").value = getIsoOffset(0);
+      onDateChanged();
+      renderSelectors();
+      selectPayer(selectedPayer);
+      selectPersonalPayer(selectedPersonalPayer);
+      toggleScope(currentScope);
+      setVaultMode(currentVaultMode);
+      fetchCloudUpdates();
+      flushOfflineQueue();
+      initRealtimeSSE();
+      setInterval(() => { flushOfflineQueue(); fetchCloudUpdates(); }, 45000);
+      window.addEventListener("online", () => { flushOfflineQueue(); fetchCloudUpdates(); initRealtimeSSE(); });
+      document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") { flushOfflineQueue(); fetchCloudUpdates(); initRealtimeSSE(); }
+      });
+    }
+
+    init();
+  </script>
+</body>
+</html>
